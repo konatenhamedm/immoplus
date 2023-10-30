@@ -32,7 +32,7 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(),self::INDEX_ROOT_NAME);
 
     $table = $dataTableFactory->create()
- //   ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+    ->add('id', TextColumn::class, ['label' => 'Identifiant'])
     ->createAdapter(ORMAdapter::class, [
     'entity' => Proprio::class,
     ])
