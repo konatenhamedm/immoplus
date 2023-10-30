@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Controller\Parametre;
+namespace App\Controller\Location;
 
-use App\Entity\Proprio;
-use App\Form\ProprioType;
-use App\Repository\ProprioRepository;
+use App\Entity\Locataire;
+use App\Form\LocataireType;
+use App\Repository\LocataireRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
-use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -19,12 +18,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
 
-#[Route('/ads/parametre/Proprio')]
-class ProprioController extends BaseController
+#[Route('/ads/location/locataire')]
+class LocataireController extends BaseController
 {
-const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
+const INDEX_ROOT_NAME = 'app_location_locataire_index';
 
-    #[Route('/', name: 'app_parametre_proprio_index', methods: ['GET', 'POST'])]
+    #[Route('/', name: 'app_location_locataire_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
 
@@ -32,14 +31,11 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(),self::INDEX_ROOT_NAME);
 
     $table = $dataTableFactory->create()
-    ->add('nomPrenoms', TextColumn::class, ['label' => 'Nom et Prénoms'])
-    ->add('contacts', TextColumn::class, ['label' => 'Contacts'])
-    ->add('email', TextColumn::class, ['label' => 'Email'])
-    ->add('numCni', TextColumn::class, ['label' => 'Num Piece'])
+    ->add('id', TextColumn::class, ['label' => 'Identifiant'])
     ->createAdapter(ORMAdapter::class, [
-    'entity' => Proprio::class,
+    'entity' => Locataire::class,
     ])
-    ->setName('dt_app_parametre_Proprio');
+    ->setName('dt_app_location_locataire');
     if($permission != null){
 
     $renders = [
@@ -111,21 +107,21 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     , 'orderable' => false
     ,'globalSearchable' => false
     ,'className' => 'grid_row_actions'
-    , 'render' => function ($value, Proprio $context) use ($renders) {
+    , 'render' => function ($value, Locataire $context) use ($renders) {
     $options = [
     'default_class' => 'btn btn-xs btn-clean btn-icon mr-2 ',
     'target' => '#exampleModalSizeLg2',
 
     'actions' => [
     'edit' => [
-    'url' => $this->generateUrl('app_parametre_Proprio_edit', ['id' => $value])
+    'url' => $this->generateUrl('app_location_locataire_edit', ['id' => $value])
     , 'ajax' => true
     , 'icon' => '%icon% bi bi-pen'
     , 'attrs' => ['class' => 'btn-default']
     , 'render' => $renders['edit']
     ],
     'show' => [
-    'url' => $this->generateUrl('app_parametre_Proprio_show', ['id' => $value])
+    'url' => $this->generateUrl('app_location_locataire_show', ['id' => $value])
     , 'ajax' => true
     , 'icon' => '%icon% bi bi-eye'
     , 'attrs' => ['class' => 'btn-primary']
@@ -133,7 +129,7 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     ],
     'delete' => [
     'target' => '#exampleModalSizeNormal',
-    'url' => $this->generateUrl('app_parametre_Proprio_delete', ['id' => $value])
+    'url' => $this->generateUrl('app_location_locataire_delete', ['id' => $value])
     , 'ajax' => true
     , 'icon' => '%icon% bi bi-trash'
     , 'attrs' => ['class' => 'btn-main']
@@ -155,25 +151,19 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     }
 
 
-    return $this->render('parametre/Proprio/index.html.twig', [
+    return $this->render('location/locataire/index.html.twig', [
     'datatable' => $table,
     'permition' => $permission
     ]);
     }
 
-    #[Route('/new', name: 'app_parametre_Proprio_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, FormError $formError): Response
+    #[Route('/new', name: 'app_location_locataire_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, LocataireRepository $locataireRepository, FormError $formError): Response
 {
-    $validationGroups = ['Default', 'FileRequired', 'autre'];
-$Proprio = new Proprio();
-$form = $this->createForm(ProprioType::class, $Proprio, [
+$locataire = new Locataire();
+$form = $this->createForm(LocataireType::class, $locataire, [
 'method' => 'POST',
-    'doc_options' => [
-        'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
-        'attrs' => ['class' => 'filestyle'],
-    ],
-    'validation_groups' => $validationGroups,
-'action' => $this->generateUrl('app_parametre_Proprio_new')
+'action' => $this->generateUrl('app_location_locataire_new')
 ]);
 $form->handleRequest($request);
 
@@ -184,14 +174,12 @@ $isAjax = $request->isXmlHttpRequest();
 
     if ($form->isSubmitted()) {
     $response = [];
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_location_locataire_index');
 
 
     if ($form->isValid()) {
 
-    $entityManager->persist($Proprio);
-    $entityManager->flush();
-
+    $locataireRepository->save($locataire, true);
     $data = true;
     $message = 'Opération effectuée avec succès';
     $statut = 1;
@@ -201,7 +189,7 @@ $isAjax = $request->isXmlHttpRequest();
     } else {
     $message = $formError->all($form);
     $statut = 0;
-    $statutCode = 500;
+    $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
     if (!$isAjax) {
     $this->addFlash('warning', $message);
     }
@@ -220,33 +208,28 @@ $isAjax = $request->isXmlHttpRequest();
 
     }
 
-    return $this->renderForm('parametre/Proprio/new.html.twig', [
-    'Proprio' => $Proprio,
+    return $this->renderForm('location/locataire/new.html.twig', [
+    'locataire' => $locataire,
     'form' => $form,
     ]);
 }
 
-    #[Route('/{id}/show', name: 'app_parametre_Proprio_show', methods: ['GET'])]
-public function show(Proprio $Proprio): Response
+    #[Route('/{id}/show', name: 'app_location_locataire_show', methods: ['GET'])]
+public function show(Locataire $locataire): Response
 {
-return $this->render('parametre/Proprio/show.html.twig', [
-'Proprio' => $Proprio,
+return $this->render('location/locataire/show.html.twig', [
+'locataire' => $locataire,
 ]);
 }
 
-    #[Route('/{id}/edit', name: 'app_parametre_Proprio_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Proprio $Proprio, EntityManagerInterface $entityManager, FormError $formError): Response
+    #[Route('/{id}/edit', name: 'app_location_locataire_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Locataire $locataire, LocataireRepository $locataireRepository, FormError $formError): Response
 {
-    $validationGroups = ['Default', 'FileRequired', 'autre'];
-$form = $this->createForm(ProprioType::class, $Proprio, [
+
+$form = $this->createForm(LocataireType::class, $locataire, [
 'method' => 'POST',
-    'doc_options' => [
-        'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
-        'attrs' => ['class' => 'filestyle'],
-    ],
-    'validation_groups' => $validationGroups,
-'action' => $this->generateUrl('app_parametre_Proprio_edit', [
-'id' => $Proprio->getId()
+'action' => $this->generateUrl('app_location_locataire_edit', [
+'id' => $locataire->getId()
 ])
 ]);
 
@@ -260,14 +243,12 @@ $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
     $response = [];
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_location_locataire_index');
 
 
     if ($form->isValid()) {
 
-    $entityManager->persist($Proprio);
-    $entityManager->flush();
-
+    $locataireRepository->save($locataire, true);
     $data = true;
     $message = 'Opération effectuée avec succès';
     $statut = 1;
@@ -277,12 +258,13 @@ $form->handleRequest($request);
     } else {
     $message = $formError->all($form);
     $statut = 0;
-    $statutCode = 500;
+    $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
     if (!$isAjax) {
     $this->addFlash('warning', $message);
     }
 
     }
+
 
     if ($isAjax) {
     return $this->json( compact('statut', 'message', 'redirect', 'data'), $statutCode);
@@ -291,24 +273,23 @@ $form->handleRequest($request);
     return $this->redirect($redirect, Response::HTTP_OK);
     }
     }
-
     }
 
-    return $this->renderForm('parametre/Proprio/edit.html.twig', [
-    'Proprio' => $Proprio,
+    return $this->renderForm('location/locataire/edit.html.twig', [
+    'locataire' => $locataire,
     'form' => $form,
     ]);
 }
 
-    #[Route('/{id}/delete', name: 'app_parametre_Proprio_delete', methods: ['DELETE', 'GET'])]
-    public function delete(Request $request, Proprio $Proprio, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/delete', name: 'app_location_locataire_delete', methods: ['DELETE', 'GET'])]
+    public function delete(Request $request, Locataire $locataire, LocataireRepository $locataireRepository): Response
 {
 $form = $this->createFormBuilder()
 ->setAction(
 $this->generateUrl(
-'app_parametre_Proprio_delete'
+'app_location_locataire_delete'
 , [
-'id' => $Proprio->getId()
+'id' => $locataire->getId()
 ]
 )
 )
@@ -317,10 +298,9 @@ $this->generateUrl(
 $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
     $data = true;
-    $entityManager->remove($Proprio);
-    $entityManager->flush();
+    $locataireRepository->remove($locataire, true);
 
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_location_locataire_index');
 
     $message = 'Opération effectuée avec succès';
 
@@ -340,8 +320,8 @@ $form->handleRequest($request);
     }
     }
 
-return $this->renderForm('parametre/Proprio/delete.html.twig', [
-'Proprio' => $Proprio,
+return $this->renderForm('location/locataire/delete.html.twig', [
+'locataire' => $locataire,
 'form' => $form,
 ]);
 }

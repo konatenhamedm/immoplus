@@ -34,13 +34,14 @@ class QuartierController extends BaseController
         $table = $dataTableFactory->create()
             /* ->add('id', TextColumn::class, ['label' => 'Identifiant'])*/
             ->add('ville', TextColumn::class, ['label' => 'Ville', 'field' => 'v.lib_ville'])
-            ->add('LibQuartier ', TextColumn::class, ['label' => 'Libelle'])
+            ->add('LibQuartier', TextColumn::class, ['label' => 'Libelle', 'field' => 'q.LibQuartier'])
+
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Quartier::class,
                 'query' => function (QueryBuilder $qb) {
                     $qb->select('v,q')
                         ->from(Quartier::class, 'q')
-                        ->leftJoin('q.ville', 'v');
+                        ->join('q.ville', 'v');
                 }
 
             ])

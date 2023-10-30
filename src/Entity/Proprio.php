@@ -31,8 +31,10 @@ class Proprio
     #[ORM\Column(length: 255)]
     private ?string $numCni = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $Cni = null;
+
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FichierAdmin $Cni = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nomPere = null;
@@ -88,8 +90,10 @@ class Proprio
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateCniR = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $lien = null;
+
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FichierAdmin $lien = null;
 
     #[ORM\Column(length: 255)]
     private ?string $commission = null;
@@ -176,12 +180,12 @@ class Proprio
         return $this;
     }
 
-    public function getCni(): ?string
+    public function getCni(): ?FichierAdmin
     {
         return $this->Cni;
     }
 
-    public function setCni(string $Cni): static
+    public function setCni(FichierAdmin $Cni): static
     {
         $this->Cni = $Cni;
 
@@ -404,12 +408,12 @@ class Proprio
         return $this;
     }
 
-    public function getLien(): ?string
+    public function getLien(): ?FichierAdmin
     {
         return $this->lien;
     }
 
-    public function setLien(string $lien): static
+    public function setLien(FichierAdmin $lien): static
     {
         $this->lien = $lien;
 
