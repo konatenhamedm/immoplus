@@ -21,7 +21,7 @@ class Annee
 
 
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $autre_info = null;
 
     #[ORM\Column]
@@ -39,6 +39,7 @@ class Annee
     public function __construct()
     {
         $this->campagnes = new ArrayCollection();
+        $this->etat = 1;
     }
 
     public function getId(): ?int
@@ -58,12 +59,12 @@ class Annee
         return $this;
     }
 
-    public function getDateDebut(): ?int
+    public function getDateDebut(): ?\DateTimeInterface
     {
         return $this->date_debut;
     }
 
-    public function setDateDebut(int $date_debut): static
+    public function setDateDebut(\DateTimeInterface $date_debut): static
     {
         $this->date_debut = $date_debut;
 

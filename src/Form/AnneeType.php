@@ -18,7 +18,7 @@ class AnneeType extends AbstractType
         'attr' => ['class' => 'datepicker no-auto skip-init']
         , 'widget' => 'single_text'
         , 'format' => 'dd/MM/yyyy',
-        'label'=>false
+        'label'=>'Date debut'
         , 'empty_data' => date('d/m/Y')
         , 'required' => false
         , 'html5' => false
@@ -27,7 +27,7 @@ class AnneeType extends AbstractType
                 'attr' => ['class' => 'datepicker no-auto skip-init']
                 , 'widget' => 'single_text'
                 , 'format' => 'dd/MM/yyyy',
-                'label'=>false
+                'label'=>"Date fin"
                 , 'empty_data' => date('d/m/Y')
                 , 'required' => false
                 , 'html5' => false

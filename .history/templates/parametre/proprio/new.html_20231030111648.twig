@@ -1,0 +1,123 @@
+{% block page_content %}
+    {% form_theme form 'widget/fields-block.html.twig' %}
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Création Proprio</h5>
+        <div class="btn btn-icon btn-sm  ms-2" data-bs-dismiss="modal" aria-label="Close">
+            <span class="svg-icon svg-icon-2x text-white">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor"></rect>
+					<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor"></rect>
+				</svg>
+            </span>
+        </div>
+    </div>
+    {{ form_start(form, {'attr': {'role':'form', 'class': 'form'}}) }}
+    <div class="modal-body content-doc">
+        {{ include('_includes/ajax/response.html.twig') }}
+        {{ form_widget(form) }}
+        <div id="kt_content_container" class=" container-xxl ">
+           
+        
+            <!--begin::Row-->
+            <div class="row g-5 g-xl-8">
+                <!--begin::Col-->
+                <div class="col-xl-6">
+        
+                    <!--begin::Tables Widget 3-->
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <!--begin::Header-->
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Des dossiers</font>
+                                    </font>
+                                </span>
+        
+                                <span class="text-muted mt-1 fw-semibold fs-7">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Plus de 100 dossiers en attente</font>
+                                    </font>
+                                </span>
+                            </h3>
+                            <div class="card-toolbar">
+                                <!--begin::Menu-->
+                               
+                               
+                                <!--end::Menu-->
+                            </div>
+                        </div>
+                        <!--end::Header-->
+        
+                        <!--begin::Body-->
+                        <div class="card-body py-3">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle gs-0 gy-3">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="p-0 w-50px"></th>
+                                            <th class="p-0 min-w-150px"></th>
+                                            <th class="p-0 min-w-140px"></th>
+                                            <th class="p-0 min-w-120px"></th>
+                                            <th class="p-0 min-w-40px"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+        
+                                    <!--begin::Table body-->
+                                   
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--begin::Body-->
+                    </div>
+                    <!--end::Tables Widget 3-->
+                </div>
+                <!--end::Col-->
+        
+                
+            </div>
+            <!--end::Row-->
+        
+            
+        
+        
+        
+        
+        </div>
+    </div>
+    <div class="modal-footer">
+        {# {{ include('_includes/ajax/loader.html.twig') }} #}
+        <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-main btn-ajax btn-sm"><span class="spinner-border d-none  spinner-ajax spinner-border-sm" role="status" aria-hidden="true"></span> Valider</button>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block java %}
+    <script>
+        $(function () {
+            init_select2('select');
+        });
+        $(function () {
+            init_select2('select', null, '.content-doc');
+        });
+        $('.no-auto').each(function () {
+            const $this = $(this);
+            const $id = $('#' + $this.attr('id'));
+            init_date_picker($id,  'down', (start, e) => {
+                //$this.val(start.format('DD/MM/YYYY'));
+            }, null, null, null);
+
+            $id.on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY'));
+            });
+        });
+
+    </script>
+{% endblock %}
