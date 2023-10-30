@@ -4,7 +4,7 @@
     <div class="card-header card-header-sm">
         <h3 class="card-title"> La configuration</h3>
         <div class="card-toolbar">
-        {% if(config|length == 0 ) %}
+        {% if(config|length != 0 or (menu.getGroupeName == "Super Administrateur") ) %}
             {% if permition in ["CR","CRU","CRUD"] %}
                 <a href="{{ path('app_parametre_config_app_new') }}" class="btn btn-main btn-sm"
                    data-bs-toggle="modal" data-bs-target="#exampleModalSizeLg2">
