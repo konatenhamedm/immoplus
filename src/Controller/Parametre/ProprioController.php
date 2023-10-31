@@ -7,7 +7,6 @@ use App\Form\ProprioType;
 use App\Repository\ProprioRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
-use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -18,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/ads/parametre/Proprio')]
 class ProprioController extends BaseController
@@ -119,7 +119,8 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     'actions' => [
     'edit' => [
     'url' => $this->generateUrl('app_parametre_Proprio_edit', ['id' => $value])
-    , 'ajax' => true
+    , 'ajax' => true,
+        'target'=>'#exampleModalSizeSm2'
     , 'icon' => '%icon% bi bi-pen'
     , 'attrs' => ['class' => 'btn-default']
     , 'render' => $renders['edit']
@@ -188,7 +189,7 @@ $isAjax = $request->isXmlHttpRequest();
 
 
     if ($form->isValid()) {
-
+    $Proprio->setEntreprise($this->security->getUser()->getEmploye()->getEntreprise());
     $entityManager->persist($Proprio);
     $entityManager->flush();
 

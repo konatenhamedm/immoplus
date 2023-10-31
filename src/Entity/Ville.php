@@ -24,6 +24,9 @@ class Ville
     #[ORM\OneToMany(mappedBy: 'ville', targetEntity: Quartier::class)]
     private Collection $quartiers;
 
+    #[ORM\ManyToOne(inversedBy: 'villes')]
+    private ?Pays $pays = null;
+
     public function __construct()
     {
         $this->quartiers = new ArrayCollection();
@@ -84,6 +87,18 @@ class Ville
                 $quartier->setVille(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPays(): ?Pays
+    {
+        return $this->pays;
+    }
+
+    public function setPays(?Pays $pays): static
+    {
+        $this->pays = $pays;
 
         return $this;
     }

@@ -69,8 +69,7 @@ class Entreprise
     #[ORM\Column(length: 255)]
     private ?string $Directeur = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $pays = null;
+
 
     #[ORM\Column(length: 255)]
     private ?string $ville = null;
@@ -78,12 +77,19 @@ class Entreprise
     #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Groupe::class)]
+    private Collection $groupes;
+
+    #[ORM\ManyToOne(inversedBy: 'entreprises')]
+    private ?Pays $pays = null;
+
 
     public function __construct()
     {
         $this->employes = new ArrayCollection();
         $this->configApps = new ArrayCollection();
         $this->Proprios = new ArrayCollection();
+        $this->groupes = new ArrayCollection();
 
     }
 
@@ -268,17 +274,7 @@ class Entreprise
         return $this;
     }
 
-    public function getPays(): ?string
-    {
-        return $this->pays;
-    }
 
-    public function setPays(string $pays): static
-    {
-        $this->pays = $pays;
-
-        return $this;
-    }
 
     public function getVille(): ?string
     {
@@ -372,6 +368,48 @@ class Entreprise
     public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupe>
+     */
+    public function getGroupes(): Collection
+    {
+        return $this->groupes;
+    }
+
+    public function addGroupe(Groupe $groupe): static
+    {
+        if (!$this->groupes->contains($groupe)) {
+            $this->groupes->add($groupe);
+            $groupe->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupe(Groupe $groupe): static
+    {
+        if ($this->groupes->removeElement($groupe)) {
+            // set the owning side to null (unless already changed)
+            if ($groupe->getEntreprise() === $this) {
+                $groupe->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPays(): ?Pays
+    {
+        return $this->pays;
+    }
+
+    public function setPays(?Pays $pays): static
+    {
+        $this->pays = $pays;
 
         return $this;
     }

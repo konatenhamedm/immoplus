@@ -234,6 +234,11 @@ class ParametreController extends BaseController
 
             'config' => [
                 [
+                    'label' => 'Pays',
+                    'id' => 'param_pays',
+                    'href' => $this->generateUrl('app_parametre_pays_index')
+                ],
+                [
                     'label' => 'Civilité',
                     'id' => 'param_article',
                     'href' => $this->generateUrl('app_parametre_civilite_index')

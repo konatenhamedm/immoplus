@@ -3,13 +3,16 @@
 namespace App\Controller\Utilisateur;
 
 use App\Controller\BaseController;
+use App\Entity\Entreprise;
 use App\Entity\Groupe;
+use App\Entity\ModuleGroupePermition;
 use App\Form\GroupeType;
 use App\Repository\GroupeRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
 use App\Service\Menu;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -37,9 +40,20 @@ class GroupeController extends BaseController
 
 
         $table = $dataTableFactory->create()
+        ->add('entreprise', TextColumn::class,['label' => 'Entreprise', 'field' => 'e.denomination'])
         ->add('name', TextColumn::class, ['label' => 'Libellé'])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Groupe::class,
+            'query' => function (QueryBuilder $qb) {
+                $qb->select('g,e')
+                    ->from(Groupe::class, 'g')
+                    ->innerJoin('g.entreprise' ,'e')
+                ;
+                if ($this->groupe != "Super Administrateur") {
+                    $qb->andWhere('e.entreprise =:entreprise')
+                        ->setParameter('entreprise', $this->entreprise);
+                }
+            }
         ])
         ->setName('dt_app_utilisateur_groupe');
         if($permission != null){
@@ -190,11 +204,11 @@ class GroupeController extends BaseController
             $response = [];
             $redirect = $this->generateUrl('app_utilisateur_groupe_index');
 
-           
-
-
             if ($form->isValid()) {
-                
+
+                if($this->groupe !="Super Administrateur"){
+                    $groupe->setEntreprise($this->entreprise);
+                }
                 $groupeRepository->add($groupe, true);
                 $data = true;
                 $message       = 'Opération effectuée avec succès';
@@ -227,6 +241,7 @@ class GroupeController extends BaseController
         return $this->renderForm('utilisateur/groupe/new.html.twig', [
             'groupe' => $groupe,
             'form' => $form,
+            'user_groue'=>$this->groupe
         ]);
     }
 
@@ -294,6 +309,7 @@ class GroupeController extends BaseController
         return $this->renderForm('utilisateur/groupe/edit.html.twig', [
             'groupe' => $groupe,
             'form' => $form,
+            'user_groue'=>$this->groupe
         ]);
     }
 

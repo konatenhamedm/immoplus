@@ -17,6 +17,11 @@
         {{ include('_includes/ajax/response.html.twig') }}
 
         <div class="row">
+            {% if user_groue == "Super Administrateur" %}
+                <div class="form-group col-md-12">
+                    <label class="sr-onl" for="userinput1">Entreprise*</label>
+                    {{ form_widget(form.entreprise) }}</div>
+            {% endif %}
             <div class="form-group col-md-12">
                 <label class="sr-onl" for="userinput1">Nom Groupe*</label>
                 {{ form_widget(form.name) }}</div>

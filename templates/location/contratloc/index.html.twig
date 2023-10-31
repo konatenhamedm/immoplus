@@ -1,12 +1,12 @@
 {% extends 'base-layout.html.twig' %}
 
-{% block title %}Liste des contratlocs{% endblock %}
-{% block header %}contratlocs{% endblock %}
+{% block title %}Liste des locataires{% endblock %}
+{% block header %}locataires{% endblock %}
 {% block breadcrumb %}{% endblock %}
 {% block body %}
 <div class="card shadow-sm">
     <div class="card-header card-header-sm">
-        <h3 class="card-title"> Liste des contratlocs</h3>
+        <h3 class="card-title"> Liste des contrat de locations</h3>
         <div class="card-toolbar">
             {% if permition in ["CR","CRU","CRUD"] %}
             <a href="{{ path('app_location_contratloc_new') }}" class="btn btn-main btn-sm"  
