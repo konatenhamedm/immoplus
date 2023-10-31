@@ -40,6 +40,7 @@ class EmployeController extends BaseController
 
         $table = $dataTableFactory->create()
         ->add('matricule', TextColumn::class, ['label' => 'Matricule'])
+            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
         ->add('fonction', TextColumn::class, ['field' => 'fonction.libelle', 'label' => 'Fonction'])
         ->add('nom', TextColumn::class, ['label' => 'Nom'])
         ->add('prenom', TextColumn::class, ['label' => 'Prénoms'])

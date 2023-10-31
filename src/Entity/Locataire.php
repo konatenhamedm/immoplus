@@ -84,6 +84,9 @@ class Locataire
     #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
 
+    #[ORM\ManyToOne(inversedBy: 'locataires')]
+    private ?Entreprise $entreprise = null;
+
     public function __construct()
     {
         $this->Contratlocs = new ArrayCollection();
@@ -422,6 +425,18 @@ class Locataire
                 $factureloc->setLocataire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
 
         return $this;
     }

@@ -6,8 +6,11 @@ use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
+
+#[UniqueEntity(['code'], message: 'Ce code est déjà utilisé')]
 #[ORM\Table(name:'_admin_user_groupe')]
 class Groupe
 {

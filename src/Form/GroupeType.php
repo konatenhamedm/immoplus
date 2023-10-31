@@ -27,7 +27,8 @@ class GroupeType extends AbstractType
 
 
 
-                $builder    ->add('name', null, ['label' => 'Libellé'])
+                $builder    ->add('code', null, ['label' => 'Code'])
+           ->add('name', null, ['label' => 'Libellé'])
                     ->add('description', TextareaType::class, ['label' => 'Description', 'required' => false, 'empty_data' => ''])
                     ->add('moduleGroupePermitions', CollectionType::class, [
                         'entry_type' => ModuleGroupePermitionType::class,

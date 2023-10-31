@@ -84,6 +84,12 @@ class Entreprise
     #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Fonction::class)]
     private Collection $fonctions;
 
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Locataire::class)]
+    private Collection $locataires;
+
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Contratloc::class)]
+    private Collection $contratlocs;
+
 
     public function __construct()
     {
@@ -92,6 +98,8 @@ class Entreprise
         $this->Proprios = new ArrayCollection();
         $this->groupes = new ArrayCollection();
         $this->fonctions = new ArrayCollection();
+        $this->locataires = new ArrayCollection();
+        $this->contratlocs = new ArrayCollection();
 
     }
 
@@ -412,6 +420,66 @@ class Entreprise
             // set the owning side to null (unless already changed)
             if ($fonction->getEntreprise() === $this) {
                 $fonction->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Locataire>
+     */
+    public function getLocataires(): Collection
+    {
+        return $this->locataires;
+    }
+
+    public function addLocataire(Locataire $locataire): static
+    {
+        if (!$this->locataires->contains($locataire)) {
+            $this->locataires->add($locataire);
+            $locataire->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocataire(Locataire $locataire): static
+    {
+        if ($this->locataires->removeElement($locataire)) {
+            // set the owning side to null (unless already changed)
+            if ($locataire->getEntreprise() === $this) {
+                $locataire->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contratloc>
+     */
+    public function getContratlocs(): Collection
+    {
+        return $this->contratlocs;
+    }
+
+    public function addContratloc(Contratloc $contratloc): static
+    {
+        if (!$this->contratlocs->contains($contratloc)) {
+            $this->contratlocs->add($contratloc);
+            $contratloc->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContratloc(Contratloc $contratloc): static
+    {
+        if ($this->contratlocs->removeElement($contratloc)) {
+            // set the owning side to null (unless already changed)
+            if ($contratloc->getEntreprise() === $this) {
+                $contratloc->setEntreprise(null);
             }
         }
 

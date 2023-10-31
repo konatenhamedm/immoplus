@@ -40,11 +40,11 @@ class GroupeController extends BaseController
 
 
         $table = $dataTableFactory->create()
-       /* ->add('entreprise', TextColumn::class,['label' => 'Entreprise', 'field' => 'e.denomination'])*/
+       ->add('code', TextColumn::class,['label' => 'code'])
         ->add('name', TextColumn::class, ['label' => 'Libellé'])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Groupe::class,
-            'query' => function (QueryBuilder $qb) {
+          /*  'query' => function (QueryBuilder $qb) {
                 $qb->select('g,e')
                     ->from(Groupe::class, 'g')
                     ->innerJoin('g.entreprise' ,'e')
@@ -53,7 +53,7 @@ class GroupeController extends BaseController
                     $qb->andWhere('e.entreprise =:entreprise')
                         ->setParameter('entreprise', $this->entreprise);
                 }
-            }
+            }*/
         ])
         ->setName('dt_app_utilisateur_groupe');
         if($permission != null){

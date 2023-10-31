@@ -34,24 +34,29 @@ class UtilisateurController extends BaseController
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(),self::INDEX_ROOT_NAME);
-//dd($permission);
+
         $table = $dataTableFactory->create()
-        ->add('username', TextColumn::class, ['label' => 'Pseudo'])
-        ->add('email', TextColumn::class, ['label' => 'Email', 'field' => 'e.adresseMail'])
-        ->add('nom', TextColumn::class, ['label' => 'Nom', 'field' => 'e.nom'])
-        ->add('prenom', TextColumn::class, ['label' => 'Prénoms', 'field' => 'e.prenom'])
-        ->add('fonction', TextColumn::class, ['label' => 'Fonction', 'field' => 'f.libelle'])
-        ->createAdapter(ORMAdapter::class, [
-            'entity' => Utilisateur::class,
-            'query' => function(QueryBuilder $qb){
-                $qb->select('u, e, f')
-                    ->from(Utilisateur::class, 'u')
-                    ->join('u.employe', 'e')
-                    ->join('e.fonction', 'f')
-                ;
-            }
-        ])
-        ->setName('dt_app_utilisateur_utilisateur');
+            ->add('username', TextColumn::class, ['label' => 'Pseudo'])
+            ->add('email', TextColumn::class, ['label' => 'Email', 'field' => 'e.adresseMail'])
+            ->add('nom', TextColumn::class, ['label' => 'Nom', 'field' => 'e.nom'])
+            ->add('prenom', TextColumn::class, ['label' => 'Prénoms', 'field' => 'e.prenom'])
+            ->add('fonction', TextColumn::class, ['label' => 'Fonction', 'field' => 'f.libelle'])
+            ->createAdapter(ORMAdapter::class, [
+                'entity' => Utilisateur::class,
+                'query' => function(QueryBuilder $qb){
+                    $qb->select('u, e, f')
+                        ->from(Utilisateur::class, 'u')
+                        ->join('u.employe', 'e')
+                        ->join('e.entreprise', 'en')
+                        ->join('e.fonction', 'f')
+                    ;
+                    if ($this->groupe != "SADM") {
+                        $qb->andWhere('en = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);
+                    }
+                }
+            ])
+            ->setName('dt_app_utilisateur_utilisateur');
         if($permission != null){
             $renders = [
                 'edit' =>  new ActionRender(function () use ($permission) {
@@ -135,7 +140,7 @@ class UtilisateurController extends BaseController
 
                             'actions' => [
                                 'edit' => [
-                                    'target'=>'#exampleModalSizeSm2',
+                                    //'target'=>'#exampleModalSizeSm2',
                                     'url' => $this->generateUrl('app_utilisateur_utilisateur_edit', ['id' => $value])
                                     , 'ajax' => true
                                     , 'icon' => '%icon% bi bi-pen'
@@ -164,7 +169,7 @@ class UtilisateurController extends BaseController
                     }
                 ]);
             }
-            }
+        }
 
         $table->handleRequest($request);
 
@@ -178,8 +183,9 @@ class UtilisateurController extends BaseController
             'permition' => $permission
         ]);
     }
-  
-    #[Route('/ads/new', name: 'app_utilisateur_utilisateur_new', methods: ['GET', 'POST'])]
+
+
+    #[Route('/new', name: 'app_utilisateur_utilisateur_new', methods: ['GET', 'POST'])]
     public function new(Request $request, UtilisateurRepository $utilisateurRepository, FormError $formError): Response
     {
         $utilisateur = new Utilisateur();
@@ -247,7 +253,7 @@ class UtilisateurController extends BaseController
         ]);
     }
 
-    #[Route('/ads/{id}/edit', name: 'app_utilisateur_utilisateur_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_utilisateur_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur,EmployeRepository $employeRepository, UtilisateurRepository $utilisateurRepository, FormError $formError): Response
     {
         
