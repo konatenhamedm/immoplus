@@ -1,0 +1,490 @@
+
+{% block page_content %}
+{% form_theme form 'widget/fields-block.html.twig' %}
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Création Contratloc</h5>
+    <div class="btn btn-icon btn-sm  ms-2" data-bs-dismiss="modal" aria-label="Close">
+        <span class="svg-icon svg-icon-2x text-white">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                    fill="currentColor"></rect>
+                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
+                    fill="currentColor"></rect>
+            </svg>
+        </span>
+    </div>
+</div>
+{{ form_start(form, {'attr': {'role':'form', 'class': 'form'}}) }}
+<div class="modal-body content-doc">
+    {{ include('_includes/ajax/response.html.twig') }}
+
+    <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_4">Identification du locataire</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_5">Autres informations</a>
+        </li>
+
+    </ul>
+
+   
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="kt_tab_pane_4" role="tabpanel">
+    {{ form_end(form) }}
+            <div class="row g-5 g-xl-8">
+
+                <div class="col-xl-6">
+
+                    <!--begin::Tables Widget 3-->
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <!--begin::Header-->
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Insérer la pièce</font>
+                                    </font>
+                                </span>
+                            </h3>
+
+                        </div>
+                        <!--end::Header-->
+
+                        <!--begin::Body-->
+                        <div class="card-body py-3">
+                            <!--begin::Table container-->
+
+                            <div class="row">
+
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                      Insérer le contrat scanné
+                                    </label>
+                                    {{ form_widget(form.ScanContrat) }}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--begin::Col-->
+                <div class="col-xl-6">
+
+                    <!--begin::Tables Widget 3-->
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <!--begin::Header-->
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Identification</font>
+                                    </font>
+                                </span>
+                            </h3>
+
+                        </div>
+                        <!--end::Header-->
+
+                        <!--begin::Body-->
+                        <div class="card-body py-3">
+
+                            ->add('DateDebut', DateType::class, [
+                            'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
+                            'label' => "Date debu", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
+                            ])
+                            ->add('DateDebut', DateType::class, [
+                            'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
+                            'label' => "Date fin", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
+                            ])
+                            ->add('NbMoisCaution')
+                            ->add('MntCaution')
+                            ->add('NbMoisAvance')
+                            ->add('MntAvance')
+                            ->add('MntLoyer')
+                            ->add('AutreInfos')
+                            
+                            ->add('DateEntree')
+                            
+                            ->add('DateProchVers', DateType::class, [
+                            'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
+                            'label' => "Date du prochain versement", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
+                            ])
+                            ->add('MntLoyerPrec')
+                            ->add('MntLoyerIni')
+                            ->add('MntLoyerActu')
+                            ->add('MntArriere')
+                            ->add('DejaLocataire')
+                            ->add('StatutLoc')
+                            ->add('Fraisanex')
+                            ->add('Etat')
+                            ->add('TotVerse')
+                            
+                            ->add('locataire',EntityType::class, [
+                            'placeholder' => '----',
+                            'class' => Locataire::class,
+                            'choice_label' => 'NPrenoms',
+                            'label' => 'Locataire',
+                            'attr' => ['class' => 'has-select2 form-select']
+                            ])
+                            ->add('appartement', EntityType::class, [
+                            'placeholder' => '----',
+                            'class' => Appartement::class,
+                            'choice_label' => 'LibAppart',
+                            'label' => 'Appartement',
+                            'attr' => ['class' => 'has-select2 form-select']
+                            ])
+                            
+                            ->add('Regime')
+                            ->add('Nature')
+
+                            Choix locatatire
+                            -----
+                            -----
+                            AHI EKAHAN INNOCENT - 0708810615
+                            AKADJE AIME - 0709221240
+                            ARISOLA LAWRENCE OWOLUWA - 0505323073
+                            AWOTUNDUN OLAREWAJU EMMANUEL - 0757322087
+                            AZANIE ELISABETH - 05456440665
+                            AZIZ MOHAMED - 0170234142
+                            BAKAYOKO - 0767651960
+                            BAKAYOKO ABOULAYE - 0707767284
+                            BAMBA YAYA - 0544741115
+                            BAZIE BASSOBLE - 0544262727
+                            BELEM NOUFOU - 0506096184
+                            BISSOUMA DIDI - 0707180107
+                            BLEHI TAHOUE JOACHIM - 0747411938
+                            BOCOVO THOMAS HERVE - 0546599452
+                            BORONI MIDJOU - 0709332507
+                            BRAGOURI N'GUESSAN ANGE OLIVIER - 0748092718
+                            COULIBALY NATACHA - 0545778448
+                            DIABATE IBRAHIM - 0757024221
+                            DIAHOU CYNTHIA LIZIANE - 0554885002
+                            DIARRA YACOUBA - 0707062569
+                            DIARRASSOUBA BAGNOU - 0747385841
+                            DIEYE OUSEYMOU - 0748337657
+                            DJETO WONKOGNON MARC AUREL - 0555112721
+                            DJOHUO BI SOGONE GERVAIS - 0555644659
+                            DONKOUAN DOH YANNICK - 0708034869
+                            FLAN VALERIE MICHEL - 0545847509
+                            FOFANA ISSA - 0585575548
+                            GBAH YORO PACOMME - 0777279200
+                            GNAMIEN GNAMIEN JEAN PAUL - 0506096184
+                            GNANGORAN EKISSI - 0140590244
+                            GNOTO ROSITA - 0749853553
+                            GOLE BI GOU ZAN ANGE (LUCIE ZOUON) - 0576193966
+                            GON DAN OUAPEU CHRISLAIN - 0759403323
+                            GUEU ARISTIDE - 0505272950
+                            GUEU VALENTIN DIOMANDE - 05066948
+                            GUINAN JEAN OSCAR - 0554141789
+                            GUY CLAUDE - 0505272950
+                            HIEN ABOULAYE - 0709662038
+                            IWUEZE STEPHEN IKECHUKU - 0101466933
+                            KAKOU MICHELLE - 0101842894
+                            KANE MINLEMON MARCEL - 0777666781
+                            KANIGUI BRAHIMA BAMBA - 0709607951
+                            KARAMOKO NAMORY - 0170286055
+                            KEA THIERRY - 0758146885
+                            KEITA ALASSANE - 0788254205
+                            KESSE ZEH TATIANA - 0757545093
+                            KOFFI NICOLAS N'GRE - 0504044046
+                            KOKA BERTINE - 0747628486
+                            KONAN N'GUESSAN FRANCIS - 0102123673
+                            KONATE SEYDOU - 0748202552
+                            KONE MAMADOU - 0546849409
+                            KOUAKOU KOUAME ROGER - 0172526421
+                            KOUAME AFFOUE CHANTALE - 0779732233
+                            KOUASSA JOSEE ROLANDE - 07039746
+                            KOUASSI ADJOUA ALINE - 0709426037
+                            KOUASSI CELESTIN KONAN - 0101421827
+                            KOUASSI GERMAIN - 0707054225
+                            KOUASSI N'GUESSAN CREPIN - 0747066097
+                            KOUREISSI YOUBA - 0777147655
+                            KOUYATE MAMADOU - 0757323025
+                            KRAMO KOUADIO JEAN FERNAND - 0788597816
+                            LEZIE BI TAH JONATHAN - 0546946358
+                            MAMADI CAMARA DIALLO - 0152944777
+                            ME LOUIS ADJO IVETTE - 0778666625
+                            MONE HAMADOU - 07577706598
+                            N'DA KOUAME MEDARD - 0709979436
+                            N'GUESSAN ABLAN JEAN?NE - 0748159715
+                            N'GUESSAN BOMOI KANGAH SYLVIE - 0788579316
+                            N'GUESSAN KOUADIO THOMAS - 0708476171
+                            N'TAKPE SIMPLICE EZEKIEL - 0544554630
+                            NKWOCHA CHIDIEBERE FRANKLIN - 0555244284
+                            NOUHO KOBENAN BENEH - 0545382089
+                            OPA JOBI TAYIWO - 0506096184
+                            OUEDRAOGO HAMADO - 0141820712
+                            OUEDRAOGO MOHAMED - 0707105285
+                            OUOHI TONGA PLACIDE - 0546122363
+                            OUSMANE ARAMA - 0504943743
+                            SAGUIN KARIM - 0758541435
+                            SAKO IBRAHIM BRICE - 0709911300
+                            SANA BRAHIMA - 0143607680
+                            SANGARE YBRAHIM - 0707146322
+                            SANOU BERTRAND - 0142121393
+                            TANO PRISCA - 0758658201
+                            TEHE DIE ELODIE VICTOIRE - 0103272637
+                            TETIALY LEOPOLD - 07071886
+                            TIA ZOTA JULIE SARAH - 0505323073
+                            TIEMOKO TROH FABRICE - 0748337657
+                            TIENDREOGO SIMON - 0707054225
+                            TINGUERI THEODOR - 0505285450
+                            TOFFA JULIE - 0151606125
+                            TOULEU MARTINE - 0505272950
+                            ULU NIWALU GODWIN CHUKWUMA - 0103395729
+                            YAGBEHOU MESSEIN GREGOIRE - 0102156418
+                            YAO ADJOUA RAISSA - 0708293135
+                            YAO GERMAINE - 0141170608
+                            YAPI AKA INNOCENT - 0758106193
+                            YAPI N'CHO BAUDOUIN - 0747180690
+                            YEO NOGOTEHE YACOUBA - 0556888820
+                            YOBO JUSTIN - 0787879866
+                            YOBOUET BEAULOIS ANICET - 0709863291
+                            ZELI AIMÉ - 0708772234
+                            ZOGBOLOU GUY ROGER - 0565934496
+                            Choix appartement
+                            -----
+                            -----
+                            Nature
+                            
+                            Mois de caution
+                            Valeur
+                            Frais annexes
+                            Régime
+                            Payé-Consommé Consommé-Payé
+                            Date entrée
+                            jj/mm/aaaa
+                            Date Proch. Versmt
+                            <!--begin::Table container-->
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nom et Prénoms
+                                    </label>
+                                    {{ form_widget(form.NPrenoms) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Date de naissance
+                                    </label>
+                                    {{ form_widget(form.DateNaiss) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Lieu de naissance
+                                    </label>
+                                    {{ form_widget(form.LieuNaiss) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Profession
+                                    </label>
+                                    {{ form_widget(form.Profession) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nature et numéro pièce
+                                    </label>
+                                    {#{{ form_widget(form.addresse) }}#}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Contact
+                                    </label>
+                                    {{ form_widget(form.Contacts) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Email
+                                    </label>
+                                    {{ form_widget(form.Email) }}
+                                </div>
+
+                                {#<div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nationalité
+                                    </label>
+                                    {{ form_widget(form.nomPere) }}
+                                </div>#}
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Genre
+                                    </label>
+                                    {{ form_widget(form.Genre) }}
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <!--begin::Col-->
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div class="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
+            <div class="row g-5 g-xl-8">
+
+                <div class="col-xl-6">
+
+                    <!--begin::Tables Widget 3-->
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <!--begin::Header-->
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Famille</font>
+                                    </font>
+                                </span>
+                            </h3>
+
+                        </div>
+                        <!--end::Header-->
+
+                        <!--begin::Body-->
+                        <div class="card-body py-3">
+                            <!--begin::Table container-->
+
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Ethnie
+                                    </label>
+                                    {{ form_widget(form.Ethnie) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nombre enfants
+                                    </label>
+                                    {{ form_widget(form.NbEnfts) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nombre personnes á charge
+                                    </label>
+                                    {{ form_widget(form.NbPersChge) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Père
+                                    </label>
+                                    {{ form_widget(form.Pere) }}
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Mère
+                                    </label>
+                                    {{ form_widget(form.Mere) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Situation matrimoniale
+                                    </label>
+                                    {{ form_widget(form.situationMatri) }}
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--begin::Col-->
+                <div class="col-xl-6">
+
+                    <!--begin::Tables Widget 3-->
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <!--begin::Header-->
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">
+                                    <font style="vertical-align: inherit;">
+                                        <font style="vertical-align: inherit;">Conjoint(e) / Colocataire</font>
+                                    </font>
+                                </span>
+                            </h3>
+
+                        </div>
+                        <!--end::Header-->
+
+                        <!--begin::Body-->
+                        <div class="card-body py-3">
+
+                            <!--begin::Table container-->
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Vivez avec
+                                    </label>
+                                    {{ form_widget(form.VivezAvec) }}
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Nom et Prénoms
+                                    </label>
+                                    {{ form_widget(form.NPConjointe) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Profesion
+                                    </label>
+                                    {{ form_widget(form.ProfConj) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Ethnie
+                                    </label>
+                                    {{ form_widget(form.EthnieConj) }}
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="sr-onl" for="userinput1">
+                                        Contacts
+                                    </label>
+                                    {{ form_widget(form.ContactConj) }}
+                                </div>
+
+
+
+
+
+                            </div>
+                        </div>
+
+                        <!--begin::Col-->
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal-footer">
+    {# {{ include('_includes/ajax/loader.html.twig') }} #}
+    <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">Annuler</button>
+    <button type="submit" class="btn btn-main btn-ajax btn-sm"><span
+            class="spinner-border d-none  spinner-ajax spinner-border-sm" role="status" aria-hidden="true"></span>
+        Valider</button>
+</div>
+{{ form_end(form) }}
+{% endblock %}
+
+{% block java %}
+<script>
+    $(function () {
+        init_select2('select');
+    });
+    $(function () {
+        init_select2('select', null, '.content-doc');
+    });
+</script>
+{% endblock %}

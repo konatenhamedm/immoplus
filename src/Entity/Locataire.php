@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\LocataireRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LocataireRepository::class)]
@@ -18,34 +20,34 @@ class Locataire
     #[ORM\Column(length: 255)]
     private ?string $NPrenoms = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $DateNaiss = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $DateNaiss = null;
 
     #[ORM\Column(length: 255)]
     private ?string $LieuNaiss = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $InfoPiece = null;
+    
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FichierAdmin $InfoPiece = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $ScanPiece = null;
-
+   
     #[ORM\Column(length: 255)]
     private ?string $Profession = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $Ethnie = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $NbEnfts = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $NbPersChge = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $Pere = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $Mere = null;
 
     #[ORM\Column(length: 255)]
@@ -54,22 +56,22 @@ class Locataire
     #[ORM\Column(length: 255)]
     private ?string $Email = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $NPConjointe = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $ProfConj = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $EthnieConj = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $ContactConj = null;
 
     #[ORM\Column(length: 255)]
     private ?string $Genre = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $VivezAvec = null;
 
     #[ORM\ManyToOne(inversedBy: 'locataires')]
@@ -83,6 +85,9 @@ class Locataire
 
     #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
+
+    #[ORM\Column(length: 255)]
+    private ?string $numpiece = null;
 
     public function __construct()
     {
@@ -108,12 +113,12 @@ class Locataire
         return $this;
     }
 
-    public function getDateNaiss(): ?string
+    public function getDateNaiss(): ?\DateTimeInterface
     {
         return $this->DateNaiss;
     }
 
-    public function setDateNaiss(string $DateNaiss): static
+    public function setDateNaiss(\DateTimeInterface $DateNaiss): static
     {
         $this->DateNaiss = $DateNaiss;
 
@@ -132,29 +137,19 @@ class Locataire
         return $this;
     }
 
-    public function getInfoPiece(): ?string
+    public function getInfoPiece(): ?FichierAdmin
     {
         return $this->InfoPiece;
     }
 
-    public function setInfoPiece(string $InfoPiece): static
+    public function setInfoPiece(FichierAdmin $InfoPiece): static
     {
         $this->InfoPiece = $InfoPiece;
 
         return $this;
     }
 
-    public function getScanPiece(): ?string
-    {
-        return $this->ScanPiece;
-    }
-
-    public function setScanPiece(string $ScanPiece): static
-    {
-        $this->ScanPiece = $ScanPiece;
-
-        return $this;
-    }
+  
 
     public function getProfession(): ?string
     {
@@ -422,6 +417,18 @@ class Locataire
                 $factureloc->setLocataire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNumpiece(): ?string
+    {
+        return $this->numpiece;
+    }
+
+    public function setNumpiece(string $numpiece): static
+    {
+        $this->numpiece = $numpiece;
 
         return $this;
     }
