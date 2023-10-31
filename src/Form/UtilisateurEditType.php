@@ -21,26 +21,14 @@ class UtilisateurEditType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, ['label' => 'Pseudo'])
-            ->add('roles', ChoiceType::class,
-            [
-                'placeholder' => 'Choisir un role',
-                'label' => 'Privilèges Supplémentaires',
-                'required'     => false,
-                'expanded'     => false,
-                'attr' => ['class' => 'has-select2'],
-                'multiple' => true,
-                'choices'  => array_flip([
-                    'ROLE_SUPER_ADMIN' => 'Super Administrateur',
-                    'ROLE_ADMIN' => 'Administrateur'
-                ]),
-            ])
-            ->add('groupes', EntityType::class, [
-                'label'        => 'Groupes',
+
+            ->add('groupe', EntityType::class, [
+                'label'        => 'Groupe',
                 'choice_label' => 'name',
-                'multiple'     => true,
+                'multiple'     => false,
                 'expanded'     => false,
-                'placeholder' => 'Choisir au moins groupe',
-                'attr' => ['class' => 'has-select2'],
+                'placeholder' => 'Choisir un groupe',
+                'attr' => ['class' => 'has-select2 form-select element'],
                 'class'        => Groupe::class,
             ])
             ->add('password', RepeatedType::class, 

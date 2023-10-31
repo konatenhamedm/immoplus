@@ -8,13 +8,13 @@ use App\Attribute\Source;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CiviliteRepository::class)]
+#[UniqueEntity(['code'], message: 'Ce code est déjà utilisé')]
 #[ORM\Table(name: '_admin_param_civilite')]
 #[Source]
 class Civilite
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[UniqueEntity(['code'], message: 'Ce code est déjà utilisé')]
     #[ORM\Column]
     private ?int $id = null;
 

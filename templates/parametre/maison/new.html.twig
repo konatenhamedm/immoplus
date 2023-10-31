@@ -83,6 +83,8 @@
     <script>
         $(function () {
             init_select2('select');
+
+
         });
         $(function () {
             init_select2('select', null, '.content-doc');
@@ -177,18 +179,15 @@
                 addDeleteLink($prototype, name);
                 // On ajoute le prototype modifié à la fin de la balise <div>
                 $container.append($prototype);
-
                 index++;
             }
 
 
             function addDeleteLink($prototype, name = null) {
                 // Création du lien
-                $deleteLink = $('<a href="#" class="btn btn-danger btn-xs" style="margin-top: 20px;"><span class="fa fa-trash"></span></a>');
+                $deleteLink = $('<a href="#" class="btn btn-danger btn-xs" style="margin-top: 0px;"><span class="fa fa-trash"></span></a>');
                 // Ajout du lien
                 $prototype.find(".del-col").append($deleteLink);
-
-
 
                 // Ajout du listener sur le clic du lien
                 $deleteLink.click(function(e) {

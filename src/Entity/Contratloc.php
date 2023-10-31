@@ -104,6 +104,12 @@ class Contratloc
     #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: Fincontrat::class)]
     private Collection $fincontrats;
 
+    #[ORM\ManyToOne(inversedBy: 'contratlocs')]
+    private ?Entreprise $entreprise = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contratlocs')]
+    private ?Campagne $campagne = null;
+
     public function __construct()
     {
         $this->compteLocs = new ArrayCollection();
@@ -490,6 +496,30 @@ class Contratloc
                 $fincontrat->setContrat(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getCampagne(): ?Campagne
+    {
+        return $this->campagne;
+    }
+
+    public function setCampagne(?Campagne $campagne): static
+    {
+        $this->campagne = $campagne;
 
         return $this;
     }

@@ -40,19 +40,26 @@ class EmployeController extends BaseController
 
         $table = $dataTableFactory->create()
         ->add('matricule', TextColumn::class, ['label' => 'Matricule'])
-        ->add('civilite', TextColumn::class, ['field' => 'civilite.code', 'label' => 'Civilité'])
+            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
+        ->add('fonction', TextColumn::class, ['field' => 'fonction.libelle', 'label' => 'Fonction'])
         ->add('nom', TextColumn::class, ['label' => 'Nom'])
         ->add('prenom', TextColumn::class, ['label' => 'Prénoms'])
-        ->add('adresseMail', TextColumn::class, ['label' => 'Email'])
-        ->add('fonction', TextColumn::class, ['field' => 'fonction.libelle', 'label' => 'Fonction'])
+        ->add('numPiece', TextColumn::class, [ 'label' => 'Numéro Pièce'])
+        ->add('Contact', TextColumn::class, ['label' => 'Contact'])
+        ->add('residence', TextColumn::class, ['label' => 'Lieu de résidence'])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Employe::class,
             'query' => function(QueryBuilder $qb){
-                $qb->select('e, civilite, fonction')
+                $qb->select('en, e,fonction')
                     ->from(Employe::class, 'e')
-                    ->join('e.civilite', 'civilite')
                     ->join('e.fonction', 'fonction')
+                    ->join('e.entreprise', 'en')
                 ;
+
+                if($this->groupe == "SADM"){
+                    $qb->andWhere('en = :entreprise')
+                        ->setParameter('entreprise', $this->entreprise);
+                }
             }
         ])
         ->setName('dt_app_utilisateur_employe');
@@ -187,9 +194,15 @@ class EmployeController extends BaseController
     #[Route('/ads/new', name: 'app_utilisateur_employe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EmployeRepository $employeRepository, FormError $formError): Response
     {
+        $validationGroups = ['Default', 'FileRequired', 'autre'];
         $employe = new Employe();
         $form = $this->createForm(EmployeType::class, $employe, [
             'method' => 'POST',
+            'doc_options' => [
+                'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
+                'attrs' => ['class' => 'filestyle'],
+            ],
+            'validation_groups' => $validationGroups,
             'action' => $this->generateUrl('app_utilisateur_employe_new')
         ]);
         $form->handleRequest($request);
@@ -207,7 +220,10 @@ class EmployeController extends BaseController
 
 
             if ($form->isValid()) {
-                
+
+                if($this->groupe != "SADM"){
+                    $employe->setEntreprise($this->entreprise);
+                }
                 $employeRepository->add($employe, true);
                 $data = true;
                 $message       = 'Opération effectuée avec succès';
@@ -233,13 +249,12 @@ class EmployeController extends BaseController
                     return $this->redirect($redirect, Response::HTTP_OK);
                 }
             }
-
-            
         }
 
         return $this->renderForm('utilisateur/employe/new.html.twig', [
             'employe' => $employe,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 
@@ -254,9 +269,14 @@ class EmployeController extends BaseController
     #[Route('/ads/{id}/edit', name: 'app_utilisateur_employe_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Employe $employe, EmployeRepository $employeRepository, FormError $formError): Response
     {
-        
+        $validationGroups = ['Default', 'FileRequired', 'autre'];
         $form = $this->createForm(EmployeType::class, $employe, [
             'method' => 'POST',
+            'doc_options' => [
+                'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
+                'attrs' => ['class' => 'filestyle'],
+            ],
+            'validation_groups' => $validationGroups,
             'action' => $this->generateUrl('app_utilisateur_employe_edit', [
                     'id' =>  $employe->getId()
             ])
@@ -307,6 +327,7 @@ class EmployeController extends BaseController
         return $this->renderForm('utilisateur/employe/edit.html.twig', [
             'employe' => $employe,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 

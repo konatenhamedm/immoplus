@@ -45,11 +45,11 @@ class ParametreController extends BaseController
                 'icon' => 'bi bi-list',
                 'href' => $this->generateUrl('app_config_parametre_ls', ['module' => 'config'])
             ],
-            [
+            /*[
                 'label' => 'Ressource humaine',
                 'icon' => 'bi bi-truck',
                 'href' => $this->generateUrl('app_config_parametre_ls', ['module' => 'rh'])
-            ],
+            ],*/
             [
                 'label' => 'Gestion utilisateur',
                 'icon' => 'bi bi-users',
@@ -207,22 +207,22 @@ class ParametreController extends BaseController
 
             ],
             'rh' => [
-                [
+               /* [
                     'label' => 'Fonction',
                     'id' => 'param_categorie',
                     'href' => $this->generateUrl('app_parametre_fonction_index')
-                ],
-                [
+                ],*/
+               /* [
                     'label' => 'Direction',
                     'id' => 'param_direction',
                     'href' => $this->generateUrl('app_parametre_service_index')
-                ],
+                ],*/
 
-                [
+              /*  [
                     'label' => 'Employé',
                     'id' => 'param_client',
                     'href' => $this->generateUrl('app_utilisateur_employe_index')
-                ],
+                ],*/
                 /*  [
                     'label' => 'Fournisseur',
                     'id' => 'param_fournisseur',

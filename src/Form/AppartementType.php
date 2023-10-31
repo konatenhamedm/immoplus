@@ -17,20 +17,20 @@ class AppartementType extends AbstractType
         $builder
             ->add('LibAppart', TextType::class, [
 
-                'label' => "N° Appartement"
+                'label' => false
             ])
             ->add('NbrePieces', IntegerType::class, [
-                'label' => "Nbre Pice"
+                'label' => false
             ])
             ->add('NumEtage', IntegerType::class, [
-                'label' => "N° Etage "
+                'label' => false
             ])
             ->add('Loyer', NumberType::class, [
-                'label' => "Loyer"
+                'label' => false
             ])
             /* ->add('Caution')*/
             ->add('Details', TextType::class, [
-                'label' => "Autres Détails",
+                'label' => false,
                 "empty_data" => 'RAS',
             ])
             /*->add('Oqp')*/

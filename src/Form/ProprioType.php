@@ -12,9 +12,16 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Security;
 
 class ProprioType extends AbstractType
 {
+    private $groupe;
+    private $entreprise;
+    public function __construct(Security $security){
+        $this->groupe = $security->getUser()->getGroupe()->getCode();
+        $this->entreprise = $security->getUser()->getEmploye()->getEntreprise();
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

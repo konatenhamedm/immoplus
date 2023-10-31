@@ -15,20 +15,31 @@
     {{ form_start(form, {'attr': {'role':'form', 'class': 'form'}}) }}
     <div class="modal-body">
         {{ include('_includes/ajax/response.html.twig') }}
+        {% if user_groupe == "SADM" %}
+            <div class="row">
+                <div class="col-md-12 mb-4">{{ form_row(form.entreprise) }}</div>
+            </div>
+        {% endif %}
         <div class="row">
-            <div class="col-md-2">{{ form_row(form.matricule) }}</div>
-            <div class="col-md-2">{{ form_row(form.civilite) }}</div>
-            <div class="col-md-3">{{ form_row(form.nom) }}</div>
-            <div class="col-md-5">{{ form_row(form.prenom) }}</div>
-        </div>
-       <div class="row">
-           <div class="col-md-6">{{ form_row(form.fonction) }}</div>
-           <div class="col-md-6">{{ form_row(form.service) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.matricule) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.nom) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.prenom) }}</div>
         </div>
         <div class="row">
-             <div class="col-md-6">{{ form_row(form.contact) }}</div>
-            <div class="col-md-6">{{ form_row(form.adresseMail) }}</div>
-        </div>   
+            <div class="col-md-4 mb-4">{{ form_row(form.civilite) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.fonction) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.contact) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">{{ form_row(form.piece) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.numPiece) }}</div>
+            <div class="col-md-4 mb-4">{{ form_row(form.adresseMail) }}</div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6 mb-4">{{ form_row(form.contacts) }}</div>
+            <div class="col-md-6 mb-4">{{ form_row(form.residence) }}</div>
+        </div>
         
     </div>
     <div class="modal-footer">
@@ -36,7 +47,10 @@
         <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">Annuler</button>
         <button type="submit" class="btn btn-main btn-ajax btn-sm"><span class="spinner-border d-none  spinner-ajax spinner-border-sm" role="status" aria-hidden="true"></span> Valider</button>
     </div>
-    {{ form_end(form) }}
+    {{ form_widget(form._token) }}
+    {{ form_end(form, {render_rest: false}) }}
+
+
 {% endblock %}
 
 {% block java %}

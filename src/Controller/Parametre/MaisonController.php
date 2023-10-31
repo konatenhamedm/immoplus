@@ -46,7 +46,14 @@ class MaisonController extends BaseController
                         ->leftJoin('m.quartier', 'q')
                         ->join('m.IdAgent', 'a')
                          ->join('a.employe', 'e') ;
+
+                    if($this->groupe !="SADM"){
+                        $qb->andWhere('e.entreprise = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);
+                    }
                 }
+
+
 
             ])
             ->setName('dt_app_parametre_maison');
