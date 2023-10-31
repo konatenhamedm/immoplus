@@ -4,6 +4,7 @@ namespace <?= $namespace ?>;
 
 <?= $use_statements; ?>
 use App\Controller\BaseController;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('<?= '/ads'.$route_path ?>')]
 class <?= $class_name ?> extends BaseController

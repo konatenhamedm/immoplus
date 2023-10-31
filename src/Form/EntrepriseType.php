@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Entreprise;
+use App\Entity\Pays;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -40,7 +42,12 @@ class EntrepriseType extends AbstractType
                 ])
             ->add('site_web')
             ->add('Directeur')
-            ->add('pays')
+            ->add('pays', EntityType::class, [
+                'class' => Pays::class,
+                'choice_label' => 'libelle',
+                'label' => 'Pays',
+                'attr' => ['class' => 'has-select2 form-select']
+            ])
             ->add('ville')
             ->add(
                 'logo',

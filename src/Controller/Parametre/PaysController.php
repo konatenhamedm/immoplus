@@ -2,11 +2,13 @@
 
 namespace App\Controller\Parametre;
 
-use App\Entity\Proprio;
-use App\Form\ProprioType;
-use App\Repository\ProprioRepository;
+use App\Entity\Entreprise;
+use App\Entity\Pays;
+use App\Form\PaysType;
+use App\Repository\PaysRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
+use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -17,14 +19,29 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
-use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/ads/parametre/Proprio')]
-class ProprioController extends BaseController
+#[Route('/ads/parametre/pays')]
+class PaysController extends BaseController
 {
-const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
 
-    #[Route('/', name: 'app_parametre_proprio_index', methods: ['GET', 'POST'])]
+    private function numero()
+    {
+
+        $query = $this->em->createQueryBuilder();
+        $query->select("count(a.id)")
+            ->from(Pays::class, 'a');
+
+        $nb = $query->getQuery()->getSingleScalarResult();
+        if ($nb == 0) {
+            $nb = 1;
+        } else {
+            $nb = $nb + 1;
+        }
+        return (date("y") . 'PYS' . date("m", strtotime("now")) . str_pad($nb, 3, '0', STR_PAD_LEFT));
+    }
+const INDEX_ROOT_NAME = 'app_parametre_pays_index';
+
+    #[Route('/', name: 'app_parametre_pays_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
 
@@ -32,14 +49,12 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(),self::INDEX_ROOT_NAME);
 
     $table = $dataTableFactory->create()
-    ->add('nomPrenoms', TextColumn::class, ['label' => 'Nom et Prénoms'])
-    ->add('contacts', TextColumn::class, ['label' => 'Contacts'])
-    ->add('email', TextColumn::class, ['label' => 'Email'])
-    ->add('numCni', TextColumn::class, ['label' => 'Num Piece'])
+    ->add('code', TextColumn::class, ['label' => 'Code pays'])
+    ->add('libelle', TextColumn::class, ['label' => 'Pays'])
     ->createAdapter(ORMAdapter::class, [
-    'entity' => Proprio::class,
+    'entity' => Pays::class,
     ])
-    ->setName('dt_app_parametre_Proprio');
+    ->setName('dt_app_parametre_pays');
     if($permission != null){
 
     $renders = [
@@ -111,22 +126,21 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     , 'orderable' => false
     ,'globalSearchable' => false
     ,'className' => 'grid_row_actions'
-    , 'render' => function ($value, Proprio $context) use ($renders) {
+    , 'render' => function ($value, Pays $context) use ($renders) {
     $options = [
     'default_class' => 'btn btn-xs btn-clean btn-icon mr-2 ',
     'target' => '#exampleModalSizeLg2',
 
     'actions' => [
     'edit' => [
-    'url' => $this->generateUrl('app_parametre_Proprio_edit', ['id' => $value])
-    , 'ajax' => true,
-        'target'=>'#exampleModalSizeSm2'
+    'url' => $this->generateUrl('app_parametre_pays_edit', ['id' => $value])
+    , 'ajax' => true
     , 'icon' => '%icon% bi bi-pen'
     , 'attrs' => ['class' => 'btn-default']
     , 'render' => $renders['edit']
     ],
     'show' => [
-    'url' => $this->generateUrl('app_parametre_Proprio_show', ['id' => $value])
+    'url' => $this->generateUrl('app_parametre_pays_show', ['id' => $value])
     , 'ajax' => true
     , 'icon' => '%icon% bi bi-eye'
     , 'attrs' => ['class' => 'btn-primary']
@@ -134,7 +148,7 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     ],
     'delete' => [
     'target' => '#exampleModalSizeNormal',
-    'url' => $this->generateUrl('app_parametre_Proprio_delete', ['id' => $value])
+    'url' => $this->generateUrl('app_parametre_pays_delete', ['id' => $value])
     , 'ajax' => true
     , 'icon' => '%icon% bi bi-trash'
     , 'attrs' => ['class' => 'btn-main']
@@ -156,25 +170,19 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     }
 
 
-    return $this->render('parametre/Proprio/index.html.twig', [
+    return $this->render('parametre/pays/index.html.twig', [
     'datatable' => $table,
     'permition' => $permission
     ]);
     }
 
-    #[Route('/new', name: 'app_parametre_Proprio_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_parametre_pays_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, FormError $formError): Response
 {
-    $validationGroups = ['Default', 'FileRequired', 'autre'];
-$Proprio = new Proprio();
-$form = $this->createForm(ProprioType::class, $Proprio, [
+$pay = new Pays();
+$form = $this->createForm(PaysType::class, $pay, [
 'method' => 'POST',
-    'doc_options' => [
-        'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
-        'attrs' => ['class' => 'filestyle'],
-    ],
-    'validation_groups' => $validationGroups,
-'action' => $this->generateUrl('app_parametre_Proprio_new')
+'action' => $this->generateUrl('app_parametre_pays_new')
 ]);
 $form->handleRequest($request);
 
@@ -185,12 +193,12 @@ $isAjax = $request->isXmlHttpRequest();
 
     if ($form->isSubmitted()) {
     $response = [];
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_parametre_pays_index');
 
 
     if ($form->isValid()) {
-    $Proprio->setEntreprise($this->security->getUser()->getEmploye()->getEntreprise());
-    $entityManager->persist($Proprio);
+        $pay->setCode($this->numero());
+    $entityManager->persist($pay);
     $entityManager->flush();
 
     $data = true;
@@ -221,33 +229,28 @@ $isAjax = $request->isXmlHttpRequest();
 
     }
 
-    return $this->renderForm('parametre/Proprio/new.html.twig', [
-    'Proprio' => $Proprio,
+    return $this->renderForm('parametre/pays/new.html.twig', [
+    'pay' => $pay,
     'form' => $form,
     ]);
 }
 
-    #[Route('/{id}/show', name: 'app_parametre_Proprio_show', methods: ['GET'])]
-public function show(Proprio $Proprio): Response
+    #[Route('/{id}/show', name: 'app_parametre_pays_show', methods: ['GET'])]
+public function show(Pays $pay): Response
 {
-return $this->render('parametre/Proprio/show.html.twig', [
-'Proprio' => $Proprio,
+return $this->render('parametre/pays/show.html.twig', [
+'pay' => $pay,
 ]);
 }
 
-    #[Route('/{id}/edit', name: 'app_parametre_Proprio_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Proprio $Proprio, EntityManagerInterface $entityManager, FormError $formError): Response
+    #[Route('/{id}/edit', name: 'app_parametre_pays_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Pays $pay, EntityManagerInterface $entityManager, FormError $formError): Response
 {
-    $validationGroups = ['Default', 'FileRequired', 'autre'];
-$form = $this->createForm(ProprioType::class, $Proprio, [
+
+$form = $this->createForm(PaysType::class, $pay, [
 'method' => 'POST',
-    'doc_options' => [
-        'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
-        'attrs' => ['class' => 'filestyle'],
-    ],
-    'validation_groups' => $validationGroups,
-'action' => $this->generateUrl('app_parametre_Proprio_edit', [
-'id' => $Proprio->getId()
+'action' => $this->generateUrl('app_parametre_pays_edit', [
+'id' => $pay->getId()
 ])
 ]);
 
@@ -261,12 +264,12 @@ $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
     $response = [];
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_parametre_pays_index');
 
 
     if ($form->isValid()) {
 
-    $entityManager->persist($Proprio);
+    $entityManager->persist($pay);
     $entityManager->flush();
 
     $data = true;
@@ -295,21 +298,21 @@ $form->handleRequest($request);
 
     }
 
-    return $this->renderForm('parametre/Proprio/edit.html.twig', [
-    'Proprio' => $Proprio,
+    return $this->renderForm('parametre/pays/edit.html.twig', [
+    'pay' => $pay,
     'form' => $form,
     ]);
 }
 
-    #[Route('/{id}/delete', name: 'app_parametre_Proprio_delete', methods: ['DELETE', 'GET'])]
-    public function delete(Request $request, Proprio $Proprio, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/delete', name: 'app_parametre_pays_delete', methods: ['DELETE', 'GET'])]
+    public function delete(Request $request, Pays $pay, EntityManagerInterface $entityManager): Response
 {
 $form = $this->createFormBuilder()
 ->setAction(
 $this->generateUrl(
-'app_parametre_Proprio_delete'
+'app_parametre_pays_delete'
 , [
-'id' => $Proprio->getId()
+'id' => $pay->getId()
 ]
 )
 )
@@ -318,10 +321,10 @@ $this->generateUrl(
 $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
     $data = true;
-    $entityManager->remove($Proprio);
+    $entityManager->remove($pay);
     $entityManager->flush();
 
-    $redirect = $this->generateUrl('app_parametre_proprio_index');
+    $redirect = $this->generateUrl('app_parametre_pays_index');
 
     $message = 'Opération effectuée avec succès';
 
@@ -341,8 +344,8 @@ $form->handleRequest($request);
     }
     }
 
-return $this->renderForm('parametre/Proprio/delete.html.twig', [
-'Proprio' => $Proprio,
+return $this->renderForm('parametre/pays/delete.html.twig', [
+'pay' => $pay,
 'form' => $form,
 ]);
 }

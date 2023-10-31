@@ -36,7 +36,7 @@ class Menu
             $this->container = $router->getRouteCollection()->all();
             $this->security = $security;
         }
-       /// dd($this->listeGroupeModule());
+        //dd($this->security->getUser()->getGroupe()->getName());
         //foreach($this->container as $key => $value){
 
         //  if(str_contains($key,'index')){
@@ -56,6 +56,9 @@ class Menu
             dd("rrrr");
         }*/
         //$this->getPermission();
+    }
+    public function getGroupeName(){
+        return $this->security->getUser()->getGroupe()->getName();
     }
     public function getRoute()
     {

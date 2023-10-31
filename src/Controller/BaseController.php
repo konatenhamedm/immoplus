@@ -18,6 +18,8 @@ class BaseController extends AbstractController
     protected $em;
     protected $security;
     protected $menu;
+    protected  $entreprise;
+    protected  $groupe;
 
 
     public function __construct(EntityManagerInterface $em,Menu $menu,Security $security)
@@ -25,6 +27,8 @@ class BaseController extends AbstractController
         $this->em = $em;
         $this->security = $security;
         $this->menu = $menu;
+        $this->entreprise = $this->security->getUser()->getGroupe()->getEntreprise();
+        $this->groupe = $this->security->getUser()->getGroupe()->getName();
     }
 
    

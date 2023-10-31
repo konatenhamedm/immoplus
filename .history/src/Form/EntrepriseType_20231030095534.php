@@ -44,7 +44,7 @@ class EntrepriseType extends AbstractType
             ->add('ville')
             ->add(
                 'logo',
-               c
+
             )
         ;
     }
