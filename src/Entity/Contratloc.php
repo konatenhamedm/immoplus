@@ -99,6 +99,9 @@ class Contratloc
     #[ORM\ManyToOne(inversedBy: 'contratlocs')]
     private ?Entreprise $entreprise = null;
 
+    #[ORM\ManyToOne(inversedBy: 'contratlocs')]
+    private ?Campagne $campagne = null;
+
     public function __construct()
     {
         $this->compteLocs = new ArrayCollection();
@@ -497,6 +500,18 @@ class Contratloc
     public function setEntreprise(?Entreprise $entreprise): static
     {
         $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getCampagne(): ?Campagne
+    {
+        return $this->campagne;
+    }
+
+    public function setCampagne(?Campagne $campagne): static
+    {
+        $this->campagne = $campagne;
 
         return $this;
     }

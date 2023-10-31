@@ -12,7 +12,7 @@
     </div>
 {% endmacro %}
 {% macro colonne(colonne) %}
-    <div class="row-colonne  my-3 py-2" style="border-bottom:3px solid #000">
+    <div class="row-colonne ">
         {#{{ dump(redaction.children.path.vars.data) }}#}
         <div class="row">
             <div class="col-md-2 ">
@@ -40,9 +40,37 @@
 
 {% macro prototype_ligne_colonne(form) %}
     <div class="list-colonne"  data-prototype="{{ _self.colonne(form.appartements.vars.prototype)|e }}"></div>
-    <button type="button" data-protoname="__name__" class="btn btn-default add_line btn-xs" id="add_ligne"  data-protoclass=".list-colonne" data-container=".column-container">
-        <i class="fa fa-plus"></i> Ajouter une ligne
-    </button>
+    <div class="row py-2 mb-4"  style="border-bottom:3px solid white;background: #3a4049">
+
+        <div class="col-md-3">
+            <button type="button" data-protoname="__name__" class="btn btn-default add_line btn-xs" id="add_ligne"  data-protoclass=".list-colonne" data-container=".column-container">
+                <i class="fa fa-plus"></i> Ajouter
+            </button>
+        </div>
+        <div class="col-md-9">
+            <h3 class="text-white">LISTE DES APPARTEMENTS</h3>
+        </div>
+
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-2">
+            N° Etage
+        </div>
+        <div class="col-md-2">
+            N° Appartement
+        </div>
+        <div class="col-md-2">
+            Nbre piece
+        </div>
+        <div class="col-md-2">
+            Loyer
+        </div>
+        <div class="col-md-3">
+            Autres Détails
+        </div>
+
+        <div class="col-md-1 del-col" data-parent=".row-colonne"></div>
+    </div>
     <div class="column-container proto-container" data-childclass="">
         {% for item in form.appartements %}
             {{ _self.colonne(item|e) }}

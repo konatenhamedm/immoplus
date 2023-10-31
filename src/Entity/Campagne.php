@@ -6,8 +6,10 @@ use App\Repository\CampagneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
+#[UniqueEntity(fields: ['LibCampagne'], message: 'Cette campagne existe deja.')]
 class Campagne
 {
     #[ORM\Id]
@@ -39,9 +41,20 @@ class Campagne
     #[ORM\OneToMany(mappedBy: 'compagne', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
 
+    #[ORM\ManyToOne(inversedBy: 'campagnes')]
+    private ?Entreprise $entreprise = null;
+
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class, orphanRemoval: true, cascade: ['persist'])]
+    private Collection $contratlocs;
+
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: CampagneContrat::class)]
+    private Collection $campagneContrats;
+
     public function __construct()
     {
         $this->facturelocs = new ArrayCollection();
+        $this->contratlocs = new ArrayCollection();
+        $this->campagneContrats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -157,6 +170,78 @@ class Campagne
             // set the owning side to null (unless already changed)
             if ($factureloc->getCompagne() === $this) {
                 $factureloc->setCompagne(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contratloc>
+     */
+    public function getContratlocs(): Collection
+    {
+        return $this->contratlocs;
+    }
+
+    public function addContratloc(Contratloc $contratloc): static
+    {
+        if (!$this->contratlocs->contains($contratloc)) {
+            $this->contratlocs->add($contratloc);
+            $contratloc->setCampagne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContratloc(Contratloc $contratloc): static
+    {
+        if ($this->contratlocs->removeElement($contratloc)) {
+            // set the owning side to null (unless already changed)
+            if ($contratloc->getCampagne() === $this) {
+                $contratloc->setCampagne(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CampagneContrat>
+     */
+    public function getCampagneContrats(): Collection
+    {
+        return $this->campagneContrats;
+    }
+
+    public function addCampagneContrat(CampagneContrat $campagneContrat): static
+    {
+        if (!$this->campagneContrats->contains($campagneContrat)) {
+            $this->campagneContrats->add($campagneContrat);
+            $campagneContrat->setCampagne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCampagneContrat(CampagneContrat $campagneContrat): static
+    {
+        if ($this->campagneContrats->removeElement($campagneContrat)) {
+            // set the owning side to null (unless already changed)
+            if ($campagneContrat->getCampagne() === $this) {
+                $campagneContrat->setCampagne(null);
             }
         }
 

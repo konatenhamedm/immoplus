@@ -168,7 +168,7 @@ class QuartierController extends BaseController
 
 
             if ($form->isValid()) {
-
+                $quartier->setEntreprise($this->entreprise);
                 $quartierRepository->save($quartier, true);
                 $data = true;
                 $message = 'Opération effectuée avec succès';

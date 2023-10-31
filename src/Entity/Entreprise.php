@@ -90,6 +90,12 @@ class Entreprise
     #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Contratloc::class)]
     private Collection $contratlocs;
 
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Campagne::class)]
+    private Collection $campagnes;
+
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Quartier::class)]
+    private Collection $quartiers;
+
 
     public function __construct()
     {
@@ -100,6 +106,9 @@ class Entreprise
         $this->fonctions = new ArrayCollection();
         $this->locataires = new ArrayCollection();
         $this->contratlocs = new ArrayCollection();
+        $this->campagnes = new ArrayCollection();
+        $this->quartiers = new ArrayCollection();
+
 
     }
 
@@ -480,6 +489,66 @@ class Entreprise
             // set the owning side to null (unless already changed)
             if ($contratloc->getEntreprise() === $this) {
                 $contratloc->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Campagne>
+     */
+    public function getCampagnes(): Collection
+    {
+        return $this->campagnes;
+    }
+
+    public function addCampagne(Campagne $campagne): static
+    {
+        if (!$this->campagnes->contains($campagne)) {
+            $this->campagnes->add($campagne);
+            $campagne->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCampagne(Campagne $campagne): static
+    {
+        if ($this->campagnes->removeElement($campagne)) {
+            // set the owning side to null (unless already changed)
+            if ($campagne->getEntreprise() === $this) {
+                $campagne->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Quartier>
+     */
+    public function getQuartiers(): Collection
+    {
+        return $this->quartiers;
+    }
+
+    public function addQuartier(Quartier $quartier): static
+    {
+        if (!$this->quartiers->contains($quartier)) {
+            $this->quartiers->add($quartier);
+            $quartier->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuartier(Quartier $quartier): static
+    {
+        if ($this->quartiers->removeElement($quartier)) {
+            // set the owning side to null (unless already changed)
+            if ($quartier->getEntreprise() === $this) {
+                $quartier->setEntreprise(null);
             }
         }
 

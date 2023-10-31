@@ -1,15 +1,18 @@
 <?php
 
-namespace App\Controller\Parametre;
+namespace App\Controller\Comptabilite;
 
+use App\Entity\Campagne;
 use App\Entity\Maison;
-use App\Form\MaisonType;
-use App\Repository\MaisonRepository;
+use App\Form\CampagneType;
+use App\Repository\CampagneRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
+use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
+use Omines\DataTablesBundle\Column\NumberColumn;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,14 +20,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
-use Doctrine\ORM\QueryBuilder;
+use App\Entity\CampagneContrat;
+use App\Repository\ContratlocRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/ads/parametre/maison')]
-class MaisonController extends BaseController
+#[Route('/ads/comptabilite/campagne')]
+class CampagneController extends BaseController
 {
-    const INDEX_ROOT_NAME = 'app_parametre_maison_index';
+    const INDEX_ROOT_NAME = 'app_comptabilite_campagne_index';
 
-    #[Route('/', name: 'app_parametre_maison_index', methods: ['GET', 'POST'])]
+    #[Route('/', name: 'app_comptabilite_campagne_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
 
@@ -32,31 +37,25 @@ class MaisonController extends BaseController
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
         $table = $dataTableFactory->create()
-            ->add('Proprio', TextColumn::class, ['label' => 'Proprietaire', 'field' => 'p.nomPrenoms'])
-            ->add('quartier', TextColumn::class, ['label' => 'Proprietaire', 'field' => 'q.LibQuartier'])
-            ->add('contacts', TextColumn::class, ['label' => 'Contacts'])
-            ->add('LibMaison', TextColumn::class, ['label' => 'Maison'])
-            ->add('agent', TextColumn::class, ['label' => 'Agent de recouvrement', 'field' => 'e.NomComplet'])
+            ->add('LibCampagne', TextColumn::class, ['label' => 'Campagne'])
+            ->add('NbreProprio', NumberColumn::class, ['label' => 'Nbre Proprio'])
+            ->add('NbreLocataire', NumberColumn::class, ['label' => 'Nbre locataire'])
+            ->add('MntTotal', NumberColumn::class, ['label' => 'Total'])
             ->createAdapter(ORMAdapter::class, [
-                'entity' => Maison::class,
+                'entity' => Campagne::class,
                 'query' => function (QueryBuilder $qb) {
-                    $qb->select('m,p,q')
-                        ->from(Maison::class, 'm')
-                        ->join('m.proprio', 'p')
-                        ->leftJoin('m.quartier', 'q')
-                        ->join('m.IdAgent', 'a')
-                         ->join('a.employe', 'e') ;
+                    $qb->select('m,e')
+                        ->from(Campagne::class, 'm')
+                        ->join('m.entreprise', 'e');
 
-                    if($this->groupe !="SADM"){
-                        $qb->andWhere('e.entreprise = :entreprise')
+
+                    if ($this->groupe != "SADM") {
+                        $qb->andWhere('e = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }
                 }
-
-
-
             ])
-            ->setName('dt_app_parametre_maison');
+            ->setName('dt_app_comptabilite_campagne');
         if ($permission != null) {
 
             $renders = [
@@ -120,21 +119,21 @@ class MaisonController extends BaseController
 
             if ($hasActions) {
                 $table->add('id', TextColumn::class, [
-                    'label' => 'Actions', 'orderable' => false, 'globalSearchable' => false, 'className' => 'grid_row_actions', 'render' => function ($value, Maison $context) use ($renders) {
+                    'label' => 'Actions', 'orderable' => false, 'globalSearchable' => false, 'className' => 'grid_row_actions', 'render' => function ($value, Campagne $context) use ($renders) {
                         $options = [
                             'default_class' => 'btn btn-xs btn-clean btn-icon mr-2 ',
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
                                 'edit' => [
-                                    'url' => $this->generateUrl('app_parametre_maison_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
+                                    'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
                                 ],
                                 'show' => [
-                                    'url' => $this->generateUrl('app_parametre_maison_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
+                                    'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
                                 'delete' => [
                                     'target' => '#exampleModalSizeNormal',
-                                    'url' => $this->generateUrl('app_parametre_maison_delete', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-trash', 'attrs' => ['class' => 'btn-main'], 'render' => $renders['delete']
+                                    'url' => $this->generateUrl('app_comptabilite_campagne_delete', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-trash', 'attrs' => ['class' => 'btn-main'], 'render' => $renders['delete']
                                 ]
                             ]
 
@@ -152,19 +151,32 @@ class MaisonController extends BaseController
         }
 
 
-        return $this->render('parametre/maison/index.html.twig', [
+        return $this->render('comptabilite/campagne/index.html.twig', [
             'datatable' => $table,
             'permition' => $permission
         ]);
     }
 
-    #[Route('/new', name: 'app_parametre_maison_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, MaisonRepository $maisonRepository, FormError $formError): Response
+    #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, CampagneRepository $campagneRepository, FormError $formError, ContratlocRepository $contratlocRepository): Response
     {
-        $maison = new Maison();
-        $form = $this->createForm(MaisonType::class, $maison, [
+
+        $campagne = new Campagne();
+
+        foreach ($contratlocRepository->findBy(array('Etat' => 1)) as $contratloc) {
+            $campagneContrat = new CampagneContrat();
+            $campagneContrat->setPrix($contratloc->getAppartement()->getLoyer());
+            $campagneContrat->setNumEtage($contratloc->getAppartement()->getNumEtage());
+            $campagneContrat->setNumAppart($contratloc->getAppartement()->getLibAppart());
+            $campagneContrat->setDetails($contratloc->getAppartement()->getDetails());
+            $campagneContrat->setNbrePiece($contratloc->getAppartement()->getNbrePieces());
+
+            $campagne->AddCampagneContrat($campagneContrat);
+        }
+
+        $form = $this->createForm(CampagneType::class, $campagne, [
             'method' => 'POST',
-            'action' => $this->generateUrl('app_parametre_maison_new')
+            'action' => $this->generateUrl('app_comptabilite_campagne_new')
         ]);
         $form->handleRequest($request);
 
@@ -175,12 +187,12 @@ class MaisonController extends BaseController
 
         if ($form->isSubmitted()) {
             $response = [];
-            $redirect = $this->generateUrl('app_parametre_maison_index');
+            $redirect = $this->generateUrl('app_comptabilite_campagne_index');
 
 
             if ($form->isValid()) {
 
-                $maisonRepository->save($maison, true);
+                $campagneRepository->save($campagne, true);
                 $data = true;
                 $message = 'Opération effectuée avec succès';
                 $statut = 1;
@@ -204,28 +216,28 @@ class MaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/maison/new.html.twig', [
-            'maison' => $maison,
+        return $this->renderForm('comptabilite/campagne/new.html.twig', [
+            'campagne' => $campagne,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/show', name: 'app_parametre_maison_show', methods: ['GET'])]
-    public function show(Maison $maison): Response
+    #[Route('/{id}/show', name: 'app_comptabilite_campagne_show', methods: ['GET'])]
+    public function show(Campagne $campagne): Response
     {
-        return $this->render('parametre/maison/show.html.twig', [
-            'maison' => $maison,
+        return $this->render('comptabilite/campagne/show.html.twig', [
+            'campagne' => $campagne,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_parametre_maison_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Maison $maison, MaisonRepository $maisonRepository, FormError $formError): Response
+    #[Route('/{id}/edit', name: 'app_comptabilite_campagne_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Campagne $campagne, CampagneRepository $campagneRepository, FormError $formError): Response
     {
 
-        $form = $this->createForm(MaisonType::class, $maison, [
+        $form = $this->createForm(CampagneType::class, $campagne, [
             'method' => 'POST',
-            'action' => $this->generateUrl('app_parametre_maison_edit', [
-                'id' => $maison->getId()
+            'action' => $this->generateUrl('app_comptabilite_campagne_edit', [
+                'id' => $campagne->getId()
             ])
         ]);
 
@@ -239,12 +251,12 @@ class MaisonController extends BaseController
 
         if ($form->isSubmitted()) {
             $response = [];
-            $redirect = $this->generateUrl('app_parametre_maison_index');
+            $redirect = $this->generateUrl('app_comptabilite_campagne_index');
 
 
             if ($form->isValid()) {
 
-                $maisonRepository->save($maison, true);
+                $campagneRepository->save($campagne, true);
                 $data = true;
                 $message = 'Opération effectuée avec succès';
                 $statut = 1;
@@ -268,21 +280,21 @@ class MaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/maison/edit.html.twig', [
-            'maison' => $maison,
+        return $this->renderForm('comptabilite/campagne/edit.html.twig', [
+            'campagne' => $campagne,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_parametre_maison_delete', methods: ['DELETE', 'GET'])]
-    public function delete(Request $request, Maison $maison, MaisonRepository $maisonRepository): Response
+    #[Route('/{id}/delete', name: 'app_comptabilite_campagne_delete', methods: ['DELETE', 'GET'])]
+    public function delete(Request $request, Campagne $campagne, CampagneRepository $campagneRepository): Response
     {
         $form = $this->createFormBuilder()
             ->setAction(
                 $this->generateUrl(
-                    'app_parametre_maison_delete',
+                    'app_comptabilite_campagne_delete',
                     [
-                        'id' => $maison->getId()
+                        'id' => $campagne->getId()
                     ]
                 )
             )
@@ -291,9 +303,9 @@ class MaisonController extends BaseController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = true;
-            $maisonRepository->remove($maison, true);
+            $campagneRepository->remove($campagne, true);
 
-            $redirect = $this->generateUrl('app_parametre_maison_index');
+            $redirect = $this->generateUrl('app_comptabilite_campagne_index');
 
             $message = 'Opération effectuée avec succès';
 
@@ -313,8 +325,8 @@ class MaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/maison/delete.html.twig', [
-            'maison' => $maison,
+        return $this->renderForm('comptabilite/campagne/delete.html.twig', [
+            'campagne' => $campagne,
             'form' => $form,
         ]);
     }
