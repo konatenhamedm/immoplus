@@ -45,14 +45,14 @@ class Entreprise
     #[ORM\Column(length: 255)]
     private ?string $contacts = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse = null;
 
 
     #[ORM\Column(length: 255)]
     private ?string $mobile = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $fax = null;
 
     #[ORM\Column(length: 255)]
@@ -74,7 +74,7 @@ class Entreprise
     #[ORM\Column(length: 255)]
     private ?string $ville = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
 
@@ -108,8 +108,6 @@ class Entreprise
         $this->contratlocs = new ArrayCollection();
         $this->campagnes = new ArrayCollection();
         $this->quartiers = new ArrayCollection();
-
-
     }
 
     public function getId(): ?int
@@ -554,7 +552,4 @@ class Entreprise
 
         return $this;
     }
-
-
-
 }

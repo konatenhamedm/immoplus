@@ -86,6 +86,9 @@ class Locataire
     #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
 
+    #[ORM\ManyToOne(inversedBy: 'locataires')]
+    private ?Entreprise $entreprise = null;
+
     #[ORM\Column(length: 255)]
     private ?string $numpiece = null;
 
@@ -421,7 +424,6 @@ class Locataire
         return $this;
     }
 
-<<<<<<< HEAD
     public function getNumpiece(): ?string
     {
         return $this->numpiece;
@@ -429,17 +431,17 @@ class Locataire
 
     public function setNumpiece(string $numpiece): static
     {
-        $this->numpiece = $numpiece;
-=======
-    public function getEntreprise(): ?Entreprise
+        return $this->numpiece = $numpiece;
+
+    }
+        public function getEntreprise(): ?Entreprise
     {
         return $this->entreprise;
     }
 
-    public function setEntreprise(?Entreprise $entreprise): static
+        public function setEntreprise(?Entreprise $entreprise): static
     {
         $this->entreprise = $entreprise;
->>>>>>> main
 
         return $this;
     }
