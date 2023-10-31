@@ -35,8 +35,10 @@ class Groupe
     #[ORM\OneToMany(mappedBy: 'groupe', targetEntity: Utilisateur::class)]
     private Collection $utilisateurs;
 
-    #[ORM\ManyToOne(inversedBy: 'groupes')]
-    private ?Entreprise $entreprise = null;
+    #[ORM\Column(length: 255)]
+    private ?string $code = null;
+
+
 
     public function __construct()
     {
@@ -180,15 +182,17 @@ class Groupe
         return $this;
     }
 
-    public function getEntreprise(): ?Entreprise
+    public function getCode(): ?string
     {
-        return $this->entreprise;
+        return $this->code;
     }
 
-    public function setEntreprise(?Entreprise $entreprise): static
+    public function setCode(string $code): static
     {
-        $this->entreprise = $entreprise;
+        $this->code = $code;
 
         return $this;
     }
+
+
 }

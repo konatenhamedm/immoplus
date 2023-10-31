@@ -45,12 +45,23 @@ class Employe
     #[ORM\Column(length: 12)]
     private ?string $matricule = null;
 
-    #[ORM\ManyToOne(inversedBy: 'employes')]
-    private ?Service $service = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'employes')]
     private ?Entreprise $entreprise = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $numPiece = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $contacts = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $residence = null;
+
+       #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FichierAdmin $piece = null;
 
 
     public function __construct()
@@ -171,17 +182,6 @@ class Employe
         return $this;
     }
 
-    public function getService(): ?Service
-    {
-        return $this->service;
-    }
-
-    public function setService(?Service $service): self
-    {
-        $this->service = $service;
-
-        return $this;
-    }
 
     public function getEntreprise(): ?Entreprise
     {
@@ -191,6 +191,54 @@ class Employe
     public function setEntreprise(?Entreprise $entreprise): self
     {
         $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getNumPiece(): ?string
+    {
+        return $this->numPiece;
+    }
+
+    public function setNumPiece(string $numPiece): static
+    {
+        $this->numPiece = $numPiece;
+
+        return $this;
+    }
+
+    public function getContacts(): ?string
+    {
+        return $this->contacts;
+    }
+
+    public function setContacts(string $contacts): static
+    {
+        $this->contacts = $contacts;
+
+        return $this;
+    }
+
+    public function getResidence(): ?string
+    {
+        return $this->residence;
+    }
+
+    public function setResidence(string $residence): static
+    {
+        $this->residence = $residence;
+
+        return $this;
+    }
+
+    public function getPiece(): ?FichierAdmin
+    {
+        return $this->piece;
+    }
+
+    public function setPiece(FichierAdmin $piece): static
+    {
+        $this->piece = $piece;
 
         return $this;
     }

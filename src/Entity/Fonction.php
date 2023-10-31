@@ -26,6 +26,9 @@ class Fonction
     #[ORM\Column(length: 10, unique: true)]
     private ?string $code = null;
 
+    #[ORM\ManyToOne(inversedBy: 'fonctions')]
+    private ?Entreprise $entreprise = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,6 +54,18 @@ class Fonction
     public function setCode(string $code): self
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
 
         return $this;
     }

@@ -25,27 +25,8 @@ class GroupeType extends AbstractType
     {
 
 
-            if($this->groupe == "Super Administrateur"){
-                $builder->add('entreprise',  EntityType::class, [
-                    'class' => Entreprise::class,
-                    'choice_label' => 'denomination',
-                    'label' => 'Entreprise',
-                    'attr' => ['class' => 'has-select2 form-select']
-                ])
-                    ->add('name', null, ['label' => 'Libellé'])
-                    ->add('description', TextareaType::class, ['label' => 'Description', 'required' => false, 'empty_data' => ''])
-                    ->add('moduleGroupePermitions', CollectionType::class, [
-                        'entry_type' => ModuleGroupePermitionType::class,
-                        'entry_options' => [
-                            'label' => false,
-                        ],
-                        'allow_add' => true,
-                        'label' => false,
-                        'by_reference' => false,
-                        'allow_delete' => true,
-                        'prototype' => true,
-                    ]);
-            }else{
+
+
                 $builder    ->add('name', null, ['label' => 'Libellé'])
                     ->add('description', TextareaType::class, ['label' => 'Description', 'required' => false, 'empty_data' => ''])
                     ->add('moduleGroupePermitions', CollectionType::class, [
@@ -60,7 +41,7 @@ class GroupeType extends AbstractType
                         'prototype' => true,
                     ])
                 ;
-            }
+
 
 
     }

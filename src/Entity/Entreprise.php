@@ -77,11 +77,12 @@ class Entreprise
     #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
-    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Groupe::class)]
-    private Collection $groupes;
 
     #[ORM\ManyToOne(inversedBy: 'entreprises')]
     private ?Pays $pays = null;
+
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Fonction::class)]
+    private Collection $fonctions;
 
 
     public function __construct()
@@ -90,6 +91,7 @@ class Entreprise
         $this->configApps = new ArrayCollection();
         $this->Proprios = new ArrayCollection();
         $this->groupes = new ArrayCollection();
+        $this->fonctions = new ArrayCollection();
 
     }
 
@@ -372,35 +374,7 @@ class Entreprise
         return $this;
     }
 
-    /**
-     * @return Collection<int, Groupe>
-     */
-    public function getGroupes(): Collection
-    {
-        return $this->groupes;
-    }
 
-    public function addGroupe(Groupe $groupe): static
-    {
-        if (!$this->groupes->contains($groupe)) {
-            $this->groupes->add($groupe);
-            $groupe->setEntreprise($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGroupe(Groupe $groupe): static
-    {
-        if ($this->groupes->removeElement($groupe)) {
-            // set the owning side to null (unless already changed)
-            if ($groupe->getEntreprise() === $this) {
-                $groupe->setEntreprise(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getPays(): ?Pays
     {
@@ -410,6 +384,36 @@ class Entreprise
     public function setPays(?Pays $pays): static
     {
         $this->pays = $pays;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fonction>
+     */
+    public function getFonctions(): Collection
+    {
+        return $this->fonctions;
+    }
+
+    public function addFonction(Fonction $fonction): static
+    {
+        if (!$this->fonctions->contains($fonction)) {
+            $this->fonctions->add($fonction);
+            $fonction->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFonction(Fonction $fonction): static
+    {
+        if ($this->fonctions->removeElement($fonction)) {
+            // set the owning side to null (unless already changed)
+            if ($fonction->getEntreprise() === $this) {
+                $fonction->setEntreprise(null);
+            }
+        }
 
         return $this;
     }

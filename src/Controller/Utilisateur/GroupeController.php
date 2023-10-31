@@ -40,7 +40,7 @@ class GroupeController extends BaseController
 
 
         $table = $dataTableFactory->create()
-        ->add('entreprise', TextColumn::class,['label' => 'Entreprise', 'field' => 'e.denomination'])
+       /* ->add('entreprise', TextColumn::class,['label' => 'Entreprise', 'field' => 'e.denomination'])*/
         ->add('name', TextColumn::class, ['label' => 'Libellé'])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Groupe::class,
@@ -206,9 +206,9 @@ class GroupeController extends BaseController
 
             if ($form->isValid()) {
 
-                if($this->groupe !="Super Administrateur"){
+               /* if($this->groupe !="Super Administrateur"){
                     $groupe->setEntreprise($this->entreprise);
-                }
+                }*/
                 $groupeRepository->add($groupe, true);
                 $data = true;
                 $message       = 'Opération effectuée avec succès';

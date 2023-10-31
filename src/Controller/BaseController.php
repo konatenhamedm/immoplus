@@ -27,8 +27,8 @@ class BaseController extends AbstractController
         $this->em = $em;
         $this->security = $security;
         $this->menu = $menu;
-        $this->entreprise = $this->security->getUser()->getGroupe()->getEntreprise();
-        $this->groupe = $this->security->getUser()->getGroupe()->getName();
+        $this->entreprise = $this->security->getUser()->getEmploye()->getEntreprise();
+        $this->groupe = $this->security->getUser()->getGroupe()->getCode();
     }
 
    

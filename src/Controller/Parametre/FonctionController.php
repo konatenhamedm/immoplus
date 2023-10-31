@@ -5,13 +5,16 @@ namespace App\Controller\Parametre;
 use App\Classes\UploadFile;
 use App\Controller\BaseController;
 use App\Entity\Civilite;
+use App\Entity\Employe;
 use App\Entity\Fonction;
+use App\Entity\Ville;
 use App\Form\FonctionType;
 use App\Form\UploadFileType;
 use App\Repository\FonctionRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -27,6 +30,21 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/ads/admin/parametre/fonction')]
 class FonctionController extends BaseController
 {
+    private function numero()
+    {
+
+        $query = $this->em->createQueryBuilder();
+        $query->select("count(a.id)")
+            ->from(Fonction::class, 'a');
+
+        $nb = $query->getQuery()->getSingleScalarResult();
+        if ($nb == 0) {
+            $nb = 1;
+        } else {
+            $nb = $nb + 1;
+        }
+        return (date("y") . 'FCT' . date("m", strtotime("now")) . str_pad($nb, 3, '0', STR_PAD_LEFT));
+    }
     const INDEX_ROOT_NAME = 'app_parametre_fonction_index';
 
 
@@ -37,9 +55,21 @@ class FonctionController extends BaseController
 
         $table = $dataTableFactory->create()
             ->add('code', TextColumn::class, ['label' => 'Code'])
+            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
             ->add('libelle', TextColumn::class, ['label' => 'Libellé'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Fonction::class,
+                'query' => function(QueryBuilder $qb){
+                    $qb->select('f, en')
+                        ->from(Fonction::class, 'f')
+                        ->join('f.entreprise', 'en')
+                    ;
+
+                    if($this->groupe == "SADM"){
+                        $qb->andWhere('en = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);
+                    }
+                }
             ])
             ->setName('dt_app_parametre_fonction');
         if ($permission != null) {
@@ -173,7 +203,10 @@ class FonctionController extends BaseController
 
 
             if ($form->isValid()) {
-
+                if($this->groupe != "SADM"){
+                    $fonction->setEntreprise($this->entreprise);
+                }
+                $fonction->setCode($this->numero());
                 $fonctionRepository->add($fonction, true);
                 $data = true;
                 $message       = 'Opération effectuée avec succès';
@@ -201,6 +234,7 @@ class FonctionController extends BaseController
         return $this->renderForm('parametre/fonction/new.html.twig', [
             'fonction' => $fonction,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 
@@ -265,6 +299,7 @@ class FonctionController extends BaseController
         return $this->renderForm('parametre/fonction/edit.html.twig', [
             'fonction' => $fonction,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 
