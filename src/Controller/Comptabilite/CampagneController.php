@@ -163,7 +163,7 @@ class CampagneController extends BaseController
 
         $campagne = new Campagne();
 
-        foreach ($contratlocRepository->findBy(array('Etat' => 1)) as $contratloc) {
+        foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
             $campagneContrat = new CampagneContrat();
             $campagneContrat->setPrix($contratloc->getAppartement()->getLoyer());
             $campagneContrat->setNumEtage($contratloc->getAppartement()->getNumEtage());

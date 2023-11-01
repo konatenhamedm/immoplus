@@ -45,7 +45,7 @@ class EmployeController extends BaseController
         ->add('nom', TextColumn::class, ['label' => 'Nom'])
         ->add('prenom', TextColumn::class, ['label' => 'Prénoms'])
         ->add('numPiece', TextColumn::class, [ 'label' => 'Numéro Pièce'])
-        ->add('Contact', TextColumn::class, ['label' => 'Contact'])
+        ->add('contact', TextColumn::class, ['label' => 'Contact'])
         ->add('residence', TextColumn::class, ['label' => 'Lieu de résidence'])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Employe::class,
@@ -54,9 +54,10 @@ class EmployeController extends BaseController
                     ->from(Employe::class, 'e')
                     ->join('e.fonction', 'fonction')
                     ->join('e.entreprise', 'en')
+                    ->orderBy('e.id ','DESC')
                 ;
 
-                if($this->groupe == "SADM"){
+                if($this->groupe != "SADM"){
                     $qb->andWhere('en = :entreprise')
                         ->setParameter('entreprise', $this->entreprise);
                 }

@@ -39,6 +39,19 @@ class ContratlocRepository extends ServiceEntityRepository
         }
     }
 
+    public function getContratLocActif($entreprise): array
+    {
+              return $this->createQueryBuilder('c')
+                  ->innerJoin('c.locataire','l')
+            ->andWhere('l.entreprise = :entreprise')
+            ->andWhere('c.Etat = :etat')
+           ->setParameter('entreprise', $entreprise)
+           ->setParameter('etat', 1)
+           ->orderBy('c.id', 'ASC')
+            ->getQuery()
+           ->getResult() ;
+    }
+
 //    /**
 //     * @return Contratloc[] Returns an array of Contratloc objects
 //     */

@@ -53,7 +53,7 @@ class Employe
     #[ORM\Column(length: 255)]
     private ?string $numPiece = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $contacts = null;
 
     #[ORM\Column(length: 255)]
