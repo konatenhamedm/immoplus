@@ -49,7 +49,7 @@ class LocataireController extends BaseController
                         ->from(Locataire::class, 'l')
                         ->join('l.entreprise', 'en');
 
-                    if ($this->groupe == "SADM") {
+                    if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }

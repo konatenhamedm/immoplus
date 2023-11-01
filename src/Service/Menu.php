@@ -60,6 +60,9 @@ class Menu
     public function getGroupeName(){
         return $this->security->getUser()->getGroupe()->getName();
     }
+    public function getGroupeCode(){
+        return $this->security->getUser()->getGroupe()->getCode();
+    }
     public function getRoute()
     {
         return $this->route;

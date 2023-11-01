@@ -18,12 +18,25 @@
     {{ include('_includes/ajax/response.html.twig') }}
 
 
+    {% if user_groupe =='SADM' %}
+
+        <div class="row">
+            <div class="form-group col-md-12 mb-4">
+                <label class="sr-onl" for="userinput1">Entreprise*</label>
+                {{ form_widget(form.entreprise) }}
+            </div>
+        </div>
+    {% endif %}
     <div class="row">
-        <div class="form-group col-md-6 mb-4">
+        <div class="form-group col-md-12 mb-4">
             <label class="sr-onl" for="userinput1">Iibellé*</label>
             {{ form_widget(form.LibQuartier) }}
         </div>
-        <div class="form-group col-md-6 mb-4">
+    </div>
+
+    <div class="row">
+
+        <div class="form-group col-md-12 mb-4">
             <label class="sr-onl" for="userinput1">Ville*</label>
             {{ form_widget(form.ville) }}
         </div>

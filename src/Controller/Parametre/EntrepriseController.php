@@ -2,12 +2,14 @@
 
 namespace App\Controller\Parametre;
 
+use App\Entity\Employe;
 use App\Entity\Entreprise;
 use App\Entity\Ville;
 use App\Form\EntrepriseType;
 use App\Repository\EntrepriseRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
+use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
@@ -48,9 +50,22 @@ class EntrepriseController extends BaseController
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
         $table = $dataTableFactory->create()
-            ->add('denomination', TextColumn::class, ['label' => 'Denomination'])
+            ->add('denomination', TextColumn::class, ['label' => 'Raison social'])
+            ->add('contacts', TextColumn::class, ['label' => 'Contact'])
+            ->add('email', TextColumn::class, ['label' => 'Email'])
+            ->add('siteWeb', TextColumn::class, ['label' => 'Site web'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Entreprise::class,
+                'query' => function(QueryBuilder $qb){
+                    $qb->select('e')
+                        ->from(Entreprise::class, 'e')
+                        ->orderBy('e.id ','DESC')
+                    ;
+                    if($this->groupe != "SADM"){
+                        $qb->andWhere('e = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);
+                    }
+                }
             ])
             ->setName('dt_app_parametre_entreprise');
         if ($permission != null) {

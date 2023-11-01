@@ -65,7 +65,7 @@ class FonctionController extends BaseController
                         ->join('f.entreprise', 'en')
                     ;
 
-                    if($this->groupe == "SADM"){
+                    if($this->groupe != "SADM"){
                         $qb->andWhere('en = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }

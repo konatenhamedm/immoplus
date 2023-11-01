@@ -35,14 +35,23 @@ class QuartierController extends BaseController
             /* ->add('id', TextColumn::class, ['label' => 'Identifiant'])*/
             ->add('ville', TextColumn::class, ['label' => 'Ville', 'field' => 'v.lib_ville'])
             ->add('LibQuartier', TextColumn::class, ['label' => 'Libelle', 'field' => 'q.LibQuartier'])
+            ->add('denomination', TextColumn::class, ['label' => 'Entreprise', 'field' => 'e.denomination'])
 
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Quartier::class,
                 'query' => function (QueryBuilder $qb) {
-                    $qb->select('v,q')
+                    $qb->select('v,q,e')
                         ->from(Quartier::class, 'q')
-                        ->join('q.ville', 'v');
+                        ->join('q.ville', 'v')
+                        ->join('q.entreprise', 'e');
+
+                    if ($this->groupe != "SADM") {
+                        $qb->andWhere('q.entreprise = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);
+                    }
                 }
+
+
 
             ])
             ->setName('dt_app_parametre_quartier');
@@ -168,7 +177,9 @@ class QuartierController extends BaseController
 
 
             if ($form->isValid()) {
-                $quartier->setEntreprise($this->entreprise);
+                if($this->groupe != "SADM"){
+                    $quartier->setEntreprise($this->entreprise);
+                }
                 $quartierRepository->save($quartier, true);
                 $data = true;
                 $message = 'Opération effectuée avec succès';
@@ -196,6 +207,7 @@ class QuartierController extends BaseController
         return $this->renderForm('parametre/quartier/new.html.twig', [
             'quartier' => $quartier,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 
@@ -260,6 +272,7 @@ class QuartierController extends BaseController
         return $this->renderForm('parametre/quartier/edit.html.twig', [
             'quartier' => $quartier,
             'form' => $form,
+            'user_groupe'=>$this->groupe
         ]);
     }
 

@@ -21,8 +21,7 @@ class Contratloc
     #[ORM\ManyToOne(inversedBy: 'Contratlocs')]
     private ?Locataire $locataire = null;
 
-    #[ORM\ManyToOne(inversedBy: 'DateDebut')]
-    private ?appartement $appartement = null;
+
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $DateDebut = null;
@@ -36,16 +35,16 @@ class Contratloc
     #[ORM\Column]
     private ?int $MntCaution = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $NbMoisAvance = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $MntAvance = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $MntLoyer = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $AutreInfos = null;
 
 
@@ -53,8 +52,8 @@ class Contratloc
     #[ORM\JoinColumn(nullable: true)]
     private ?FichierAdmin $ScanContrat = null;
 
-   
-    
+
+
     #[ORM\Column(length: 255)]
     private ?string $Regime = null;
 
@@ -64,35 +63,35 @@ class Contratloc
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $DateProchVers = null;
 
-  
+
     #[ORM\Column(length: 255)]
     private ?string $Nature = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $MntLoyerPrec = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $MntLoyerIni = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $MntLoyerActu = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $MntArriere = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $DejaLocataire = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $StatutLoc = null;
 
     #[ORM\Column]
     private ?int $Fraisanex = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $Etat = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column(nullable: true)]
     private ?int $TotVerse = null;
 
     #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: CompteLoc::class)]
@@ -109,6 +108,12 @@ class Contratloc
 
     #[ORM\ManyToOne(inversedBy: 'contratlocs')]
     private ?Campagne $campagne = null;
+
+
+    #[ORM\ManyToOne(inversedBy: 'appartContratlocs')]
+    private ?Appartement $appart = null;
+
+
 
     public function __construct()
     {
@@ -134,17 +139,7 @@ class Contratloc
         return $this;
     }
 
-    public function getAppartement(): ?appartement
-    {
-        return $this->appartement;
-    }
 
-    public function setAppartement(?appartement $appartement): static
-    {
-        $this->appartement = $appartement;
-
-        return $this;
-    }
 
     public function getDateDebut(): ?\DateTimeInterface
     {
@@ -520,6 +515,18 @@ class Contratloc
     public function setCampagne(?Campagne $campagne): static
     {
         $this->campagne = $campagne;
+
+        return $this;
+    }
+
+    public function getAppart(): ?Appartement
+    {
+        return $this->appart;
+    }
+
+    public function setAppart(?Appartement $appart): static
+    {
+        $this->appart = $appart;
 
         return $this;
     }

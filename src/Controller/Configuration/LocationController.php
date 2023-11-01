@@ -48,7 +48,7 @@ class LocationController extends BaseController
             [
                 'label' => 'Les contrats résiliés',
                 'icon' => 'bi bi-truck',
-                'href' => $this->generateUrl('app_location_contratloc_index')
+                'href' => $this->generateUrl('app_location_contratloc_resilier_index')
             ],
           /*  [
                 'label' => 'Gestion utilisateur',

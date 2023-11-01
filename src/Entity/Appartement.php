@@ -18,6 +18,7 @@ class Appartement
     #[ORM\Column(length: 255)]
     private ?string $LibAppart = null;
 
+
     #[ORM\Column]
     private ?int $NbrePieces = null;
 
@@ -39,17 +40,25 @@ class Appartement
     #[ORM\ManyToOne(inversedBy: 'appartements')]
     private ?Maison $maisson = null;
 
-    #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Contratloc::class)]
-    private Collection $DateDebut;
+    #[ORM\OneToMany(mappedBy: 'appart', targetEntity: Contratloc::class)]
+    private Collection $appartContratlocs;
 
     #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
 
+    #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Contratloc::class)]
+    private Collection $contratlocs;
+
     public function __construct()
     {
-        $this->DateDebut = new ArrayCollection();
+
         $this->facturelocs = new ArrayCollection();
+        $this->contratlocs = new ArrayCollection();
+       /* $this->appartementContratlocs = new ArrayCollection();*/
+        $this->appartContratlocs = new ArrayCollection();
+        $this->Oqp = 0;
     }
+
 
     public function getId(): ?int
     {
@@ -67,6 +76,7 @@ class Appartement
 
         return $this;
     }
+
 
     public function getNbrePieces(): ?int
     {
@@ -152,35 +162,37 @@ class Appartement
         return $this;
     }
 
+
     /**
      * @return Collection<int, Contratloc>
      */
-    public function getDateDebut(): Collection
+    public function getAppartContratlocs(): Collection
     {
-        return $this->DateDebut;
+        return $this->appartContratlocs;
     }
 
-    public function addDateDebut(Contratloc $dateDebut): static
+    public function addAppartContratloc(Contratloc $appartContratloc): static
     {
-        if (!$this->DateDebut->contains($dateDebut)) {
-            $this->DateDebut->add($dateDebut);
-            $dateDebut->setAppartement($this);
+        if (!$this->appartContratlocs->contains($appartContratloc)) {
+            $this->appartContratlocs->add($appartContratloc);
+            $appartContratloc->setAppart($this);
         }
 
         return $this;
     }
 
-    public function removeDateDebut(Contratloc $dateDebut): static
+    public function removeAppartContratloc(Contratloc $appartContratloc): static
     {
-        if ($this->DateDebut->removeElement($dateDebut)) {
+        if ($this->appartContratlocs->removeElement($appartContratloc)) {
             // set the owning side to null (unless already changed)
-            if ($dateDebut->getAppartement() === $this) {
-                $dateDebut->setAppartement(null);
+            if ($appartContratloc->getAppart() === $this) {
+                $appartContratloc->setAppart(null);
             }
         }
 
         return $this;
     }
+
 
     /**
      * @return Collection<int, Factureloc>
@@ -210,5 +222,43 @@ class Appartement
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Contratloc>
+     */
+    public function getContratlocs(): Collection
+    {
+        return $this->contratlocs;
+    }
+
+    public function addContratloc(Contratloc $contratloc): static
+    {
+        if (!$this->contratlocs->contains($contratloc)) {
+            $this->contratlocs->add($contratloc);
+            $contratloc->setAppartement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContratloc(Contratloc $contratloc): static
+    {
+        if ($this->contratlocs->removeElement($contratloc)) {
+            // set the owning side to null (unless already changed)
+            if ($contratloc->getAppartement() === $this) {
+                $contratloc->setAppartement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contratloc>
+     */
+    public function getAppartementContratlocs(): Collection
+    {
+        return $this->appartementContratlocs;
     }
 }

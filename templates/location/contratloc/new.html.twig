@@ -35,17 +35,17 @@
 
             <div class="row g-5 g-xl-8">
 
-                <div class="col-xl-6">
+                <div class="col-xl-4 col-md-4">
 
                     <!--begin::Tables Widget 3-->
-                    <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card card-xl-stretch mb-xl-8" >
                         <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bold fs-3 mb-1">
-                                    <font style="vertical-align: inherit;">
-                                        <font style="vertical-align: inherit;">Insérer la pièce</font>
-                                    </font>
+                        <div class="card-header border-0 " style="border-bottom:1px solid white;background: #3a4049;min-height: 50px !important;">
+                            <h3 class="card-title align-items-start flex-column text-white" >
+                                <span class="card-label fw-bold fs-3 mb-1 text-white">
+
+                                        Insérer la pièce
+
                                 </span>
                             </h3>
 
@@ -70,17 +70,17 @@
                     </div>
                 </div>
                 <!--begin::Col-->
-                <div class="col-xl-6" >
+                <div class="col-xl-8 col-md-8" >
 
                     <!--begin::Tables Widget 3-->
-                    <div class="card card-xl-stretch mb-xl-8">
+                    <div class="card card-xl-stretch mb-xl-8" >
                         <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bold fs-3 mb-1">
-                                    <font style="vertical-align: inherit;">
-                                        <font style="vertical-align: inherit;">Identification</font>
-                                    </font>
+                        <div class="card-header border-0" style="border-bottom:1px solid white;background: #3a4049;min-height: 50px !important;">
+                            <h3 class="card-title align-items-start flex-column text-white">
+                                <span class="card-label fw-bold fs-3 mb-1 text-white">
+
+                                        Identification
+
                                 </span>
                             </h3>
 
@@ -92,67 +92,76 @@
 
                             <!--begin::Table container-->
                             <div class="row">
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
                                         Choix locatatire
                                     </label>
                                     {{ form_widget(form.locataire) }}
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
                                         Choix appartement
                                     </label>
-                                    {{ form_widget(form.appartement) }}
+                                    {{ form_widget(form.appart) }}
                                 </div>
+                            </div>
+                            <div class="row">
+
                                 <div class="form-group col-md-12">
                                     <label class="sr-onl" for="userinput1">
                                         Nature
                                     </label>
                                     {{ form_widget(form.Nature) }}
                                 </div>
-                                <div class="form-group col-md-12">
+
+
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
-                                         Mois de caution
+                                        Mois de caution
                                     </label>
                                     {{ form_widget(form.NbMoisCaution) }}
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
-                                    Valeur
+                                        Valeur
                                     </label>
-                                   {{ form_widget(form.MntCaution) }}
+                                    {{ form_widget(form.MntCaution) }}
                                 </div>
-                                <div class="form-group col-md-12">
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
                                         Frais annexes
                                     </label>
-                                   
+
                                     {{ form_widget(form.Fraisanex) }}
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label class="sr-onl" for="userinput1">
                                         Régime
                                     </label>
                                     {{ form_widget(form.Regime) }}
                                 </div>
-
-                             
-                                <div class="form-group col-md-12">
-                                    <label class="sr-onl" for="userinput1">
-                                    Date entrée
-                                    </label>
-                                    {{ form_widget(form.DateEntree) }}
-                                </div>
-
-                                <div class="form-group col-md-12">
-                                    <label class="sr-onl" for="userinput1">
-                                    Date Proch. Versmt
-                                    </label>
-                                    {{ form_widget(form.DateProchVers) }}
-                                </div>
-
-
                             </div>
+                                <div class="row mb-4">
+                                    <div class="form-group col-md-6">
+                                        <label class="sr-onl" for="userinput1">
+                                            Date entrée
+                                        </label>
+                                        {{ form_widget(form.DateEntree) }}
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label class="sr-onl" for="userinput1">
+                                            Date Proch. Versmt
+                                        </label>
+                                        {{ form_widget(form.DateProchVers) }}
+                                    </div>
+                                </div>
                         </div>
 
                         <!--begin::Col-->
