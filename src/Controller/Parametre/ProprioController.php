@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
 use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/ads/parametre/Proprio')]
+#[Route('/ads/parametre/proprio')]
 class ProprioController extends BaseController
 {
 const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
@@ -156,7 +156,7 @@ const INDEX_ROOT_NAME = 'app_parametre_proprio_index';
     }
 
 
-    return $this->render('parametre/Proprio/index.html.twig', [
+    return $this->render('parametre/proprio/index.html.twig', [
     'datatable' => $table,
     'permition' => $permission
     ]);
@@ -221,7 +221,7 @@ $isAjax = $request->isXmlHttpRequest();
 
     }
 
-    return $this->renderForm('parametre/Proprio/new.html.twig', [
+    return $this->renderForm('parametre/proprio/new.html.twig', [
     'Proprio' => $Proprio,
     'form' => $form,
     ]);
@@ -230,7 +230,7 @@ $isAjax = $request->isXmlHttpRequest();
     #[Route('/{id}/show', name: 'app_parametre_Proprio_show', methods: ['GET'])]
 public function show(Proprio $Proprio): Response
 {
-return $this->render('parametre/Proprio/show.html.twig', [
+return $this->render('parametre/proprio/show.html.twig', [
 'Proprio' => $Proprio,
 ]);
 }
@@ -295,7 +295,7 @@ $form->handleRequest($request);
 
     }
 
-    return $this->renderForm('parametre/Proprio/edit.html.twig', [
+    return $this->renderForm('parametre/proprio/edit.html.twig', [
     'Proprio' => $Proprio,
     'form' => $form,
     ]);
@@ -341,7 +341,7 @@ $form->handleRequest($request);
     }
     }
 
-return $this->renderForm('parametre/Proprio/delete.html.twig', [
+return $this->renderForm('parametre/proprio/delete.html.twig', [
 'Proprio' => $Proprio,
 'form' => $form,
 ]);
