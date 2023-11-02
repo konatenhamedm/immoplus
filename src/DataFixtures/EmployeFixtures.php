@@ -21,6 +21,9 @@ class EmployeFixtures extends Fixture implements DependentFixtureInterface
         $employe->setContact('00000000');
         $employe->setMatricule('00000000');
         $employe->setAdresseMail('admin@knh.com');
+        $employe->setNumPiece('555');
+        $employe->setResidence('admin@knh.com');
+
         $manager->persist($employe);
 
         $manager->flush();

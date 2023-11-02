@@ -13,6 +13,7 @@ class GroupeFixtures extends Fixture
     {
         $groupAdmin = new Groupe();
         $groupAdmin->setName('Super Administrateur');
+        $groupAdmin->setCode('uu');
         $groupAdmin->setDescription('');
         $groupAdmin->setRoles(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']);
         $manager->persist($groupAdmin);
