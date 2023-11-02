@@ -124,11 +124,20 @@
 
 
             addLine($container, name, proto_class);
-
+            refresh();
 
 
             e.preventDefault(); // évite qu'un # apparaisse dans l'URL
         });
+
+        function refresh() {
+            let index = 0
+            $('.row-colonne').each(function () {
+                index++;
+                $(this).attr('data-numberKey', index)
+                $(this).find('.numero:first').val(index);
+            })
+        }
 
         if (index > 0) {
             $container.children('.row-colonne').each(function () {
@@ -201,7 +210,7 @@
 
                 //console.log($(this).attr('data-parent'), $(this));
                 $parent.remove();
-
+                refresh();
                 if (index > 0) {
                     index -= 1;
                 }
