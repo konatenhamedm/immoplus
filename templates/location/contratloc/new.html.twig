@@ -329,6 +329,22 @@
 
         const $appart = $('#{{ form.appart.vars.id }}');
         const $nb = $('#{{ form.NbMoisCaution.vars.id }}');
+        const $nb_avance = $('#{{ form.NbMoisAvance.vars.id }}');
+
+        $nb_avance.on('input',function (){
+            const $this = $(this);
+
+            const appart_montant = $('.appart').find('option:selected').attr('data-value');
+
+
+            if(appart_montant === undefined){
+                alert('Veillez selectionner un appartement')
+            }else{
+
+                $('.mt_avance').val($this.val() * parseInt(appart_montant))
+            }
+
+        })
 
         $nb.on('input',function (){
             const $this = $(this);

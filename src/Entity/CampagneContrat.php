@@ -26,6 +26,18 @@ class CampagneContrat
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
     private ?string $loyer = null;
 
+    private ?string $locataire_hide = null;
+
+    public function getLocataireHide(): ?string
+    {
+        return $this->locataire_hide;
+    }
+
+    public function setLocataireHide(?string $locataire_hide): void
+    {
+        $this->locataire_hide = $locataire_hide;
+    }
+
 
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

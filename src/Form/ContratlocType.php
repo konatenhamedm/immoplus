@@ -45,9 +45,13 @@ class ContratlocType extends AbstractType
                 'attr' => ['class' => ' montant_caution'],
                 'empty_data' => '0'
             ])
-            ->add('NbMoisAvance')
+            ->add('NbMoisAvance',IntegerType::class,[
+                'attr' => ['class' => 'nbre_avance'],
+                'empty_data' => '0',
+            ])
             ->add('MntAvance',NumberType::class,[
-                'empty_data' => '0'
+                'empty_data' => '0',
+                  'attr' => ['class' => 'mt_avance']
             ])
             //->add('MntLoyer')
             ->add('AutreInfos')

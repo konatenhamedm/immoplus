@@ -328,6 +328,7 @@ class ContratlocController extends BaseController
                     $appart->setOqp(1);
                     $appartementRepository->save($appart,true);
                 }
+                $contratloc->setMntLoyer($appart->getLoyer());
                 $contratloc->setTotVerse($somme);
                 $contratloc->setEtat(1);
                 $contratlocRepository->save($contratloc, true);

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\FacturelocRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FacturelocRepository::class)]
@@ -39,14 +40,18 @@ class Factureloc
     #[ORM\Column]
     private ?int $SoldeFactLoc = null;
 
-    #[ORM\Column]
-    private ?int $DateEmission = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $DateEmission = null;
 
-    #[ORM\Column]
-    private ?int $DateLimite = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $DateLimite = null;
 
     #[ORM\OneToMany(mappedBy: 'numFact', targetEntity: Reglements::class)]
     private Collection $reglements;
+
+    #[ORM\Column(length: 255)]
+    private ?string $statut = null;
 
     public function __construct()
     {
@@ -154,24 +159,24 @@ class Factureloc
         return $this;
     }
 
-    public function getDateEmission(): ?int
+    public function getDateEmission(): ?\DateTimeInterface
     {
         return $this->DateEmission;
     }
 
-    public function setDateEmission(int $DateEmission): static
+    public function setDateEmission(\DateTimeInterface $DateEmission): static
     {
         $this->DateEmission = $DateEmission;
 
         return $this;
     }
 
-    public function getDateLimite(): ?int
+    public function getDateLimite(): ?\DateTimeInterface
     {
         return $this->DateLimite;
     }
 
-    public function setDateLimite(int $DateLimite): static
+    public function setDateLimite(\DateTimeInterface $DateLimite): static
     {
         $this->DateLimite = $DateLimite;
 
@@ -204,6 +209,18 @@ class Factureloc
                 $reglement->setNumFact(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }

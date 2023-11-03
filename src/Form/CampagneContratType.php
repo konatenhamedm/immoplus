@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\CampagneContrat;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -39,6 +40,11 @@ class CampagneContratType extends AbstractType
                 , 'required' => false
                 , 'html5' => false
             ])
+            /*->add('locataire_hide',HiddenType::class,[
+                'label' => false,
+                'mapped'=>false
+            ])*/
+
             /*->add('dateLimite')*/
         ;
     }

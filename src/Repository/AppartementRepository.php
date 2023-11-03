@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Appartement;
 use App\Entity\Contratloc;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,6 +30,21 @@ class AppartementRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getAppart($appart , $maison)
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.maisson',"m")
+            ->andWhere('a.LibAppart = :appart')
+            ->andWhere('m.LibMaison = :maison')
+            ->setParameter('appart', $appart)
+            ->setParameter('maison', $maison)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 //    /**

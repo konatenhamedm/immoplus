@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
-#[UniqueEntity(fields: ['LibCampagne'], message: 'Cette campagne existe deja.')]
+#[UniqueEntity(fields: ['LibCampagne', 'annee'], errorPath: 'module', message: 'Cette campagne existe deja.')]
 class Campagne
 {
     #[ORM\Id]
@@ -29,7 +29,7 @@ class Campagne
     #[ORM\Column]
     private ?int $MntTotal = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $MntPaye = null;
 
     #[ORM\ManyToOne(inversedBy: 'campagnes')]
@@ -44,10 +44,10 @@ class Campagne
     #[ORM\ManyToOne(inversedBy: 'campagnes')]
     private ?Entreprise $entreprise = null;
 
-    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class)]
     private Collection $contratlocs;
 
-    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: CampagneContrat::class)]
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: CampagneContrat::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $campagneContrats;
 
     public function __construct()
@@ -55,6 +55,7 @@ class Campagne
         $this->facturelocs = new ArrayCollection();
         $this->contratlocs = new ArrayCollection();
         $this->campagneContrats = new ArrayCollection();
+
     }
 
     public function getId(): ?int

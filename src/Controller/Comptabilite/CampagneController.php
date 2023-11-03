@@ -3,9 +3,12 @@
 namespace App\Controller\Comptabilite;
 
 use App\Entity\Campagne;
+use App\Entity\Factureloc;
 use App\Entity\Maison;
 use App\Form\CampagneType;
+use App\Repository\AppartementRepository;
 use App\Repository\CampagneRepository;
+use App\Repository\FacturelocRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
 use Doctrine\ORM\QueryBuilder;
@@ -125,16 +128,16 @@ class CampagneController extends BaseController
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
-                                'edit' => [
+                                /* 'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
-                                ],
+                                ],*/
                                 'show' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
-                                'delete' => [
+                                /* 'delete' => [
                                     'target' => '#exampleModalSizeNormal',
                                     'url' => $this->generateUrl('app_comptabilite_campagne_delete', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-trash', 'attrs' => ['class' => 'btn-main'], 'render' => $renders['delete']
-                                ]
+                                ]*/
                             ]
 
                         ];
@@ -158,23 +161,29 @@ class CampagneController extends BaseController
     }
 
     #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CampagneRepository $campagneRepository, FormError $formError, ContratlocRepository $contratlocRepository): Response
+    public function new(Request $request, CampagneRepository $campagneRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
     {
+
+
 
         $campagne = new Campagne();
 
-        $somme =0;
+        $somme = 0;
+        $dateActuelle = new \DateTime();
+        $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
+        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), 5);
 
         foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
             $campagneContrat = new CampagneContrat();
             $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
             $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
             $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
-            $campagneContrat->setNumAppartement($contratloc->getAppart()->getNumEtage());
+            $campagneContrat->setNumAppartement($contratloc->getAppart()->getLibAppart());
             $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
+            $campagneContrat->setDateLimite($dateMoisSuivant);
             $campagne->AddCampagneContrat($campagneContrat);
 
-            $somme +=$contratloc->getAppart()->getLoyer();
+            $somme += $contratloc->getAppart()->getLoyer();
         }
         $campagne->setMntTotal($somme);
         $form = $this->createForm(CampagneType::class, $campagne, [
@@ -194,8 +203,33 @@ class CampagneController extends BaseController
 
 
             if ($form->isValid()) {
-
+                $campagne->setNbreProprio(1);
+                $campagne->setEntreprise($this->entreprise);
+                $campagne->setNbreLocataire(1);
                 $campagneRepository->save($campagne, true);
+                if ($form->get('campagneContrats')->getData()) {
+                    foreach ($form->get('campagneContrats')->getData() as $data) {
+                        $facture = new Factureloc();
+                        $appart = $appartementRepository->getAppart($data->getNumAppartement(), $data->getMaison());
+                        $contrat = $contratlocRepository->findOneBy(array('appart' => $appart));
+
+
+                        $facture->setLocataire($contrat->getLocataire());
+                        $facture->setAppartement($appart);
+                        $facture->setLibFacture($form->get('LibCampagne')->getData());
+                        $facture->setCompagne($campagne);
+                        $facture->setMntFact($data->getLoyer());
+                        $facture->setContrat($contrat);
+                        $facture->setDateLimite($data->getDateLimite());
+                        $facture->setDateEmission(new \DateTime());
+                        $facture->setMois($form->get('mois')->getData());
+                        $facture->setSoldeFactLoc($data->getLoyer());
+                        $facture->setStatut('impayer');
+
+                        $facturelocRepository->save($facture, true);
+                    }
+                }
+
                 $data = true;
                 $message = 'Opération effectuée avec succès';
                 $statut = 1;
