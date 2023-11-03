@@ -11,6 +11,7 @@ use App\Repository\CampagneRepository;
 use App\Repository\FacturelocRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\BoolColumn;
@@ -160,6 +161,9 @@ class CampagneController extends BaseController
         ]);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CampagneRepository $campagneRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
     {
