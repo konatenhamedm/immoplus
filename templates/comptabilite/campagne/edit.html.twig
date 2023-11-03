@@ -22,8 +22,8 @@
             <div class="col-md-6 mb-4">{{ form_row(form.annee) }}</div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-4">{{ form_row(form.LibCampagne) }}</div>
-            <div class="col-md-6 mb-4">{{ form_row(form.MntTotal) }}</div>
+            <div class="col-md-6 mb-4">{{ form_row(form.LibCampagne,{attr:{'readonly':'readonly'}}) }}</div>
+            <div class="col-md-6 mb-4">{{ form_row(form.MntTotal,{attr:{'readonly':'readonly'}}) }}</div>
         </div>
         <br>
         {{ prototype_ligne_colonne(form) }}

@@ -15,19 +15,18 @@ class CampagneContrat
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $numEtage = null;
+    private ?string $proprietaire = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $numAppart = null;
+    private ?string $locataire = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nbrePiece = null;
+    private ?string $maison = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
-    private ?string $prix = null;
+    private ?string $loyer = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $details = null;
+
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateLimite = null;
@@ -35,70 +34,62 @@ class CampagneContrat
     #[ORM\ManyToOne(inversedBy: 'campagneContrats')]
     private ?Campagne $campagne = null;
 
+    #[ORM\Column(length: 10)]
+    private ?string $numAppartement = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNumEtage(): ?string
+    public function getProprietaire(): ?string
     {
-        return $this->numEtage;
+        return $this->proprietaire;
     }
 
-    public function setNumEtage(string $numEtage): static
+    public function setProprietaire(string $proprietaire): static
     {
-        $this->numEtage = $numEtage;
+        $this->proprietaire = $proprietaire;
 
         return $this;
     }
 
-    public function getNumAppart(): ?string
+    public function getLocataire(): ?string
     {
-        return $this->numAppart;
+        return $this->locataire;
     }
 
-    public function setNumAppart(string $numAppart): static
+    public function setLocataire(string $locataire): static
     {
-        $this->numAppart = $numAppart;
+        $this->locataire = $locataire;
 
         return $this;
     }
 
-    public function getNbrePiece(): ?string
+    public function getMaison(): ?string
     {
-        return $this->nbrePiece;
+        return $this->maison;
     }
 
-    public function setNbrePiece(string $nbrePiece): static
+    public function setMaison(string $maison): static
     {
-        $this->nbrePiece = $nbrePiece;
+        $this->maison = $maison;
 
         return $this;
     }
 
-    public function getPrix(): ?string
+    public function getLoyer(): ?string
     {
-        return $this->prix;
+        return $this->loyer;
     }
 
-    public function setPrix(string $prix): static
+    public function setLoyer(string $loyer): static
     {
-        $this->prix = $prix;
+        $this->loyer = $loyer;
 
         return $this;
     }
 
-    public function getDetails(): ?string
-    {
-        return $this->details;
-    }
-
-    public function setDetails(string $details): static
-    {
-        $this->details = $details;
-
-        return $this;
-    }
 
     public function getDateLimite(): ?\DateTimeInterface
     {
@@ -120,6 +111,18 @@ class CampagneContrat
     public function setCampagne(?Campagne $campagne): static
     {
         $this->campagne = $campagne;
+
+        return $this;
+    }
+
+    public function getNumAppartement(): ?string
+    {
+        return $this->numAppartement;
+    }
+
+    public function setNumAppartement(string $numAppartement): static
+    {
+        $this->numAppartement = $numAppartement;
 
         return $this;
     }

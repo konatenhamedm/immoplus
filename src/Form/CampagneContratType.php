@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\CampagneContrat;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,20 +16,28 @@ class CampagneContratType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('numEtage',IntegerType::class,[
+            ->add('proprietaire',TextType::class,[
                 'label' => false
             ])
-            ->add('numAppart',IntegerType::class,[
+            ->add('locataire',TextType::class,[
                 'label' => false
             ])
-            ->add('nbrePiece',IntegerType::class,[
+            ->add('maison',TextType::class,[
                 'label' => false
             ])
-            ->add('prix',NumberType::class,[
+            ->add('loyer',NumberType::class,[
                 'label' => false
             ])
-            ->add('details',TextType::class,[
+            ->add('numAppartement',TextType::class,[
                 'label' => false
+            ]) ->add('dateLimite',DateType::class,  [
+                'label'=>false,
+                'attr' => ['class' => 'datepicker no-auto skip-init']
+                , 'widget' => 'single_text'
+                , 'format' => 'dd/MM/yyyy'
+                , 'empty_data' => date('d/m/Y')
+                , 'required' => false
+                , 'html5' => false
             ])
             /*->add('dateLimite')*/
         ;

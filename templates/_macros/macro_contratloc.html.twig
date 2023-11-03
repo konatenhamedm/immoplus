@@ -19,19 +19,22 @@
         {#{{ dump(redaction.children.path.vars.data) }}#}
         <div class="row">
             <div class="col-md-2">
-                {{ form_row(colonne.numEtage) }}
+                {{ form_row(colonne.proprietaire,{attr:{'readonly':'readonly'}}) }}
             </div>
             <div class="col-md-2">
-                {{ form_row(colonne.numAppart) }}
+                {{ form_row(colonne.locataire,{attr:{'readonly':'readonly'}}) }}
             </div>
             <div class="col-md-2">
-                {{ form_row(colonne.nbrePiece) }}
+                {{ form_row(colonne.maison,{attr:{'readonly':'readonly'}}) }}
+            </div>
+            <div class="col-md-1">
+                {{ form_row(colonne.numAppartement,{attr:{'readonly':'readonly'}}) }}
             </div>
             <div class="col-md-2">
-                {{ form_row(colonne.prix) }}
+                {{ form_row(colonne.loyer,{attr:{'readonly':'readonly'}}) }}
             </div>
-            <div class="col-md-3">
-                {{ form_row(colonne.details) }}
+            <div class="col-md-2">
+                {{ form_row(colonne.dateLimite ) }}
             </div>
 
             <div class="col-md-1 del-col" data-parent=".row-colonne"></div>
@@ -59,19 +62,23 @@
 </div>
     <div class="row mb-4">
         <div class="col-md-2">
-            Num etage
+            Propriétaire
         </div>
         <div class="col-md-2">
-            Num appart
+            Locataire
         </div>
         <div class="col-md-2">
-            Nbre piece
+            Maison
+        </div>
+        <div class="col-md-1">
+
+            N° Appart
         </div>
         <div class="col-md-2">
-            Prix
+            Loyer
         </div>
-        <div class="col-md-3">
-            Details
+        <div class="col-md-2">
+            Date limite
         </div>
 
         <div class="col-md-1 del-col" data-parent=".row-colonne"></div>

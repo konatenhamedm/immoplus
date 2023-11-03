@@ -318,7 +318,7 @@ class ContratlocController extends BaseController
 
         if ($form->isSubmitted()) {
           $appart = $appartementRepository->find($form->getData()->getAppart()->getId());
-          $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() ;
+          $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() + $form->getData()->getMntAvance();
             $response = [];
             $redirect = $this->generateUrl('app_location_contratloc_index');
 
@@ -394,12 +394,13 @@ class ContratlocController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
+            $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() + $form->getData()->getMntAvance();
             $response = [];
             $redirect = $this->generateUrl('app_config_location_index');
 
 
             if ($form->isValid()) {
-
+                $contratloc->setTotVerse($somme);
                 $contratlocRepository->save($contratloc, true);
                 $data = true;
                 $message = 'Opération effectuée avec succès';

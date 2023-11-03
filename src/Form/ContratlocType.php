@@ -8,6 +8,8 @@ use App\Entity\Contratloc;
 use App\Entity\Tabmois;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,10 +37,18 @@ class ContratlocType extends AbstractType
                 'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
                 'label' => "Date fin", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
             ])*/
-            ->add('NbMoisCaution')
-            ->add('MntCaution')
+            ->add('NbMoisCaution',IntegerType::class,[
+        'attr' => ['class' => ' nb_mois_caution'],
+        'empty_data' => '0'
+    ])
+            ->add('MntCaution',NumberType::class,[
+                'attr' => ['class' => ' montant_caution'],
+                'empty_data' => '0'
+            ])
             ->add('NbMoisAvance')
-            ->add('MntAvance')
+            ->add('MntAvance',NumberType::class,[
+                'empty_data' => '0'
+            ])
             //->add('MntLoyer')
             ->add('AutreInfos')
            ->add('ScanContrat',
@@ -121,7 +131,9 @@ class ContratlocType extends AbstractType
                 
                 
             )
-            ->add('Fraisanex')
+            ->add('Fraisanex',NumberType::class,[
+                'empty_data' => '0'
+            ])
           //  ->add('Etat')
             //->add('TotVerse')
           ->add('appart', EntityType::class, [
@@ -129,9 +141,9 @@ class ContratlocType extends AbstractType
               'choice_label' => 'LibAppart',
               'placeholder' => '-----',
               'label' => 'Choix de appartement ',
-             /* 'choice_attr' => function (Tabmois $tabmois) {
-                  return ['data-value' => $tabmois->getLibMois()];
-              },*/
+              'choice_attr' => function (Appartement $appartement) {
+                  return ['data-value' => $appartement->getLoyer()];
+              },
               'query_builder' => function (EntityRepository $er) {
                   return $er->createQueryBuilder('e')
                       ->innerJoin('e.maisson','m')

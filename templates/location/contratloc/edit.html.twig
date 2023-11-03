@@ -317,6 +317,7 @@
 
 {% block java %}
 <script>
+
     $(function () {
         init_select2('select');
         $('.nouvelle').hide()
@@ -325,6 +326,36 @@
     });
     $(function () {
         init_select2('select', null, '.content-doc');
+
+        const $appart = $('#{{ form.appart.vars.id }}');
+        const $nb = $('#{{ form.NbMoisCaution.vars.id }}');
+
+        $nb.on('input',function (){
+            const $this = $(this);
+            const appart_montant = $('.appart').find('option:selected').attr('data-value');
+            if(appart_montant === undefined){
+                alert('Veillez selectionner un appartement')
+            }else{
+
+                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+            }
+            //$('.montant_caution').val(mois+' ' + annee);
+            // alert()
+
+        })
+
+        $appart.on('change', function () {
+            const $this = $(this);
+            const appart_montant = $this.find('option:selected').attr('data-value');
+            if($('.nb_mois_caution').val()){
+                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+            }
+
+            //const nb = $this.find('option:selected').attr('data-value');
+            //$('.libelleCampagne').val(mois+' ' + annee);
+
+
+        });
 
     });
     var checkBox0 = $('#contratloc_StatutLoc_0');

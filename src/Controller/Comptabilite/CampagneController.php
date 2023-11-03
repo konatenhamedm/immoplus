@@ -163,17 +163,20 @@ class CampagneController extends BaseController
 
         $campagne = new Campagne();
 
+        $somme =0;
+
         foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
             $campagneContrat = new CampagneContrat();
-            $campagneContrat->setPrix($contratloc->getAppartement()->getLoyer());
-            $campagneContrat->setNumEtage($contratloc->getAppartement()->getNumEtage());
-            $campagneContrat->setNumAppart($contratloc->getAppartement()->getLibAppart());
-            $campagneContrat->setDetails($contratloc->getAppartement()->getDetails());
-            $campagneContrat->setNbrePiece($contratloc->getAppartement()->getNbrePieces());
-
+            $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
+            $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
+            $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
+            $campagneContrat->setNumAppartement($contratloc->getAppart()->getNumEtage());
+            $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
             $campagne->AddCampagneContrat($campagneContrat);
-        }
 
+            $somme +=$contratloc->getAppart()->getLoyer();
+        }
+        $campagne->setMntTotal($somme);
         $form = $this->createForm(CampagneType::class, $campagne, [
             'method' => 'POST',
             'action' => $this->generateUrl('app_comptabilite_campagne_new')
