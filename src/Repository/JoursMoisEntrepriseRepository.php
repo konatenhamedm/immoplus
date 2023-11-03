@@ -29,6 +29,18 @@ class JoursMoisEntrepriseRepository extends ServiceEntityRepository
         }
     }
 
+    public function getJour($entreprise){
+               return $this->createQueryBuilder('j')
+                   ->select('m.libelle')
+                   ->innerJoin('j.joursMois','m')
+            ->andWhere('j.entreprise = :entreprise')
+            ->andWhere('j.active = :active')
+            ->setParameter('entreprise', $entreprise)
+            ->setParameter('active', 1)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 //    /**
 //     * @return JoursMoisEntreprise[] Returns an array of JoursMoisEntreprise objects
 //     */

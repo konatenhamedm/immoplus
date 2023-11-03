@@ -9,6 +9,7 @@ use App\Form\CampagneType;
 use App\Repository\AppartementRepository;
 use App\Repository\CampagneRepository;
 use App\Repository\FacturelocRepository;
+use App\Repository\JoursMoisEntrepriseRepository;
 use App\Service\ActionRender;
 use App\Service\FormError;
 use Doctrine\ORM\NonUniqueResultException;
@@ -165,17 +166,14 @@ class CampagneController extends BaseController
      * @throws NonUniqueResultException
      */
     #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CampagneRepository $campagneRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
+    public function new(Request $request, CampagneRepository $campagneRepository,JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
     {
-
-
-
         $campagne = new Campagne();
 
         $somme = 0;
         $dateActuelle = new \DateTime();
         $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
-        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), 5);
+        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise));
 
         foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
             $campagneContrat = new CampagneContrat();
