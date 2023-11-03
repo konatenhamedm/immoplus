@@ -203,16 +203,29 @@ class CampagneController extends BaseController
 
 
             if ($form->isValid()) {
-                $campagne->setNbreProprio(1);
-                $campagne->setEntreprise($this->entreprise);
-                $campagne->setNbreLocataire(1);
-                $campagneRepository->save($campagne, true);
+
                 if ($form->get('campagneContrats')->getData()) {
+                    $solde = 0;
+
                     foreach ($form->get('campagneContrats')->getData() as $data) {
                         $facture = new Factureloc();
                         $appart = $appartementRepository->getAppart($data->getNumAppartement(), $data->getMaison());
                         $contrat = $contratlocRepository->findOneBy(array('appart' => $appart));
 
+                        if ($contrat->getMntAvance() > 0) {
+                            $solde = $data->getLoyer() - $contrat->getMntAvance();
+
+                            if ($contrat->getMntAvance() >= $data->getLoyer()) {
+                                $facture->setStatut('payer');
+                            } else {
+                                $facture->setStatut('impayer');
+                            }
+                        } else {
+                            $solde = 0;
+                            $facture->setStatut('impayer');
+                        }
+
+                        // $form->getData()->getMntAvance()
 
                         $facture->setLocataire($contrat->getLocataire());
                         $facture->setAppartement($appart);
@@ -223,12 +236,17 @@ class CampagneController extends BaseController
                         $facture->setDateLimite($data->getDateLimite());
                         $facture->setDateEmission(new \DateTime());
                         $facture->setMois($form->get('mois')->getData());
-                        $facture->setSoldeFactLoc($data->getLoyer());
-                        $facture->setStatut('impayer');
+                        $facture->setSoldeFactLoc($solde);
+
 
                         $facturelocRepository->save($facture, true);
                     }
                 }
+                $campagne->setNbreProprio(1);
+                $campagne->setEntreprise($this->entreprise);
+                $campagne->setNbreLocataire(1);
+                $campagneRepository->save($campagne, true);
+
 
                 $data = true;
                 $message = 'Opération effectuée avec succès';
