@@ -96,6 +96,9 @@ class Entreprise
     #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: Quartier::class)]
     private Collection $quartiers;
 
+    #[ORM\OneToMany(mappedBy: 'entreprise', targetEntity: JoursMoisEntreprise::class)]
+    private Collection $joursMoisEntreprises;
+
 
     public function __construct()
     {
@@ -108,6 +111,7 @@ class Entreprise
         $this->contratlocs = new ArrayCollection();
         $this->campagnes = new ArrayCollection();
         $this->quartiers = new ArrayCollection();
+        $this->joursMoisEntreprises = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -547,6 +551,36 @@ class Entreprise
             // set the owning side to null (unless already changed)
             if ($quartier->getEntreprise() === $this) {
                 $quartier->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JoursMoisEntreprise>
+     */
+    public function getJoursMoisEntreprises(): Collection
+    {
+        return $this->joursMoisEntreprises;
+    }
+
+    public function addJoursMoisEntreprise(JoursMoisEntreprise $joursMoisEntreprise): static
+    {
+        if (!$this->joursMoisEntreprises->contains($joursMoisEntreprise)) {
+            $this->joursMoisEntreprises->add($joursMoisEntreprise);
+            $joursMoisEntreprise->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJoursMoisEntreprise(JoursMoisEntreprise $joursMoisEntreprise): static
+    {
+        if ($this->joursMoisEntreprises->removeElement($joursMoisEntreprise)) {
+            // set the owning side to null (unless already changed)
+            if ($joursMoisEntreprise->getEntreprise() === $this) {
+                $joursMoisEntreprise->setEntreprise(null);
             }
         }
 

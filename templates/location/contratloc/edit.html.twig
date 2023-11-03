@@ -324,6 +324,21 @@
         $('.ancien').hide()
 
     });
+    $("#exampleModalSizeLg2").find('.content-doc').on("change", function () { //element is in DOM now as it added in previous statement
+        const $current = $(this)
+        console.log($current.val());
+
+        if ($current.val() == 1) {
+            $current.closest('.row-line').find('.qte').prop('disabled', true)
+            $current.closest('.row-line').find('.naturepromesse').prop('disabled', true)
+
+        }
+        if ($current.val() == 2) {
+            $current.closest('.row-line').find('.qte').prop('disabled', false);
+            $current.closest('.row-line').find('.naturepromesse').prop('disabled', false)
+        }
+    });
+
     $(function () {
         init_select2('select', null, '.content-doc');
 
@@ -378,12 +393,12 @@
     var checkBox1 = $('#contratloc_StatutLoc_1');
     var nouvelle = $('.nouvelle');
     var ancien = $('.ancien');
-    checkBox0.on('click', function () {
+    checkBox0.is(':checked', function () {
         nouvelle.show();
         ancien.hide();
 
     });
-    checkBox1.on('click', function () {
+    checkBox1.is(':checked', function () {
         nouvelle.hide();
         ancien.show();
     });
