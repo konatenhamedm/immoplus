@@ -38,7 +38,7 @@ class JoursMoisEntrepriseRepository extends ServiceEntityRepository
             ->setParameter('entreprise', $entreprise)
             ->setParameter('active', 1)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getOneOrNullResult();
     }
 
 //    /**

@@ -44,7 +44,7 @@ class Campagne
     #[ORM\ManyToOne(inversedBy: 'campagnes')]
     private ?Entreprise $entreprise = null;
 
-    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class)]
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $contratlocs;
 
     #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: CampagneContrat::class, orphanRemoval: true, cascade: ['persist'])]

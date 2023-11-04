@@ -177,9 +177,10 @@ class ContratlocType extends AbstractType
                     'Consommé-Payé' => 'Consomme_Paye',
 
                     ],
-                    'choice_value' => null,
+                   // 'choice_value' => null,
                     'multiple' => false,
                     'expanded' => true,
+                    'required' => true,
                     'empty_data' => 'Payé-Consommé',
                 ]
             )

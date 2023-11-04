@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\Types\Nullable;
-
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ContratlocRepository::class)]
 class Contratloc
 {
@@ -55,6 +55,7 @@ class Contratloc
 
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs date debut est requis")]
     private ?string $Regime = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
