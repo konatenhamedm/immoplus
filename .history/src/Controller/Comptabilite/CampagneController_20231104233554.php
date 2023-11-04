@@ -171,7 +171,7 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])

@@ -259,6 +259,6 @@ class Appartement
      */
     public function getAppartementContratlocs(): Collection
     {
-        return $this->appartContratlocs;
+        return $this->appartementContratlocs;
     }
 }

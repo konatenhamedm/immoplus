@@ -131,7 +131,7 @@ class CampagneController extends BaseController
                             'actions' => [
                                  'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
-                                ],
+                                ],*/
                                 'show' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
@@ -171,7 +171,7 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
@@ -281,7 +281,7 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             //->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])

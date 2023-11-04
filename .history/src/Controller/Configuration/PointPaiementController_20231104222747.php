@@ -14,21 +14,22 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-#[Route('/admin/config/loyer')]
-class GestionLoyerController extends BaseController
+#[Route('/admin/config/point')]
+class PointPaiementController  extends BaseController
 {
 
-    const INDEX_ROOT_NAME = 'app_config_loyer_index';
+    const INDEX_ROOT_NAME = 'app_config_point_index';
 
     /* private $menu;
      public function __construct(Menu $menu){
          $this->menu = $menu;
      }*/
 
-    #[Route(path: '/', name: 'app_config_loyer_index', methods: ['GET', 'POST'])]
+    #[Route(path: '/', name: 'app_config_point_index', methods: ['GET', 'POST'])]
     public function index(Request $request, Breadcrumb $breadcrumb): Response
     {
 
+        
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
         /* if($this->menu->getPermission()){
@@ -38,19 +39,16 @@ class GestionLoyerController extends BaseController
          }*/
         $modules = [
             [
-                'label' => 'Campagnes',
+                'label' => 'Point proprietaire',
                 'icon' => 'bi bi-list',
-                'href' => $this->generateUrl('app_comptabilite_campagne_index')
+               'href' => $this->generateUrl('app_point_proprietaire_index')
+           
             ],
             [
-                'label' => 'Loyers impayés',
+                'label' => 'Point locateur',
                 'icon' => 'bi bi-truck',
-                'href' => $this->generateUrl('app_gestion_loyer_impayer_index')
-            ], [
-                'label' => 'Loyers payés',
-                'icon' => 'bi bi-truck',
-                'href' => $this->generateUrl('app_gestion_loyer_payer_index')
-            ],
+                 'href' => $this->generateUrl('app_point_locataire_index')
+             ],    
           /*  [
                 'label' => 'Gestion utilisateur',
                 'icon' => 'bi bi-users',
@@ -70,7 +68,7 @@ class GestionLoyerController extends BaseController
             ]
         ]);
 
-        return $this->render('config/loyer/index.html.twig', [
+        return $this->render('config/point/index.html.twig', [
             'modules' => $modules,
             'breadcrumb' => $breadcrumb,
             'permition' => $permission

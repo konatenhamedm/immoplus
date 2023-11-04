@@ -129,9 +129,9 @@ class CampagneController extends BaseController
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
-                                 'edit' => [
+                                /* 'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
-                                ],
+                                ],*/
                                 'show' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
@@ -171,11 +171,11 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
-            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite', 'format' => 'd/m/Y'])
+            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {
@@ -281,11 +281,11 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             //->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
-            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite','format'=>'d/m/Y'])
+            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite','format'=])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {

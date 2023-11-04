@@ -236,7 +236,7 @@ class Appartement
     {
         if (!$this->contratlocs->contains($contratloc)) {
             $this->contratlocs->add($contratloc);
-            $contratloc->setAppart($this);
+            $contratloc->setAppartement($this);
         }
 
         return $this;
@@ -246,8 +246,8 @@ class Appartement
     {
         if ($this->contratlocs->removeElement($contratloc)) {
             // set the owning side to null (unless already changed)
-            if ($contratloc->getAppart() === $this) {
-                $contratloc->setAppart(null);
+            if ($contratloc->getA) {
+                $contratloc->setAppartement(null);
             }
         }
 
@@ -259,6 +259,6 @@ class Appartement
      */
     public function getAppartementContratlocs(): Collection
     {
-        return $this->appartContratlocs;
+        return $this->appartementContratlocs;
     }
 }
