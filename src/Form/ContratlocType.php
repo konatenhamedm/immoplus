@@ -108,7 +108,7 @@ class ContratlocType extends AbstractType
             array(
                 'choices' => array(
                     'Oui' => 'oui',
-                    'Nom' => 'nom',
+                    'Non' => 'non',
 
                 ),
                 'choice_value' => null,

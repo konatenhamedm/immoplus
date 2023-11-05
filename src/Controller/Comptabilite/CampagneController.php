@@ -173,22 +173,22 @@ class CampagneController extends BaseController
         $somme = 0;
         $dateActuelle = new \DateTime();
         $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
-        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise)? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']):5);
-if($contratlocRepository->getContratLocActif($this->entreprise)){
-    foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
-        $campagneContrat = new CampagneContrat();
-        $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
-        $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
-        $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
-        $campagneContrat->setNumAppartement($contratloc->getAppart()->getLibAppart());
-        $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
-        $campagneContrat->setDateLimite($dateMoisSuivant);
-        $campagne->AddCampagneContrat($campagneContrat);
+        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise) ? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']) : 5);
+        if ($contratlocRepository->getContratLocActif($this->entreprise)) {
+            foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
+                $campagneContrat = new CampagneContrat();
+                $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
+                $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
+                $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
+                $campagneContrat->setNumAppartement($contratloc->getAppart()->getLibAppart());
+                $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
+                $campagneContrat->setDateLimite($dateMoisSuivant);
+                $campagne->AddCampagneContrat($campagneContrat);
 
-        $somme += $contratloc->getAppart()->getLoyer();
-    }
-}
-    $campagne->setMntTotal($somme);
+                $somme += $contratloc->getAppart()->getLoyer();
+            }
+        }
+        $campagne->setMntTotal($somme);
         $form = $this->createForm(CampagneType::class, $campagne, [
             'method' => 'POST',
             'action' => $this->generateUrl('app_comptabilite_campagne_new')
@@ -235,7 +235,7 @@ if($contratlocRepository->getContratLocActif($this->entreprise)){
                                 $solde = $contrat->getMntAvance() - $data->getLoyer();
                                 $contrat->setMntAvance($solde);
                             } else {
-                                $solde =  $data->getLoyer() - $contrat->getMntAvance();
+                                $solde = $data->getLoyer() - $contrat->getMntAvance();
                                 $facture->setStatut('impayer');
                                 $facture->setSoldeFactLoc($solde);
                                 $contrat->setMntAvance(0);
@@ -258,7 +258,6 @@ if($contratlocRepository->getContratLocActif($this->entreprise)){
                         $facture->setDateLimite($data->getDateLimite());
                         $facture->setDateEmission(new \DateTime());
                         $facture->setMois($form->get('mois')->getData());
-
 
 
                         $facturelocRepository->save($facture, true);
