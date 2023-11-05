@@ -129,9 +129,9 @@ class CampagneController extends BaseController
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
-                                 'edit' => [
+                                /* 'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
-                                ],
+                                ],*/
                                 'show' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
@@ -161,7 +161,7 @@ class CampagneController extends BaseController
         ]);
     }
     
-    
+    /
     #[Route('/impayer', name: 'app_gestion_loyer_impayer_index', methods: ['GET', 'POST'])]
     public function indeximpayer(Request $request, DataTableFactory $dataTableFactory): Response
     {
@@ -171,11 +171,11 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
-            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite', 'format' => 'd/m/Y'])
+            ->add('DateLimite', TextColumn::class, ['label' => 'Date limite'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {
@@ -281,11 +281,11 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             //->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
-            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite','format'=>'d/m/Y'])
+            ->add('DateLimite', TextColumn::class, ['label' => 'Date limite'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {
@@ -380,27 +380,26 @@ class CampagneController extends BaseController
      * @throws NonUniqueResultException
      */
     #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CampagneRepository $campagneRepository, JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
+    public function new(Request $request, CampagneRepository $campagneRepository,JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
     {
         $campagne = new Campagne();
-//dd();
+
         $somme = 0;
         $dateActuelle = new \DateTime();
         $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
-        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise) ? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']) : 5);
-        if ($contratlocRepository->getContratLocActif($this->entreprise)) {
-            foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
-                $campagneContrat = new CampagneContrat();
-                $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
-                $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
-                $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
-                $campagneContrat->setNumAppartement($contratloc->getAppart()->getLibAppart());
-                $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
-                $campagneContrat->setDateLimite($dateMoisSuivant);
-                $campagne->AddCampagneContrat($campagneContrat);
+        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise));
 
-                $somme += $contratloc->getAppart()->getLoyer();
-            }
+        foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
+            $campagneContrat = new CampagneContrat();
+            $campagneContrat->setLoyer($contratloc->getAppart()->getLoyer());
+            $campagneContrat->setProprietaire($contratloc->getAppart()->getMaisson()->getProprio()->getNomPrenoms());
+            $campagneContrat->setMaison($contratloc->getAppart()->getMaisson()->getLibMaison());
+            $campagneContrat->setNumAppartement($contratloc->getAppart()->getLibAppart());
+            $campagneContrat->setLocataire($contratloc->getLocataire()->getNprenoms());
+            $campagneContrat->setDateLimite($dateMoisSuivant);
+            $campagne->AddCampagneContrat($campagneContrat);
+
+            $somme += $contratloc->getAppart()->getLoyer();
         }
         $campagne->setMntTotal($somme);
         $form = $this->createForm(CampagneType::class, $campagne, [
@@ -420,19 +419,7 @@ class CampagneController extends BaseController
 
 
             if ($form->isValid()) {
-                //array()
-                $proprio = $campagne->getCampagneContrats()->filter(function (CampagneContrat $ligne) {
-                    return $ligne->getProprietaire();
-                });
 
-                $locataire = $campagne->getCampagneContrats()->filter(function (CampagneContrat $ligne) {
-                    return $ligne->getLocataire();
-                });
-
-                $campagne->setNbreProprio(count(array_unique((array)$proprio)));
-                $campagne->setEntreprise($this->entreprise);
-                $campagne->setNbreLocataire(count(array_unique((array)$locataire)));
-                $campagneRepository->save($campagne, true);
                 if ($form->get('campagneContrats')->getData()) {
                     $solde = 0;
 
@@ -442,22 +429,15 @@ class CampagneController extends BaseController
                         $contrat = $contratlocRepository->findOneBy(array('appart' => $appart));
 
                         if ($contrat->getMntAvance() > 0) {
+                            $solde = $data->getLoyer() - $contrat->getMntAvance();
 
                             if ($contrat->getMntAvance() >= $data->getLoyer()) {
                                 $facture->setStatut('payer');
-                                $facture->setSoldeFactLoc(0);
-                                $solde = $contrat->getMntAvance() - $data->getLoyer();
-                                $contrat->setMntAvance($solde);
                             } else {
-                                $solde = $data->getLoyer() - $contrat->getMntAvance();
                                 $facture->setStatut('impayer');
-                                $facture->setSoldeFactLoc($solde);
-                                $contrat->setMntAvance(0);
                             }
-
-                            $contratlocRepository->save($contrat, true);
                         } else {
-                            $facture->setSoldeFactLoc(0);
+                            $solde = 0;
                             $facture->setStatut('impayer');
                         }
 
@@ -472,11 +452,17 @@ class CampagneController extends BaseController
                         $facture->setDateLimite($data->getDateLimite());
                         $facture->setDateEmission(new \DateTime());
                         $facture->setMois($form->get('mois')->getData());
+                        $facture->setSoldeFactLoc($solde);
 
 
                         $facturelocRepository->save($facture, true);
                     }
                 }
+                $campagne->setNbreProprio(1);
+                $campagne->setEntreprise($this->entreprise);
+                $campagne->setNbreLocataire(1);
+                $campagneRepository->save($campagne, true);
+
 
                 $data = true;
                 $message = 'Opération effectuée avec succès';

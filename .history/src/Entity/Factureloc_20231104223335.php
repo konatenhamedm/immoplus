@@ -29,7 +29,7 @@ class Factureloc
     private ?Locataire $locataire = null;
 
     #[ORM\ManyToOne(inversedBy: 'facturelocs')]
-    private ?Appartement $appartement = null;
+    private ?ppartement $appartement = null;
 
     #[ORM\Column(length: 255)]
     private ?string $LibFacture = null;
