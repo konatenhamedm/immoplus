@@ -57,37 +57,37 @@ class Proprio
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateCni = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomPrenomsR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $contactsR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $emailR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresseR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomPrereR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomMereR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsAppR = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable:true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $lieuNaissR = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $professionR = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE,nullable:true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCniR = null;
 
 
@@ -101,7 +101,7 @@ class Proprio
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $totalDu = null;
 
-    #[ORM\Column(length: 255 , nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $totalPaye = null;
 
     #[ORM\ManyToOne(inversedBy: 'Proprios')]
@@ -110,7 +110,7 @@ class Proprio
     #[ORM\OneToMany(mappedBy: 'proprio', targetEntity: Maison::class)]
     private Collection $proprioMaisons;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $numCniR = null;
 
     public function __construct()
@@ -511,5 +511,54 @@ class Proprio
         $this->numCniR = $numCniR;
 
         return $this;
+    }
+
+    public function getSommeMaison()
+    {
+        $sommeT = 0;
+        ///$sommeRes=0;
+        ///$sommeSole=0;
+        foreach ($this->getProprioMaisons() as $maison) {
+            foreach ($maison->getAppartements() as $appartement) {
+                foreach ($appartement->getFacturelocs() as $facture) {
+                    $sommeT += $facture->getMntFact();
+                    // $sommeSole += $facture->getSoldeFactLoc();
+                }
+            }
+        }
+        return $sommeT;
+    }
+
+    public function getSommeSoleRestant()
+    {
+        //$sommeT=0;
+        //$sommeRes=0;
+        $sommeSole = 0;
+        foreach ($this->getProprioMaisons() as $maison) {
+            foreach ($maison->getAppartements() as $appartement) {
+                foreach ($appartement->getFacturelocs() as $facture) {
+                    // $sommeT += $facture->getMntFact();
+                    $sommeSole += $facture->getSoldeFactLoc();
+                }
+            }
+        }
+        return $sommeSole;
+    }
+
+    public function getSommeEncaisser()
+    {
+        $sommeT = 0;
+        $sommeRes = 0;
+        $sommeSole = 0;
+        foreach ($this->getProprioMaisons() as $maison) {
+            foreach ($maison->getAppartements() as $appartement) {
+                foreach ($appartement->getFacturelocs() as $facture) {
+                    $sommeT += $facture->getMntFact();
+                    $sommeSole += $facture->getSoldeFactLoc();
+                }
+            }
+        }
+
+        return ($sommeT - $sommeSole);
     }
 }
