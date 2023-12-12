@@ -29,8 +29,10 @@ class CampagneType extends AbstractType
                 'choice_attr' => function (Annee $annee) {
                     return ['data-value' => $annee->getLibelle()];
                 },
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('e');
+                'query_builder' => function (EntityRepository $em) {
+                    return $em->createQueryBuilder('e')
+                        ->andWhere('e.libelle = :annee')
+                        ->setParameter('annee', date_format(new \DateTime(), "Y"));
                 },
                 'attr' => ['class' => 'has-select2 form-select annee']
             ])

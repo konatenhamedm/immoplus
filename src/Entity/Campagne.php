@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
-#[UniqueEntity(fields: ['LibCampagne', 'annee'], errorPath: 'module', message: 'Cette campagne existe deja.')]
+#[UniqueEntity(fields: ['LibCampagne', 'entreprise'], errorPath: 'LibCampagne', message: 'Cette campagne existe deja.')]
 class Campagne
 {
     #[ORM\Id]
@@ -29,7 +29,7 @@ class Campagne
     #[ORM\Column]
     private ?int $MntTotal = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $MntPaye = null;
 
     #[ORM\ManyToOne(inversedBy: 'campagnes')]
@@ -55,7 +55,6 @@ class Campagne
         $this->facturelocs = new ArrayCollection();
         $this->contratlocs = new ArrayCollection();
         $this->campagneContrats = new ArrayCollection();
-
     }
 
     public function getId(): ?int

@@ -56,12 +56,11 @@ class EntrepriseController extends BaseController
             ->add('siteWeb', TextColumn::class, ['label' => 'Site web'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Entreprise::class,
-                'query' => function(QueryBuilder $qb){
+                'query' => function (QueryBuilder $qb) {
                     $qb->select('e')
                         ->from(Entreprise::class, 'e')
-                        ->orderBy('e.id ','DESC')
-                    ;
-                    if($this->groupe != "SADM"){
+                        ->orderBy('e.id ', 'DESC');
+                    if ($this->groupe != "SADM") {
                         $qb->andWhere('e = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }
@@ -165,7 +164,8 @@ class EntrepriseController extends BaseController
 
         return $this->render('parametre/entreprise/index.html.twig', [
             'datatable' => $table,
-            'permition' => $permission
+            'permition' => $permission,
+            'groupe' => $this->groupe
         ]);
     }
 

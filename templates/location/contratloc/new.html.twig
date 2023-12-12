@@ -53,7 +53,7 @@
                         <!--end::Header-->
 
                         <!--begin::Body-->
-                        <div class="card-body py-3">
+                        <div class="card-body py-3 p-0">
                             <!--begin::Table container-->
 
                             <div class="row">
@@ -88,7 +88,7 @@
                         <!--end::Header-->
 
                         <!--begin::Body-->
-                        <div class="card-body py-3">
+                        <div class="card-body py-3 p-0">
 
                             <!--begin::Table container-->
                             <div class="row">
@@ -194,20 +194,20 @@
                     <!--begin::Tables Widget 3-->
                     <div class="card card-xl-stretch mb-xl-8">
                         <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
+                     {#    <div class="card-header border-0 pt-5">
                             <h3 class="card-title align-items-start flex-column">
                                 <span class="card-label fw-bold fs-3 mb-1">
                                     <font style="vertical-align: inherit;">
-                                        <font style="vertical-align: inherit;">Nouveau (elle)</font>
+                                         <font style="vertical-align: inherit;">Nouveau (elle)</font> 
                                     </font>
                                 </span>
                             </h3>
 
-                        </div>
+                        </div> #}
                         <!--end::Header-->
 
                         <!--begin::Body-->
-                        <div class="card-body py-3">
+                        <div class="card-body py-3 p-0">
                             <!--begin::Table container-->
                             <div class="row">
                               
@@ -247,7 +247,7 @@
                     <!--begin::Tables Widget 3-->
                     <div class="card card-xl-stretch mb-xl-8">
                         <!--begin::Header-->
-                        <div class="card-header border-0 pt-5 texte-center">
+                        {# <div class="card-header border-0 pt-5 texte-center">
                             <h3 class="card-title align-items-start  flex-column">
                                 <span class="card-label text-justify fw-bold fs-3 mb-1">
                                     <font style="vertical-align: inherit;">
@@ -256,7 +256,7 @@
                                 </span>
                             </h3>
 
-                        </div>
+                        </div> #}
                         <!--end::Header-->
 
                         <!--begin::Body-->
@@ -340,7 +340,7 @@
                 alert('Veillez selectionner un appartement')
             }else{
 
-                $('.mt_avance').val($this.val() * parseInt(appart_montant))
+                $('.input-mnt_avance').val($this.val() * parseInt(appart_montant))
             }
 
         })
@@ -352,7 +352,7 @@
                 alert('Veillez selectionner un appartement')
             }else{
 
-                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+                $('.input-mnt_caution').val($this.val() * parseInt(appart_montant))
             }
             //$('.montant_caution').val(mois+' ' + annee);
            // alert()
@@ -363,7 +363,7 @@
             const $this = $(this);
             const appart_montant = $this.find('option:selected').attr('data-value');
             if($('.nb_mois_caution').val()){
-                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+                $('.input-mnt_caution').val($this.val() * parseInt(appart_montant))
             }
 
             //const nb = $this.find('option:selected').attr('data-value');

@@ -131,7 +131,7 @@ class TypemaisonController extends BaseController
         }
 
 
-        return $this->render('parametre/Typemaison/index.html.twig', [
+        return $this->render('parametre/typemaison/index.html.twig', [
             'datatable' => $table,
             'permition' => $permission
         ]);
@@ -183,7 +183,7 @@ class TypemaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/Typemaison/new.html.twig', [
+        return $this->renderForm('parametre/typemaison/new.html.twig', [
             'Typemaison' => $Typemaison,
             'form' => $form,
         ]);
@@ -247,7 +247,7 @@ class TypemaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/Typemaison/edit.html.twig', [
+        return $this->renderForm('parametre/typemaison/edit.html.twig', [
             'Typemaison' => $Typemaison,
             'form' => $form,
         ]);
@@ -292,7 +292,7 @@ class TypemaisonController extends BaseController
             }
         }
 
-        return $this->renderForm('parametre/Typemaison/delete.html.twig', [
+        return $this->renderForm('parametre/typemaison/delete.html.twig', [
             'Typemaison' => $Typemaison,
             'form' => $form,
         ]);

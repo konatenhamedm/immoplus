@@ -1,14 +1,19 @@
+{% extends 'base-layout.html.twig' %}
+
+{% block title %}Liste des facturelocs{% endblock %}
+{% block header %}facturelocs{% endblock %}
+{% block breadcrumb %}{% endblock %}
 {% block body %}
 <div class="card shadow-sm">
     <div class="card-header card-header-sm">
-        <h3 class="card-title"> Liste des factures impayées</h3>
+        <h3 class="card-title"> Liste des facturelocs</h3>
         <div class="card-toolbar">
             {% if permition in ["CR","CRU","CRUD"] %}
-            {#<a href="{{ path('app_location_contratloc_new') }}" class="btn btn-main btn-sm" data-bs-toggle="modal"
-                data-bs-target="#exampleModalSizeSm2">
+            <a href="{{ path('app_comptabilite_factureloc_new') }}" class="btn btn-main btn-sm"  
+                data-bs-toggle="modal" data-bs-target="#exampleModalSizeLg2">
                 <i class="bi bi-plus-square text-light"></i>
                 Nouveau
-            </a>#}
+            </a>
             {% endif %}
         </div>
     </div>
@@ -16,7 +21,7 @@
         <div class="row">
             <div class="col-sm-12">
                 {% if permition != null %}
-                <div id="grid_app_location_contratloc_resilier" class="grid-dt-wrapper">Chargement....</div>
+                <div id="grid_app_comptabilite_factureloc" class="grid-dt-wrapper">Chargement....</div>
                 {% else %}
                 <div class="d-flex flex-column flex-center flex-column-fluid">
                     <!--begin::Content-->
@@ -26,10 +31,10 @@
                             <div class="card-body py-1 py-lg-20" style="margin-top: -88px">
 
                                 <!--begin::Title-->
-                                {% include "_includes/message_error.html.twig" %}
+                                 {% include "_includes/message_error.html.twig" %}
                                 <!--end::Title-->
                                 <!--begin::Illustration-->
-
+                               
 
 
                             </div>
@@ -47,16 +52,16 @@
 
 
 {% block java %}
-<script src="{{ asset('assets/js/datatables.js') }}"></script>
-<script>
-    $(function () {
-        $('#grid_app_location_contratloc_resilier').initDataTables({{ datatable_settings(datatable) }}, {
-        searching: true,
-        ajaxUrl: "{{ path('app_gestion_loyer_impayer_index') }}",
-        language: {
-            url: asset_base_path + "/js/i18n/French.json"
-        }
-    });
+    <script src="{{ asset('assets/js/datatables.js') }}"></script>
+    <script> 
+        $(function() { 
+              $('#grid_app_comptabilite_factureloc').initDataTables({{ datatable_settings(datatable) }}, {
+                  searching: true,
+                  ajaxUrl: "{{ path('app_comptabilite_factureloc_index') }}",
+                  language: {
+                      url: asset_base_path + "/js/i18n/French.json"
+                  }
+              });
         });
-</script>
+    </script>
 {% endblock %}

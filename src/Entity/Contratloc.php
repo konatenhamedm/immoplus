@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\Types\Nullable;
 use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: ContratlocRepository::class)]
 class Contratloc
 {
@@ -32,17 +33,20 @@ class Contratloc
     #[ORM\Column]
     private ?int $NbMoisCaution = null;
 
-    #[ORM\Column]
-    private ?int $MntCaution = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    #[Assert\PositiveOrZero(message: 'Le montant de la caution doit être > 0 ', groups: ['niveau-frais'])]
+    private ?string $MntCaution = null;
+
 
     #[ORM\Column(nullable: true)]
     private ?int $NbMoisAvance = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntAvance = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    #[Assert\PositiveOrZero(message: 'Le montant avance doit être > 0 ', groups: ['niveau-frais'])]
+    private ?string $MntAvance = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntLoyer = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $MntLoyer = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $AutreInfos = null;
@@ -68,17 +72,17 @@ class Contratloc
     #[ORM\Column(length: 255)]
     private ?string $Nature = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntLoyerPrec = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $MntLoyerPrec = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntLoyerIni = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $MntLoyerIni = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntLoyerActu = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $MntLoyerActu = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $MntArriere = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $MntArriere = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $DejaLocataire = null;
@@ -87,13 +91,13 @@ class Contratloc
     private ?string $StatutLoc = null;
 
     #[ORM\Column]
-    private ?int $Fraisanex = null;
+    private ?string $Fraisanex = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $Etat = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $TotVerse = null;
+    private ?string $TotVerse = null;
 
     #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: CompteLoc::class)]
     private Collection $compteLocs;
@@ -114,6 +118,9 @@ class Contratloc
     #[ORM\ManyToOne(inversedBy: 'appartContratlocs')]
     private ?Appartement $appart = null;
 
+    #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: CompteLocataire::class)]
+    private Collection $compteLocataires;
+
 
 
     public function __construct()
@@ -121,6 +128,7 @@ class Contratloc
         $this->compteLocs = new ArrayCollection();
         $this->facturelocs = new ArrayCollection();
         $this->fincontrats = new ArrayCollection();
+        $this->compteLocataires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -202,24 +210,24 @@ class Contratloc
         return $this;
     }
 
-    public function getMntAvance(): ?int
+    public function getMntAvance(): ?string
     {
         return $this->MntAvance;
     }
 
-    public function setMntAvance(int $MntAvance): static
+    public function setMntAvance(?string $MntAvance): static
     {
         $this->MntAvance = $MntAvance;
 
         return $this;
     }
 
-    public function getMntLoyer(): ?int
+    public function getMntLoyer(): ?string
     {
         return $this->MntLoyer;
     }
 
-    public function setMntLoyer(int $MntLoyer): static
+    public function setMntLoyer(?string $MntLoyer): static
     {
         $this->MntLoyer = $MntLoyer;
 
@@ -231,7 +239,7 @@ class Contratloc
         return $this->AutreInfos;
     }
 
-    public function setAutreInfos(string $AutreInfos): static
+    public function setAutreInfos(?string $AutreInfos): static
     {
         $this->AutreInfos = $AutreInfos;
 
@@ -298,48 +306,48 @@ class Contratloc
         return $this;
     }
 
-    public function getMntLoyerPrec(): ?int
+    public function getMntLoyerPrec(): ?string
     {
         return $this->MntLoyerPrec;
     }
 
-    public function setMntLoyerPrec(int $MntLoyerPrec): static
+    public function setMntLoyerPrec(?string $MntLoyerPrec): static
     {
         $this->MntLoyerPrec = $MntLoyerPrec;
 
         return $this;
     }
 
-    public function getMntLoyerIni(): ?int
+    public function getMntLoyerIni(): ?string
     {
         return $this->MntLoyerIni;
     }
 
-    public function setMntLoyerIni(int $MntLoyerIni): static
+    public function setMntLoyerIni(?string $MntLoyerIni): static
     {
         $this->MntLoyerIni = $MntLoyerIni;
 
         return $this;
     }
 
-    public function getMntLoyerActu(): ?int
+    public function getMntLoyerActu(): ?string
     {
         return $this->MntLoyerActu;
     }
 
-    public function setMntLoyerActu(int $MntLoyerActu): static
+    public function setMntLoyerActu(?string $MntLoyerActu): static
     {
         $this->MntLoyerActu = $MntLoyerActu;
 
         return $this;
     }
 
-    public function getMntArriere(): ?int
+    public function getMntArriere(): ?string
     {
         return $this->MntArriere;
     }
 
-    public function setMntArriere(int $MntArriere): static
+    public function setMntArriere(?string $MntArriere): static
     {
         $this->MntArriere = $MntArriere;
 
@@ -351,7 +359,7 @@ class Contratloc
         return $this->DejaLocataire;
     }
 
-    public function setDejaLocataire(string $DejaLocataire): static
+    public function setDejaLocataire(?string $DejaLocataire): static
     {
         $this->DejaLocataire = $DejaLocataire;
 
@@ -363,19 +371,19 @@ class Contratloc
         return $this->StatutLoc;
     }
 
-    public function setStatutLoc(string $StatutLoc): static
+    public function setStatutLoc(?string $StatutLoc): static
     {
         $this->StatutLoc = $StatutLoc;
 
         return $this;
     }
 
-    public function getFraisanex(): ?int
+    public function getFraisanex(): ?string
     {
         return $this->Fraisanex;
     }
 
-    public function setFraisanex(int $Fraisanex): static
+    public function setFraisanex(?string $Fraisanex): static
     {
         $this->Fraisanex = $Fraisanex;
 
@@ -394,12 +402,12 @@ class Contratloc
         return $this;
     }
 
-    public function getTotVerse(): ?int
+    public function getTotVerse(): ?string
     {
         return $this->TotVerse;
     }
 
-    public function setTotVerse(int $TotVerse): static
+    public function setTotVerse(?string $TotVerse): static
     {
         $this->TotVerse = $TotVerse;
 
@@ -528,6 +536,36 @@ class Contratloc
     public function setAppart(?Appartement $appart): static
     {
         $this->appart = $appart;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CompteLocataire>
+     */
+    public function getCompteLocataires(): Collection
+    {
+        return $this->compteLocataires;
+    }
+
+    public function addCompteLocataire(CompteLocataire $compteLocataire): static
+    {
+        if (!$this->compteLocataires->contains($compteLocataire)) {
+            $this->compteLocataires->add($compteLocataire);
+            $compteLocataire->setContrat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompteLocataire(CompteLocataire $compteLocataire): static
+    {
+        if ($this->compteLocataires->removeElement($compteLocataire)) {
+            // set the owning side to null (unless already changed)
+            if ($compteLocataire->getContrat() === $this) {
+                $compteLocataire->setContrat(null);
+            }
+        }
 
         return $this;
     }

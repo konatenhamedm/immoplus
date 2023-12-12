@@ -38,22 +38,21 @@ class ContratlocController extends BaseController
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
             ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
             ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
-            ->add('appartement', TextColumn::class, ['label' => 'Appartement','field' => 'a.LibAppart'])
+            ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
             ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
             ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
             ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
-            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé','field' => 'l.TotVerse'])
+            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
 
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Contratloc::class,
-                'query' => function (QueryBuilder $qb)  {
+                'query' => function (QueryBuilder $qb) {
                     $qb->select('en, l,a')
                         ->from(Contratloc::class, 'l')
                         ->join('l.entreprise', 'en')
                         ->join('l.appart', 'a')
                         ->andWhere('l.Etat = :etat')
-                        ->setParameter('etat',1)
-                    ;
+                        ->setParameter('etat', 1);
 
                     if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
@@ -144,7 +143,7 @@ class ContratlocController extends BaseController
                 }
             }
 
-            if ($hasActions ) {
+            if ($hasActions) {
                 $table->add('id', TextColumn::class, [
                     'label' => 'Actions', 'orderable' => false, 'globalSearchable' => false, 'className' => 'grid_row_actions', 'render' => function ($value, Contratloc $context) use ($renders) {
                         $options = [
@@ -201,22 +200,21 @@ class ContratlocController extends BaseController
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
             ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
             ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
-            ->add('appartement', TextColumn::class, ['label' => 'Appartement','field' => 'a.LibAppart'])
+            ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
             ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
             ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
             ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
-            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé','field' => 'l.TotVerse'])
+            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
 
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Contratloc::class,
-                'query' => function (QueryBuilder $qb)  {
+                'query' => function (QueryBuilder $qb) {
                     $qb->select('en, l,a')
                         ->from(Contratloc::class, 'l')
                         ->join('l.entreprise', 'en')
                         ->join('l.appart', 'a')
                         ->andWhere('l.Etat = :etat')
-                        ->setParameter('etat',0)
-                    ;
+                        ->setParameter('etat', 0);
 
                     if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
@@ -260,7 +258,7 @@ class ContratlocController extends BaseController
                 }
             }
 
-            if ($hasActions ) {
+            if ($hasActions) {
                 $table->add('id', TextColumn::class, [
                     'label' => 'Actions', 'orderable' => false, 'globalSearchable' => false, 'className' => 'grid_row_actions', 'render' => function ($value, Contratloc $context) use ($renders) {
                         $options = [
@@ -296,8 +294,8 @@ class ContratlocController extends BaseController
     }
 
     #[Route('/new', name: 'app_location_contratloc_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ContratlocRepository $contratlocRepository,AppartementRepository $appartementRepository, FormError $formError): Response
-    { 
+    public function new(Request $request, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FormError $formError): Response
+    {
         $validationGroups = ['Default', 'FileRequired', 'autre'];
         $contratloc = new Contratloc();
         $form = $this->createForm(ContratlocType::class, $contratloc, [
@@ -317,21 +315,25 @@ class ContratlocController extends BaseController
         $isAjax = $request->isXmlHttpRequest();
 
         if ($form->isSubmitted()) {
-          $appart = $appartementRepository->find($form->getData()->getAppart()->getId());
-          $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() + $form->getData()->getMntAvance();
+            $appart = $appartementRepository->find($form->getData()->getAppart()->getId());
+            $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() + $form->getData()->getMntAvance();
             $response = [];
             $redirect = $this->generateUrl('app_location_contratloc_index');
 
 
             if ($form->isValid()) {
-                if($appart){
-                    $appart->setOqp(1);
-                    $appartementRepository->save($appart,true);
-                }
+
                 $contratloc->setMntLoyer($appart->getLoyer());
+                $contratloc->setEntreprise($this->entreprise);
                 $contratloc->setTotVerse($somme);
                 $contratloc->setEtat(1);
                 $contratlocRepository->save($contratloc, true);
+
+                if ($appart) {
+                    $appart->setOqp(1);
+                    $appartementRepository->save($appart, true);
+                }
+
                 $data = true;
                 $message = 'Opération effectuée avec succès';
                 $statut = 1;

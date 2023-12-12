@@ -9,7 +9,8 @@ use App\Form\CampagneType;
 use App\Repository\AppartementRepository;
 use App\Repository\CampagneRepository;
 use App\Repository\FacturelocRepository;
-use App\Repository\JoursMoisEntrepriseRepository;use App\Service\ActionRender;
+use App\Repository\JoursMoisEntrepriseRepository;
+use App\Service\ActionRender;
 use App\Service\FormError;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
@@ -32,7 +33,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class CampagneController extends BaseController
 {
     const INDEX_ROOT_NAME = 'app_comptabilite_campagne_index';
-  
+
     #[Route('/', name: 'app_comptabilite_campagne_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
@@ -129,7 +130,7 @@ class CampagneController extends BaseController
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
-                                 'edit' => [
+                                'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
                                 ],
                                 'show' => [
@@ -160,8 +161,8 @@ class CampagneController extends BaseController
             'permition' => $permission
         ]);
     }
-    
-    
+
+
     #[Route('/impayer', name: 'app_gestion_loyer_impayer_index', methods: ['GET', 'POST'])]
     public function indeximpayer(Request $request, DataTableFactory $dataTableFactory): Response
     {
@@ -181,14 +182,14 @@ class CampagneController extends BaseController
                 'query' => function (QueryBuilder $qb) {
                     $qb->select('en,c,f,a,loc')
                         ->from(Factureloc::class, 'f')
-                    ->innerJoin('f.compagne', 'c')
-                    ->innerJoin('c.entreprise', 'en')
-                     ->join('f.appartement', 'a')
+                        ->innerJoin('f.compagne', 'c')
+                        ->innerJoin('c.entreprise', 'en')
+                        ->join('f.appartement', 'a')
                         ->join('f.locataire', 'loc')
                         ->andWhere('f.statut = :statut')
                         ->setParameter('statut', 'impayer');
 
-                   if ($this->groupe != "SADM") {
+                    if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }
@@ -264,7 +265,7 @@ class CampagneController extends BaseController
 
         ]);
     }
- 
+
     /**
      * Fonction pour afficher la grip des payer
      *
@@ -285,7 +286,7 @@ class CampagneController extends BaseController
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             //->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
-            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite','format'=>'d/m/Y'])
+            ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite', 'format' => 'd/m/Y'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {
@@ -296,9 +297,9 @@ class CampagneController extends BaseController
                         ->join('f.appartement', 'a')
                         ->join('f.locataire', 'loc')
                         ->andWhere('f.statut = :statut')
-                        ->setParameter('statut', 'impayer');
+                        ->setParameter('statut', 'payer');
 
-                       if ($this->groupe != "SADM") {
+                    if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }
@@ -350,7 +351,7 @@ class CampagneController extends BaseController
                             'actions' => [
 
                                 'show' => [
-                                    'url' => $this->generateUrl('app_location_contratloc_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
+                                    'url' => $this->generateUrl('app_comptabilite_factureloc_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
                             ]
 
@@ -375,7 +376,23 @@ class CampagneController extends BaseController
         ]);
     }
 
-  
+
+    #[Route(path: '/getdateLimite/{mois}/{annee}', name: 'date_limite', methods: ['GET'])]
+    public function getdateLimite(JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, $mois, $annee): Response
+    {
+
+        $dateActuelle = new \DateTime(date(DATE_ATOM, mktime(0, 0, 0,  intval($mois), 1, intval($annee))));
+
+        $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
+
+        $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise) ? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']) : 5);
+        //dd($dateActuelle);
+        return $this->json(
+            date_format($dateActuelle, "d/m/Y")
+        );
+    }
+
+
     /**
      * @throws NonUniqueResultException
      */
@@ -383,11 +400,13 @@ class CampagneController extends BaseController
     public function new(Request $request, CampagneRepository $campagneRepository, JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
     {
         $campagne = new Campagne();
-//dd();
+        //dd();
         $somme = 0;
         $dateActuelle = new \DateTime();
         $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
+
         $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise) ? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']) : 5);
+
         if ($contratlocRepository->getContratLocActif($this->entreprise)) {
             foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
                 $campagneContrat = new CampagneContrat();
@@ -417,7 +436,6 @@ class CampagneController extends BaseController
         if ($form->isSubmitted()) {
             $response = [];
             $redirect = $this->generateUrl('app_comptabilite_campagne_index');
-
 
             if ($form->isValid()) {
                 //array()

@@ -92,11 +92,15 @@ class Locataire
     #[ORM\Column(length: 255,nullable:true)]
     private ?string $numpiece = null;
 
+    #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: CompteLocataire::class)]
+    private Collection $compteLocataires;
+
     public function __construct()
     {
         $this->Contratlocs = new ArrayCollection();
         $this->compteLocs = new ArrayCollection();
         $this->facturelocs = new ArrayCollection();
+        $this->compteLocataires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -447,4 +451,34 @@ class Locataire
 
         return $this;
     }
+
+        /**
+         * @return Collection<int, CompteLocataire>
+         */
+        public function getCompteLocataires(): Collection
+        {
+            return $this->compteLocataires;
+        }
+
+        public function addCompteLocataire(CompteLocataire $compteLocataire): static
+        {
+            if (!$this->compteLocataires->contains($compteLocataire)) {
+                $this->compteLocataires->add($compteLocataire);
+                $compteLocataire->setLocataire($this);
+            }
+
+            return $this;
+        }
+
+        public function removeCompteLocataire(CompteLocataire $compteLocataire): static
+        {
+            if ($this->compteLocataires->removeElement($compteLocataire)) {
+                // set the owning side to null (unless already changed)
+                if ($compteLocataire->getLocataire() === $this) {
+                    $compteLocataire->setLocataire(null);
+                }
+            }
+
+            return $this;
+        }
 }

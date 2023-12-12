@@ -19,7 +19,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-4">{{ form_row(form.mois) }}</div>
-            <div class="col-md-6 mb-4">{{ form_row(form.annee) }}</div>
+            <div class="col-md-6 mb-4">{{ form_row(form.annee,{attr:{'readonly':'readonly'}}) }}</div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-4">{{ form_row(form.LibCampagne,{attr:{'readonly':'readonly'}}) }}</div>
@@ -62,9 +62,25 @@
             $mois.on('change', function () {
                 const $this = $(this);
 
+                
+
                 const mois = $this.find('option:selected').attr('data-value');
                 const annee = $('.annee').find('option:selected').attr('data-value');
                 $('.libelleCampagne').val(mois+' ' + annee);
+
+                    let url = '/ads/comptabilite/campagne/getdateLimite/'+$this.val()+'/'+annee
+                	$.ajax( {
+					dataType: 'json',
+					url: url,
+					success: function ( json ) {
+						//alert(json)
+                        $('.datepicker ').val(json)
+					},
+					error: function () {
+						// Error occurred loading language file, continue on as best we can
+						
+					}
+				} );
 
 
             });
@@ -159,6 +175,20 @@
                 addDeleteLink($prototype, name);
                 // On ajoute le prototype modifié à la fin de la balise <div>
                 $container.append($prototype);
+                
+                let url = '/ads/comptabilite/campagne/getdateLimite/'+$('.mois').val()+'/'+ $('.annee').find('option:selected').attr('data-value');
+                	$.ajax( {
+					dataType: 'json',
+					url: url,
+					success: function ( json ) {
+						//alert(json)
+                        $container.find('.datepicker ').val(json)
+					},
+					error: function () {
+						// Error occurred loading language file, continue on as best we can
+						
+					}
+				} );
 
                 index++;
             }
