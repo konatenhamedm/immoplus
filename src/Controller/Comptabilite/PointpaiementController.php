@@ -37,8 +37,8 @@ class PointpaiementController extends BaseController
 
 
 
-    
-    
+
+
     #[Route('/locataire', name: 'app_point_locataire_index', methods: ['GET', 'POST'])]
     public function indexLocataire(Request $request, DataTableFactory $dataTableFactory): Response
     {
@@ -160,11 +160,11 @@ class PointpaiementController extends BaseController
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
 
-          
+
 
             ->add('nomPrenoms', TextColumn::class, ['field' => 'pro.nomPrenoms', 'label' => 'Proprietaire'])
             ->add('maisson', TextColumn::class, ['field' => 'mai.LibMaison', 'label' => 'Maison',])
-            ->add('mois', TextColumn::class, ['label' => 'Mois'])
+            ->add('Mois', TextColumn::class, ['label' => 'Mois', 'field' => 'c.LibCampagne'])
             ->add('MntFact', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Total du'])
             ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
             ->createAdapter(ORMAdapter::class, [
@@ -177,6 +177,8 @@ class PointpaiementController extends BaseController
                         ->join('f.appartement', 'a')
                         ->join('a.maisson', 'mai')
                         ->join('mai.proprio', 'pro');
+                    /* ->groupBy('pro.nomPrenoms')
+                        ->addGroupBy('c.LibCampagne'); */
                     //->andWhere('f.statut = :statut')
                     //->setParameter('statut', 'impayer')
 

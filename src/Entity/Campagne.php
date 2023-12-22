@@ -7,9 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
-#[UniqueEntity(fields: ['LibCampagne', 'entreprise'], errorPath: 'LibCampagne', message: 'Cette campagne existe deja.')]
+#[UniqueEntity(fields: ['LibCampagne', 'entreprise'], ignoreNull: false, message: 'Cette campagne existe deja.')]
 class Campagne
 {
     #[ORM\Id]
@@ -17,7 +18,7 @@ class Campagne
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
     private ?string $LibCampagne = null;
 
     #[ORM\Column]
@@ -42,6 +43,7 @@ class Campagne
     private Collection $facturelocs;
 
     #[ORM\ManyToOne(inversedBy: 'campagnes')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Entreprise $entreprise = null;
 
     #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Contratloc::class, orphanRemoval: true, cascade: ['persist'])]
@@ -246,5 +248,16 @@ class Campagne
         }
 
         return $this;
+    }
+
+    public function getMontantRestant()
+    {
+        $somme = 0;
+
+        foreach ($this->facturelocs as $factureloc) {
+            $somme += $factureloc->getSoldeFactLoc();
+        }
+
+        return $somme;
     }
 }

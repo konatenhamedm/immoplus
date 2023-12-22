@@ -21,9 +21,13 @@ class Motif
     #[ORM\OneToMany(mappedBy: 'motif', targetEntity: Fincontrat::class)]
     private Collection $fincontrats;
 
+    #[ORM\OneToMany(mappedBy: 'motif', targetEntity: Contratloc::class)]
+    private Collection $contratlocs;
+
     public function __construct()
     {
         $this->fincontrats = new ArrayCollection();
+        $this->contratlocs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,6 +71,36 @@ class Motif
             // set the owning side to null (unless already changed)
             if ($fincontrat->getMotif() === $this) {
                 $fincontrat->setMotif(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contratloc>
+     */
+    public function getContratlocs(): Collection
+    {
+        return $this->contratlocs;
+    }
+
+    public function addContratloc(Contratloc $contratloc): static
+    {
+        if (!$this->contratlocs->contains($contratloc)) {
+            $this->contratlocs->add($contratloc);
+            $contratloc->setMotif($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContratloc(Contratloc $contratloc): static
+    {
+        if ($this->contratlocs->removeElement($contratloc)) {
+            // set the owning side to null (unless already changed)
+            if ($contratloc->getMotif() === $this) {
+                $contratloc->setMotif(null);
             }
         }
 

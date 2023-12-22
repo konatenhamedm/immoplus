@@ -12,7 +12,7 @@ class FacturelocType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('LibFacture')
+            /* ->add('LibFacture')
             ->add('MntFact')
             ->add('SoldeFactLoc')
             ->add('DateEmission')
@@ -22,8 +22,7 @@ class FacturelocType extends AbstractType
             ->add('mois')
             ->add('contrat')
             ->add('locataire')
-            ->add('appartement')
-        ;
+            ->add('appartement') */;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

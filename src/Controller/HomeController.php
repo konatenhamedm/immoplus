@@ -2,14 +2,25 @@
 
 namespace App\Controller;
 
+use App\Entity\Factureloc;
 use App\Entity\Pays;
+use App\Entity\VersmtProprio;
+use App\Form\VersmtProprioType;
+use App\Repository\ContratlocRepository;
+use App\Repository\FacturelocRepository;
+use App\Repository\LocataireRepository;
 use App\Repository\PaysRepository;
+use App\Repository\ProprioRepository;
+use App\Repository\TabmoisRepository;
+use App\Repository\VersmtProprioRepository;
+use App\Service\FormError;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class HomeController extends AbstractController
 {
@@ -314,5 +325,198 @@ class HomeController extends AbstractController
         }
 
         return $this->json('success');
+    }
+
+    private function numeroVersement()
+    {
+
+        $query = $this->em->createQueryBuilder();
+        $query->select("count(a.id)")
+            ->from(VersmtProprio::class, 'a');
+
+        $nb = $query->getQuery()->getSingleScalarResult();
+        if ($nb == 0) {
+            $nb = 1;
+        } else {
+            $nb = $nb + 1;
+        }
+        return (date("y") . '-' . 'ESP' . '-' . date("m", strtotime("now")) . '-' . str_pad($nb, 3, '0', STR_PAD_LEFT));
+    }
+
+    #[Route('/versement/get_numero', name: 'app_get_numero', methods: ['GET'])]
+    public function existe(Request $request): Response
+    {
+        $response = new Response();
+        $format = "";
+        $numero = $this->numeroVersement();
+
+        if ($request->isXmlHttpRequest()) {
+
+            $arrayCollection[] = array(
+                'numero' =>  $numero,
+
+                // ... Same for each property you want
+            );
+            $data = json_encode($arrayCollection); // formater le résultat de la requête en json
+            //dd($data);
+            $response->headers->set('Content-TypeActe', 'application/json');
+            $response->setContent($data);
+        }
+        return $this->json([
+            'code' => 200,
+            'message' => 'ça marche bien',
+            'numero' => $numero,
+        ], 200);
+    }
+
+    #[Route('/new/{id}', name: 'app_comptabilite_versmt_proprio_new',  methods: ['GET', 'POST'])]
+    #[Route('/{id}/new', name: 'app_achat_demande_new_user', methods: ['GET', 'POST'])]
+    public function new(Request $request, VersmtProprioRepository $versmtProprioRepository, FormError $formError, ?int $id, FacturelocRepository $facturelocRepository, TabmoisRepository $tabmoisRepository, LocataireRepository $locataireRepository, ContratlocRepository $contratlocRepository): Response
+    {
+
+
+
+        $versmtProprio = new VersmtProprio();
+        $form = $this->createForm(VersmtProprioType::class, $versmtProprio, [
+            'method' => 'POST',
+            'action' => $this->generateUrl('app_comptabilite_versmt_proprio_new', ['id' => $id])
+        ]);
+        $form->handleRequest($request);
+
+        // $locataire = $locataireRepository->find($id);
+        $factures = $facturelocRepository->findAllFactureLocataire($id);
+
+        // $proprioId = $proprio;
+
+
+        $data = null;
+        $statutCode = Response::HTTP_OK;
+
+        $isAjax = $request->isXmlHttpRequest();
+
+        if ($form->isSubmitted()) {
+            $date = $form->get('dateVersement')->getData();
+
+            $montant = (int) $form->get('montant')->getData();
+
+            //dd($tabmoisRepository->findOneBy(array('NumMois' => (int)$date->format('m'))));
+
+
+            $response = [];
+
+            $redirect = $this->generateUrl('app_comptabilite_versmt_proprio_index', ['id' => $id]);
+
+
+
+            if ($form->isValid()) {
+                $last_key = count($factures);
+                $i = 1;
+                foreach ($factures as $key => $facture) {
+                    $versement = new VersmtProprio();
+                    $versement->setLibelle($tabmoisRepository->findOneBy(array('NumMois' => (int)$date->format('m')))->getLibMois() . ' ' . $date->format('Y'));
+                    $versement->setDateVersement($form->get('dateVersement')->getData());
+                    $versement->setProprio($facture->getAppartement()->getMaisson()->getProprio());
+                    $versement->setMaison($facture->getAppartement()->getMaisson());
+                    $versement->setLocataire($locataireRepository->find($id));
+                    $versement->setNumero($form->get('numero')->getData());
+                    $versement->setTypeVersement($form->get('type_versement')->getData());
+
+
+
+
+
+
+                    if ($montant >= $facture->getMntFact()) {
+                        //dd('dd');
+                        $facture->setSoldeFactLoc(0);
+                        $facture->setStatut(Factureloc::ETATS_STATUT['payer']);
+                        $facture->setEncaisse(Factureloc::ETATS['oui']);
+                        $facturelocRepository->save($facture, true);
+
+                        $versement->setMontant($facture->getMntFact());
+                        $versmtProprioRepository->save($versement, true);
+
+                        $montant = $montant - $facture->getMntFact();
+
+                        if ($i == $last_key) {
+                            //dd('ff');
+                            $contrat = $contratlocRepository->find($facture->getContrat()->getId());
+
+                            $contrat->setMntAvance($contrat->getMntAvance() + $montant);
+                            $contratlocRepository->save($contrat, true);
+                        }
+                    } else {
+
+                        if ($i == $last_key) {
+                            //dd('ff');
+                            $contrat = $contratlocRepository->find($facture->getContrat()->getId());
+
+                            $contrat->setMntAvance($contrat->getMntAvance() + $montant);
+                            $contratlocRepository->save($contrat, true);
+                        }
+                    }
+
+
+
+
+                    $i++;
+                }
+
+
+
+
+                $data = true;
+                $message = 'Opération effectuée avec succès';
+                $statut = 1;
+                $this->addFlash('success', $message);
+            } else {
+                $message = $formError->all($form);
+                $statut = 0;
+                $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+                if (!$isAjax) {
+                    $this->addFlash('warning', $message);
+                }
+            }
+
+
+            if ($isAjax) {
+                return $this->json(compact('statut', 'message', 'redirect', 'data'), $statutCode);
+            } else {
+                if ($statut == 1) {
+                    return $this->redirect($redirect, Response::HTTP_OK);
+                }
+            }
+        }
+
+        return $this->renderForm('comptabilite/versmt_proprio/new.html.twig', [
+            'versmt_proprio' => $versmtProprio,
+            'form' => $form,
+            // 'id' => $id
+        ]);
+    }
+
+
+    #[Route(path: '/print-iframe', name: 'default_print_iframe', methods: ["DELETE", "GET"], condition: "request.query.get('r')", options: ["expose" => true])]
+    public function defaultPrintIframe(Request $request, UrlGeneratorInterface $urlGenerator)
+    {
+        $all = $request->query->all();
+        //print-iframe?r=foo_bar_foo&params[']
+        $routeName = $request->query->get('r');
+        $title = $request->query->get('title');
+        $params = $all['params'] ?? [];
+        $stacked = $params['stacked'] ?? false;
+        $redirect = isset($params['redirect']) ? $urlGenerator->generate($params['redirect'], $params) : '';
+        $iframeUrl = $urlGenerator->generate($routeName, $params);
+
+        $isFacture = isset($params['mode']) && $params['mode'] == 'facture' && $routeName == 'facturation_facture_print';
+
+        return $this->render('home/iframe.html.twig', [
+            'iframe_url' => $iframeUrl,
+            'id' => $params['id'] ?? null,
+            'stacked' => $stacked,
+            'redirect' => $redirect,
+            'title' => $title,
+            'facture' => 0/*$isFacture*/
+        ]);
     }
 }

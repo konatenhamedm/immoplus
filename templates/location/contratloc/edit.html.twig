@@ -43,7 +43,7 @@
                                 <h3 class="card-title align-items-start flex-column text-white" >
                                 <span class="card-label fw-bold fs-3 mb-1 text-white">
 
-                                        Insérer la pièce
+                                        Insérer le contrat scanné
 
                                 </span>
                                 </h3>
@@ -52,17 +52,35 @@
                             <!--end::Header-->
 
                             <!--begin::Body-->
-                            <div class="card-body py-3">
+                            <div class="card-body py-3 " style="padding-left: 2px;">
                                 <!--begin::Table container-->
 
                                 <div class="row">
 
-                                    <div class="form-group col-md-12">
+                                   {% if contratloc.ScanContrat.size %}
+                                    <div class="form-group col-md-10">
                                         <label class="sr-onl" for="userinput1">
                                             Insérer le contrat scanné
                                         </label>
                                         {{ form_widget(form.ScanContrat) }}
                                     </div>
+                                      <div class="form-group col-md-2 ">
+                                                <a class="btn btn-success btn-xs mt-6 py-5" target="_blank" title="Télécharger le document" href="{{ path('fichier_index', {id:  contratloc.ScanContrat.id }) }}" download> 
+                                                
+                                                {# <i class="fe fe-upload"></i> #}
+                                                    <i class="fa fa-download"></i></a>
+                                                
+                                     </div>
+                                   {% else %}
+ <div class="form-group col-md-12">
+                                        <label class="sr-onl" for="userinput1">
+                                            Insérer le contrat scanné
+                                        </label>
+                                        {{ form_widget(form.ScanContrat) }}
+                                    </div>
+                                     
+                                   {% endif %}
+                                   
 
                                 </div>
                             </div>
@@ -87,7 +105,7 @@
                             <!--end::Header-->
 
                             <!--begin::Body-->
-                            <div class="card-body py-3">
+                            <div class="card-body py-3 p-0">
 
                                 <!--begin::Table container-->
                                 <div class="row">
@@ -320,8 +338,18 @@
 
     $(function () {
         init_select2('select');
-        $('.nouvelle').hide()
-        $('.ancien').hide()
+        if(document.getElementById("contratloc_StatutLoc_0").checked){
+ $('.nouvelle').show()
+ $('.ancien').hide()
+        }
+        if(document.getElementById("contratloc_StatutLoc_1").checked){
+  $('.ancien').show()
+  $('.nouvelle').hide()
+        }
+
+
+       
+      
 
     });
     $("#exampleModalSizeLg2").find('.content-doc').on("change", function () { //element is in DOM now as it added in previous statement
@@ -361,25 +389,31 @@
 
         })
 
-        $nb.on('input',function (){
+       $nb.on('input',function (){
             const $this = $(this);
+               
             const appart_montant = $('.appart').find('option:selected').attr('data-value');
+            //alert(appart_montant)
             if(appart_montant === undefined){
                 alert('Veillez selectionner un appartement')
             }else{
 
-                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+                $('.input-mnt_caution').val($this.val() * parseInt(appart_montant))
             }
             //$('.montant_caution').val(mois+' ' + annee);
-            // alert()
+           // alert()
 
         })
-
         $appart.on('change', function () {
             const $this = $(this);
             const appart_montant = $this.find('option:selected').attr('data-value');
-            if($('.nb_mois_caution').val()){
-                $('.montant_caution').val($this.val() * parseInt(appart_montant))
+            const resultat = $nb.val() * parseInt(appart_montant);
+
+           
+            if(isNaN(resultat) ){
+              $('.input-mnt_caution').val(0)  
+            }else{
+                  $('.input-mnt_caution').val(resultat)
             }
 
             //const nb = $this.find('option:selected').attr('data-value');
@@ -390,18 +424,18 @@
 
     });
     var checkBox0 = $('#contratloc_StatutLoc_0');
-    var checkBox1 = $('#contratloc_StatutLoc_1');
-    var nouvelle = $('.nouvelle');
-    var ancien = $('.ancien');
-    checkBox0.is(':checked', function () {
-        nouvelle.show();
-        ancien.hide();
+        var checkBox1 = $('#contratloc_StatutLoc_1');
+        var nouvelle = $('.nouvelle');
+        var ancien = $('.ancien');
+        checkBox0.on('click',function () {
+          nouvelle.show();
+         ancien.hide();
 
-    });
-    checkBox1.is(':checked', function () {
-        nouvelle.hide();
-        ancien.show();
-    });
+        });
+        checkBox1.on('click', function () {
+                nouvelle.hide();
+            ancien.show();
+        });
     $('.no-auto').each(function () {
         const $this = $(this);
         const $id = $('#' + $this.attr('id'));

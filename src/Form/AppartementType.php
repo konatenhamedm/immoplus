@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Appartement;
+use App\Form\DataTransformer\ThousandNumberTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -19,23 +20,27 @@ class AppartementType extends AbstractType
 
                 'label' => false
             ])
-            ->add('NbrePieces', IntegerType::class, [
-                'label' => false
+            ->add('NbrePieces', TextType::class, [
+                'label' => false,
+                'attr' => ['class' => 'input-money']
             ])
             ->add('NumEtage', IntegerType::class, [
                 'label' => false,
-                'attr'=> ['class'=>'numero']
+                'attr' => ['class' => 'numero']
             ])
-            ->add('Loyer', NumberType::class, [
-                'label' => false
+            ->add('Loyer', TextType::class, [
+                'label' => false,
+                'attr' => ['class' => 'input-money']
             ])
             /* ->add('Caution')*/
             ->add('Details', TextType::class, [
                 'label' => false,
                 "empty_data" => 'RAS',
-            ])
-            /*->add('Oqp')*/
-            /*->add('maisson')*/;
+            ]);
+        /*->add('Oqp')*/
+        /*->add('maisson')*/
+        $builder->get('Loyer')->addModelTransformer(new ThousandNumberTransformer());
+        $builder->get('NbrePieces')->addModelTransformer(new ThousandNumberTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver): void

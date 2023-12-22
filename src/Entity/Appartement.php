@@ -5,9 +5,13 @@ namespace App\Entity;
 use App\Repository\AppartementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: AppartementRepository::class)]
+#[UniqueEntity(fields: ['LibAppart', 'maisson_id'],  message: 'Cette campagne existe deja.')]
 class Appartement
 {
     #[ORM\Id]
@@ -16,16 +20,20 @@ class Appartement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Veuillez renseigner le libellé de la colonne', groups: ['colonne-groupe'])]
     private ?string $LibAppart = null;
 
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0')]
     private ?int $NbrePieces = null;
 
     #[ORM\Column]
     private ?int $NumEtage = null;
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0')]
+    #[Assert\Positive(message: 'Le loyer payé doit être > à 0')]
     private ?int $Loyer = null;
 
     #[ORM\Column(nullable: true)]
@@ -38,6 +46,7 @@ class Appartement
     private ?int $Oqp = null;
 
     #[ORM\ManyToOne(inversedBy: 'appartements')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Maison $maisson = null;
 
     #[ORM\OneToMany(mappedBy: 'appart', targetEntity: Contratloc::class)]
@@ -46,17 +55,22 @@ class Appartement
     #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Factureloc::class)]
     private Collection $facturelocs;
 
-    #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Contratloc::class)]
-    private Collection $contratlocs;
+    /* #[ORM\OneToMany(mappedBy: 'appartement', targetEntity: Contratloc::class)]
+    private Collection $contratlocs; */
 
     public function __construct()
     {
 
         $this->facturelocs = new ArrayCollection();
-        $this->contratlocs = new ArrayCollection();
-       /* $this->appartementContratlocs = new ArrayCollection();*/
+        //$this->contratlocs = new ArrayCollection();
+        /* $this->appartementContratlocs = new ArrayCollection();*/
         $this->appartContratlocs = new ArrayCollection();
         $this->Oqp = 0;
+    }
+
+    public function getNomComplet()
+    {
+        return $this->maisson->getProprio()->getNomPrenoms() . " - " . $this->maisson->getLibMaison() . " - " . $this->LibAppart . " - " . $this->Loyer;
     }
 
 
@@ -224,35 +238,7 @@ class Appartement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Contratloc>
-     */
-    public function getContratlocs(): Collection
-    {
-        return $this->contratlocs;
-    }
 
-    public function addContratloc(Contratloc $contratloc): static
-    {
-        if (!$this->contratlocs->contains($contratloc)) {
-            $this->contratlocs->add($contratloc);
-            $contratloc->setAppart($this);
-        }
-
-        return $this;
-    }
-
-    public function removeContratloc(Contratloc $contratloc): static
-    {
-        if ($this->contratlocs->removeElement($contratloc)) {
-            // set the owning side to null (unless already changed)
-            if ($contratloc->getAppart() === $this) {
-                $contratloc->setAppart(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Contratloc>

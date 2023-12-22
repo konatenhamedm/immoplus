@@ -60,7 +60,15 @@
                   ajaxUrl: "{{ path('app_location_locataire_index') }}",
                   language: {
                       url: asset_base_path + "/js/i18n/French.json"
-                  }
+                  },
+       /*dom:'<"html5buttons"B>lTfgitp',
+        buttons: [
+            {
+                text: 'Export to Excel',
+                action: $.fn.initDataTables.exportBtnAction('excel', {{ datatable_settings(datatable) }})
+            }
+        ]*/
+    
               });
         });
     </script>

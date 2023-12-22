@@ -6,7 +6,8 @@
 parameters:
     locale: fr
     upload_dir: "%kernel.project_dir%/public/uploads"
-
+    assets_dir: "%kernel.project_dir%/public/uploads"
+    font_dir: "%kernel.project_dir%/public/fonts"
 services:
     # default Config for services in *this* file
     _defaults:

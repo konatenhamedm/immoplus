@@ -19,6 +19,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
+use App\Entity\Contratloc;
+use Omines\DataTablesBundle\Adapter\ArrayAdapter;
+use Omines\DataTablesBundle\Column\MapColumn;
+use Omines\DataTablesBundle\Column\TwigColumn;
+use Omines\DataTablesBundle\Column\TwigStringColumn;
+use Omines\DataTablesBundle\Exporter\DataTableExporterEvents;
+use Omines\DataTablesBundle\Exporter\Event\DataTableExporterResponseEvent;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/ads/location/locataire')]
 class LocataireController extends BaseController
@@ -31,31 +39,69 @@ class LocataireController extends BaseController
 
 
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
+        if ($this->groupe == "SADM") {
+            $table = $dataTableFactory->create()
+                //->add('id', TextColumn::class, ['label' => 'Identifiant'])
 
-        $table = $dataTableFactory->create()
-            //->add('id', TextColumn::class, ['label' => 'Identifiant'])
+                // ->add('InfoPiece', TextColumn::class, ['label' => 'Nationalité'])
 
-            // ->add('InfoPiece', TextColumn::class, ['label' => 'Nationalité'])
-            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
-            ->add('NPrenoms', TextColumn::class, ['label' => 'Nom et Prénom(s)'])
-            ->add('Profession', TextColumn::class, ['label' => 'Proffession'])
-            ->add('Contacts', TextColumn::class, ['label' => 'Contact'])
-            ->add('Email', TextColumn::class, ['label' => 'Email'])
-            ->add('InfoPiece', TextColumn::class, ['label' => 'Num pièce'])
-            ->createAdapter(ORMAdapter::class, [
-                'entity' => Locataire::class,
-                'query' => function (QueryBuilder $qb) {
-                    $qb->select('en, l')
-                        ->from(Locataire::class, 'l')
-                        ->join('l.entreprise', 'en');
-
+                ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
+                ->add('NPrenoms', TextColumn::class, ['label' => 'Nom et Prénom(s)'])
+                ->add('Profession', TextColumn::class, ['label' => 'Profession'])
+                ->add('Contacts', TextColumn::class, ['label' => 'Contact'])
+                ->add('Email', TextColumn::class, ['label' => 'Email'])
+                ->add('InfoPiece', TextColumn::class, ['label' => 'Num pièce'])
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Locataire::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l')
+                            ->from(Locataire::class, 'l')
+                            ->join('l.entreprise', 'en');
+                        /* 
                     if ($this->groupe != "SADM") {
                         $qb->andWhere('en = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
+                    } */
                     }
-                }
-            ])
-            ->setName('dt_app_location_locataire');
+                ])
+                ->setName('dt_app_location_locataire');
+        } else {
+            $table = $dataTableFactory->create()
+                //->add('id', TextColumn::class, ['label' => 'Identifiant'])
+
+                // ->add('InfoPiece', TextColumn::class, ['label' => 'Nationalité'])
+
+                ///->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
+
+
+                ->add('idf', TextColumn::class, ['className' => 'w-1px', 'field' => 'l.id', 'label' => '', 'render' => function ($value, Locataire $context) {
+                    return sprintf('<input type="checkbox" name="selectAll" id="selectAll" value="%s">', $value);
+                }])
+
+                ->add('NPrenoms', TextColumn::class, ['label' => 'Nom et Prénom(s)'])
+                ->add('Profession', TextColumn::class, ['label' => 'Profession'])
+                ->add('Contacts', TextColumn::class, ['label' => 'Contact'])
+                ->add('Email', TextColumn::class, ['label' => 'Email'])
+                ->add('InfoPiece', TextColumn::class, ['label' => 'Num pièce'])
+                ->addEventListener(DataTableExporterEvents::PRE_RESPONSE, function (DataTableExporterResponseEvent $e) {
+                    $response = $e->getResponse();
+                    $response->deleteFileAfterSend(true);
+                    $ext = $response->getFile()->getExtension();
+                    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'custom_filename.' . $ext);
+                })
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Locataire::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l')
+                            ->from(Locataire::class, 'l')
+                            ->join('l.entreprise', 'en')
+                            ->andWhere('en = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise);;
+                    }
+                ])
+                ->setName('dt_app_location_locataire');
+        }
+
         if ($permission != null) {
 
             $renders = [
@@ -104,6 +150,21 @@ class LocataireController extends BaseController
                         return true;
                     }
                 }),
+                'imprime' => new ActionRender(function () use ($permission) {
+                    if ($permission == 'R') {
+                        return true;
+                    } elseif ($permission == 'RD') {
+                        return true;
+                    } elseif ($permission == 'RU') {
+                        return true;
+                    } elseif ($permission == 'CRUD') {
+                        return true;
+                    } elseif ($permission == 'CRU') {
+                        return true;
+                    } elseif ($permission == 'CR') {
+                        return true;
+                    }
+                }),
 
             ];
 
@@ -131,6 +192,10 @@ class LocataireController extends BaseController
                                 ],
                                 'show' => [
                                     'url' => $this->generateUrl('app_location_locataire_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
+                                ],
+
+                                'imprime' => [
+                                    'url' => $this->generateUrl('fichier_index_autre', ['id' => $value]), 'ajax' => false, 'icon' => '%icon% fa fa-download', 'attrs' => ['class' => 'btn-success', 'target' => '_blank'], 'render' => $renders['imprime']
                                 ],
                                 'delete' => [
                                     'target' => '#exampleModalSizeNormal',
@@ -161,7 +226,7 @@ class LocataireController extends BaseController
     #[Route('/new', name: 'app_location_locataire_new', methods: ['GET', 'POST'])]
     public function new(Request $request, LocataireRepository $locataireRepository, FormError $formError): Response
     {
-        $validationGroups = ['Default', 'FileRequired', 'autre'];
+        $validationGroups = ['Default', 'FileRequired', 'oui'];
         $locataire = new Locataire();
         $form = $this->createForm(LocataireType::class, $locataire, [
             'method' => 'POST',
@@ -232,14 +297,19 @@ class LocataireController extends BaseController
     #[Route('/{id}/edit', name: 'app_location_locataire_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Locataire $locataire, LocataireRepository $locataireRepository, FormError $formError): Response
     {
-
+        $validationGroups = ['Default', 'FileRequired', 'oui'];
         $form = $this->createForm(LocataireType::class, $locataire, [
             'method' => 'POST',
+            'doc_options' => [
+                'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
+                'attrs' => ['class' => 'filestyle'],
+            ],
+            'validation_groups' => $validationGroups,
             'action' => $this->generateUrl('app_location_locataire_edit', [
                 'id' => $locataire->getId()
             ])
         ]);
-
+        //  dd($locataire);
         $data = null;
         $statutCode = Response::HTTP_OK;
 

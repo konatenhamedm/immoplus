@@ -40,17 +40,19 @@ class ContratlocType extends AbstractType
                 'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
                 'label' => "Date fin", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
             ])*/
-            ->add('NbMoisCaution', IntegerType::class, [
-                'attr' => ['class' => ' nb_mois_caution'],
-                'empty_data' => '0'
+            ->add('NbMoisCaution', TextType::class, [
+                'empty_data' => '0',
+                'attr' => ['class' => ' nb_mois_caution input-money'],
+
             ])
 
             ->add('MntCaution', TextType::class, [
-                'attr' => ['class' => 'input-money input-mnt_caution'],
-                'empty_data' => '0'
+
+                'attr' => ['class' => 'input-money input-mnt_caution input-mnt'],
+
             ])
-            ->add('NbMoisAvance', IntegerType::class, [
-                'attr' => ['class' => 'nbre_avance'],
+            ->add('NbMoisAvance', TextType::class, [
+                'attr' => ['class' => 'nbre_avance input-money input-mnt'],
                 'empty_data' => '0',
             ])
             ->add('MntAvance', TextType::class, [
@@ -143,30 +145,10 @@ class ContratlocType extends AbstractType
 
 
             )
-            ->add('Fraisanex', NumberType::class, [
-                'empty_data' => '0'
-            ])
+            ->add('Fraisanex', TextType::class, ['empty_data' => '0', 'attr' => ['class' => 'input-money']])
             //  ->add('Etat')
             //->add('TotVerse')
-            ->add('appart', EntityType::class, [
-                'class' => Appartement::class,
-                'choice_label' => 'LibAppart',
-                'placeholder' => '-----',
-                'label' => 'Choix de appartement ',
-                'choice_attr' => function (Appartement $appartement) {
-                    return ['data-value' => $appartement->getLoyer()];
-                },
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('e')
-                        ->innerJoin('e.maisson', 'm')
-                        ->innerJoin('m.proprio', 'p')
-                        ->andWhere('e.Oqp = :etat')
-                        ->andWhere('p.entreprise = :entreprise')
-                        ->setParameter('etat', 0)
-                        ->setParameter('entreprise', $this->entreprise);
-                },
-                'attr' => ['class' => 'has-select2 form-select appart']
-            ])
+
             ->add('locataire', EntityType::class, [
                 'placeholder' => '----',
                 'class' => Locataire::class,
@@ -211,14 +193,67 @@ class ContratlocType extends AbstractType
                 ]
             );
 
+        if ($options['type'] == "edit") {
+            $builder->add('appart', EntityType::class, [
+                'class' => Appartement::class,
+                'choice_label' => 'getNomComplet',
+                'placeholder' => '-----',
+                'label' => 'Choix de appartement ',
+                'choice_attr' => function (Appartement $appartement) {
+                    return ['data-value' => $appartement->getLoyer()];
+                },
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    return $er->createQueryBuilder('e')
+                        ->innerJoin('e.maisson', 'm')
+                        ->innerJoin('m.proprio', 'p')
+                        ->leftJoin('e.appartContratlocs', 'temp', 'WITH')
+                        ->orWhere('temp.id = :id')
+                        /* ->leftJoin('e.contratlocs', 'c') */
+                        ->orWhere('e.Oqp = :etat')
+                        ->andWhere('p.entreprise = :entreprise')
+                        ->orWhere('e.id = :id')
+                        ->setParameter('etat', 0)
+                        ->setParameter('id', $options['contratId'])
+                        ->setParameter('entreprise', $this->entreprise);
+                },
+                'attr' => ['class' => 'has-select2 form-select appart']
+            ]);
+        } else {
+            $builder->add('appart', EntityType::class, [
+                'class' => Appartement::class,
+                'choice_label' => 'getNomComplet',
+                'placeholder' => '-----',
+                'label' => 'Choix de appartement ',
+                'choice_attr' => function (Appartement $appartement) {
+                    return ['data-value' => $appartement->getLoyer()];
+                },
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('e')
+                        ->innerJoin('e.maisson', 'm')
+                        ->innerJoin('m.proprio', 'p')
+                        ->andWhere('e.Oqp = :etat')
+                        ->andWhere('p.entreprise = :entreprise')
+                        ->setParameter('etat', 0)
+                        ->setParameter('entreprise', $this->entreprise);
+                },
+                'attr' => ['class' => 'has-select2 form-select appart']
+            ]);
+        }
+
         $builder->get('MntLoyerPrec')->addModelTransformer(new ThousandNumberTransformer());
 
-        if ($builder->get('MntLoyerIni')->getData())
-            $builder->get('MntLoyerIni')->addModelTransformer(new ThousandNumberTransformer());
-        if ($builder->get('MntLoyerActu')->getData())
-            $builder->get('MntLoyerActu')->addModelTransformer(new ThousandNumberTransformer());
-        if ($builder->get('MntArriere')->getData())
-            $builder->get('MntArriere')->addModelTransformer(new ThousandNumberTransformer());
+        /*   if ($builder->get('MntLoyerIni')->getData()) */
+        $builder->get('MntLoyerIni')->addModelTransformer(new ThousandNumberTransformer());
+        /* if ($builder->get('MntLoyerActu')->getData()) */
+        $builder->get('MntLoyerActu')->addModelTransformer(new ThousandNumberTransformer());
+        /* if ($builder->get('MntArriere')->getData()) */
+        $builder->get('MntArriere')->addModelTransformer(new ThousandNumberTransformer());
+        /* if ($builder->get('NbMoisCaution')->getData()) */
+        $builder->get('NbMoisCaution')->addModelTransformer(new ThousandNumberTransformer());
+        /* if ($builder->get('Fraisanex')->getData()) */
+        $builder->get('Fraisanex')->addModelTransformer(new ThousandNumberTransformer());
+        /* if ($builder->get('NbMoisAvance')->getData()) */
+        $builder->get('NbMoisAvance')->addModelTransformer(new ThousandNumberTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -233,5 +268,7 @@ class ContratlocType extends AbstractType
         $resolver->setRequired('doc_options');
         $resolver->setRequired('doc_required');
         $resolver->setRequired(['validation_groups']);
+        $resolver->setRequired('type');
+        $resolver->setRequired('contratId');
     }
 }

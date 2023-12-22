@@ -25,15 +25,79 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
+use App\Controller\FileTrait;
 use App\Entity\CampagneContrat;
+use App\Entity\TypeVersements;
+use App\Entity\VersmtProprio;
 use App\Repository\ContratlocRepository;
+use App\Repository\MaisonRepository;
+use App\Repository\TypeVersementsRepository;
+use App\Repository\UtilisateurRepository;
+use App\Repository\VersmtProprioRepository;
+use App\Service\Utils;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Length;
 
 #[Route('/ads/comptabilite/campagne')]
 class CampagneController extends BaseController
 {
+    use FileTrait;
+
     const INDEX_ROOT_NAME = 'app_comptabilite_campagne_index';
 
+    #[Route('/{id}/print', name: 'app_fiche_etat_campagne', methods: ['DELETE', 'GET'])]
+
+    public function print(Request $request, Campagne $campagne, FacturelocRepository $facturelocRepository, MaisonRepository $maisonRepository, UtilisateurRepository $utilisateurRepository): Response
+    {
+
+        $sommeCommission = 0;
+
+        $factures = $facturelocRepository->findBy(array('statut' => 'payer', 'compagne' => $campagne));
+        $allMaisons = [];
+        $allAgents = [];
+        $i = 0;
+        foreach ($factures as $key => $value) {
+
+            $allMaisons[$i]['id'] = $value->getAppartement()->getMaisson()->getId();
+            // $allAgents[$i]['idAgent'] = $value->getAppartement()->getMaisson()->getIdAgent()->getId();
+
+            array_push($allAgents, $value->getAppartement()->getMaisson()->getIdAgent()->getId());
+
+            //$allMaisons[$i]['maison'] = $value->getAppartement()->getMaisson()->getLibMaison();
+            //$sommeCommission += $value->getAppartement()->getMaisson()->getMntCom();
+            $i++;
+        }
+
+        //dd(array_unique($allMaisons, SORT_REGULAR));
+        for ($i = 0; $i < count(array_unique($allMaisons, SORT_REGULAR)); $i++) {
+            $sommeCommission += $maisonRepository->find($allMaisons[$i])->getMntCom();
+        }
+
+
+        // dd($facturelocRepository->findAllFactureCampagne($campagne->getId())[0]['somme']);
+        $somme =  $campagne->getMntTotal() - $facturelocRepository->findAllFactureCampagne($campagne->getId());
+        return $this->renderPdf('comptabilite/campagne/imprime_recouvrement_campagne.html.twig', [
+            'entreprise' => $this->entreprise,
+            'campagne' => $campagne,
+            'montant_encaisse' => $somme,
+            'reste_encaisse' => $facturelocRepository->findAllFactureCampagne($campagne->getId()),
+            'commission' =>  $sommeCommission,
+            'agents' =>  $utilisateurRepository->getAllAgents(array_unique($allAgents, SORT_REGULAR)),
+            /* 'versement' => $versmtProprio,
+            'montant_lettre' => $lettre->Conversion($versmtProprio->getMontant()) */
+            /* 'service' => $service */
+        ], [
+            'orientation' => 'P',
+            'protected' => true,
+            'showWaterkText' => true,
+            'fontDir' => [
+                $this->getParameter('font_dir') . '/arial',
+                $this->getParameter('font_dir') . '/trebuchet',
+            ]
+        ], true, $this->entreprise->getDenomination());
+    }
     #[Route('/', name: 'app_comptabilite_campagne_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
@@ -46,6 +110,10 @@ class CampagneController extends BaseController
             ->add('NbreProprio', NumberColumn::class, ['label' => 'Nbre Proprio'])
             ->add('NbreLocataire', NumberColumn::class, ['label' => 'Nbre locataire'])
             ->add('MntTotal', NumberColumn::class, ['label' => 'Total'])
+            ->add('MontantRestant', TextColumn::class, ['label' => 'Reste à recouvrer ', 'className' => 'text-end w-50px', 'render' => function ($value, $context) {
+                return Utils::formatNumber($context->getMontantRestant());
+            }])
+            //->add('getMontantRestant', NumberColumn::class, ['label' => 'Reste à recouvrer'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Campagne::class,
                 'query' => function (QueryBuilder $qb) {
@@ -133,6 +201,19 @@ class CampagneController extends BaseController
                                 'edit' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_edit', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-pen', 'attrs' => ['class' => 'btn-default'], 'render' => $renders['edit']
                                 ],
+                                'print' => [
+                                    'url' => $this->generateUrl('default_print_iframe', [
+                                        'r' => 'app_fiche_etat_campagne',
+                                        'params' => [
+                                            'id' => $value,
+                                        ]
+                                    ]),
+                                    'ajax' => true,
+                                    'target' =>  '#exampleModalSizeSm2',
+                                    'icon' => '%icon% bi bi-printer',
+                                    'attrs' => ['class' => 'btn-main btn-stack']
+                                    //, 'render' => new ActionRender(fn() => $source || $etat != 'cree')
+                                ],
                                 'show' => [
                                     'url' => $this->generateUrl('app_comptabilite_campagne_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
@@ -172,10 +253,11 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('LibFacture', TextColumn::class, ['label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
             ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
-            ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
+            ->add('MntFact', TextColumn::class, ['label' => 'Montant'])
+            ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Reste à payer'])
             ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite', 'format' => 'd/m/Y'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
@@ -202,7 +284,7 @@ class CampagneController extends BaseController
             $renders = [
 
 
-                'show' => new ActionRender(function () use ($permission) {
+                'payer' => new ActionRender(function () use ($permission) {
                     if ($permission == 'R') {
                         return true;
                     } elseif ($permission == 'RD') {
@@ -240,8 +322,8 @@ class CampagneController extends BaseController
 
                             'actions' => [
 
-                                'show' => [
-                                    'url' => $this->generateUrl('app_location_contratloc_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
+                                'payer' => [
+                                    'url' => $this->generateUrl('app_comptabilite_factureloc_edit', ['id' => $value]), 'ajax' => false, 'icon' => '%icon% bi bi-cash', 'attrs' => ['class' => 'btn-warning'], 'render' => $renders['payer']
                                 ],
                             ]
 
@@ -282,15 +364,15 @@ class CampagneController extends BaseController
 
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('MntFact', TextColumn::class, ['label' => 'Loyer'])
+            ->add('LibFacture', TextColumn::class, ['label' => 'Loyer'])
             ->add('locataire', TextColumn::class, ['field' => 'loc.NPrenoms', 'label' => 'Locataire'])
-            //->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
-            ->add('SoldeFactLoc', TextColumn::class, ['label' => 'Montant'])
+            ->add('appartement', TextColumn::class, ['field' => 'a.LibAppart', 'label' => 'Appartement',])
+            ->add('MntFact', TextColumn::class, ['label' => 'Montant'])
             ->add('DateLimite', DateTimeColumn::class, ['label' => 'Date limite', 'format' => 'd/m/Y'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Factureloc::class,
                 'query' => function (QueryBuilder $qb) {
-                    $qb->select('en,c,f,loc')
+                    $qb->select('en,c,f,a,loc')
                         ->from(Factureloc::class, 'f')
                         ->innerJoin('f.compagne', 'c')
                         ->innerJoin('c.entreprise', 'en')
@@ -392,12 +474,27 @@ class CampagneController extends BaseController
         );
     }
 
+    private function numeroVersement()
+    {
+
+        $query = $this->em->createQueryBuilder();
+        $query->select("count(a.id)")
+            ->from(VersmtProprio::class, 'a');
+
+        $nb = $query->getQuery()->getSingleScalarResult();
+        if ($nb == 0) {
+            $nb = 1;
+        } else {
+            $nb = $nb + 1;
+        }
+        return (date("y") . '-' . 'ESP' . '-' . date("m", strtotime("now")) . '-' . str_pad($nb, 3, '0', STR_PAD_LEFT));
+    }
 
     /**
      * @throws NonUniqueResultException
      */
     #[Route('/new', name: 'app_comptabilite_campagne_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CampagneRepository $campagneRepository, JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository): Response
+    public function new(Request $request, CampagneRepository $campagneRepository, JoursMoisEntrepriseRepository $joursMoisEntrepriseRepository, FormError $formError, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FacturelocRepository $facturelocRepository, TypeVersementsRepository $typeVersementsRepository, VersmtProprioRepository $versmtProprioRepository): Response
     {
         $campagne = new Campagne();
         //dd();
@@ -406,6 +503,9 @@ class CampagneController extends BaseController
         $dateMoisSuivant = $dateActuelle->add(new \DateInterval('P1M'));
 
         $dateMoisSuivant->setDate($dateMoisSuivant->format('Y'), $dateMoisSuivant->format('m'), $joursMoisEntrepriseRepository->getJour($this->entreprise) ? intval($joursMoisEntrepriseRepository->getJour($this->entreprise)['libelle']) : 5);
+
+        $tableau_locataire = [];
+        $tableau_proprio = [];
 
         if ($contratlocRepository->getContratLocActif($this->entreprise)) {
             foreach ($contratlocRepository->getContratLocActif($this->entreprise) as $contratloc) {
@@ -419,9 +519,14 @@ class CampagneController extends BaseController
                 $campagne->AddCampagneContrat($campagneContrat);
 
                 $somme += $contratloc->getAppart()->getLoyer();
+
+                array_push($tableau_locataire, $contratloc->getLocataire()->getId());
+                array_push($tableau_proprio, $contratloc->getAppart()->getMaisson()->getProprio()->getId());
             }
         }
         $campagne->setMntTotal($somme);
+
+        // dd(array_unique($tableau_locataire));
         $form = $this->createForm(CampagneType::class, $campagne, [
             'method' => 'POST',
             'action' => $this->generateUrl('app_comptabilite_campagne_new')
@@ -439,17 +544,22 @@ class CampagneController extends BaseController
 
             if ($form->isValid()) {
                 //array()
-                $proprio = $campagne->getCampagneContrats()->filter(function (CampagneContrat $ligne) {
+                /* $proprio = $campagne->getCampagneContrats()->filter(function (CampagneContrat $ligne) {
                     return $ligne->getProprietaire();
                 });
 
                 $locataire = $campagne->getCampagneContrats()->filter(function (CampagneContrat $ligne) {
-                    return $ligne->getLocataire();
-                });
 
-                $campagne->setNbreProprio(count(array_unique((array)$proprio)));
+                    $array = [];
+                    //array_push($array, $ligne->getLocataire()['id']);
+                    // $array . push((int));
+                    return $ligne->getLocataire();
+                }); */
+
+
+                $campagne->setNbreProprio(count(array_unique($tableau_proprio)));
                 $campagne->setEntreprise($this->entreprise);
-                $campagne->setNbreLocataire(count(array_unique((array)$locataire)));
+                $campagne->setNbreLocataire(count(array_unique($tableau_locataire)));
                 $campagneRepository->save($campagne, true);
                 if ($form->get('campagneContrats')->getData()) {
                     $solde = 0;
@@ -462,21 +572,36 @@ class CampagneController extends BaseController
                         if ($contrat->getMntAvance() > 0) {
 
                             if ($contrat->getMntAvance() >= $data->getLoyer()) {
-                                $facture->setStatut('payer');
+                                $facture->setStatut(Factureloc::ETATS_STATUT['payer']);
+                                $facture->setEncaisse(Factureloc::ETATS['oui']);
                                 $facture->setSoldeFactLoc(0);
                                 $solde = $contrat->getMntAvance() - $data->getLoyer();
                                 $contrat->setMntAvance($solde);
+
+                                $versement = new VersmtProprio();
+
+                                $versement->setProprio($appart->getMaisson()->getProprio());
+                                $versement->setMaison($appart->getMaisson());
+                                $versement->setTypeVersement($typeVersementsRepository->findOneBy(array('CodTyp' => 'ESP')));
+                                $versement->setDateVersement(new \DateTime());
+                                $versement->setLibelle($form->get('LibCampagne')->getData());
+                                $versement->setMontant($data->getLoyer());
+                                $versement->setNumero($this->numeroVersement());
+                                $versement->setLocataire($contrat->getLocataire());
+                                $versmtProprioRepository->save($versement, true);
                             } else {
                                 $solde = $data->getLoyer() - $contrat->getMntAvance();
                                 $facture->setStatut('impayer');
+                                $facture->setEncaisse(Factureloc::ETATS['non']);
                                 $facture->setSoldeFactLoc($solde);
                                 $contrat->setMntAvance(0);
                             }
 
                             $contratlocRepository->save($contrat, true);
-                        } else {
-                            $facture->setSoldeFactLoc(0);
-                            $facture->setStatut('impayer');
+                        } elseif ($contrat->getMntAvance() == 0) {
+                            $facture->setSoldeFactLoc($data->getLoyer());
+                            $facture->setStatut(Factureloc::ETATS_STATUT['impayer']);
+                            $facture->setEncaisse(Factureloc::ETATS['non']);
                         }
 
                         // $form->getData()->getMntAvance()

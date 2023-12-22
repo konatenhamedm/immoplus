@@ -5,8 +5,10 @@ namespace App\Entity;
 use App\Repository\MaisonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaisonRepository::class)]
 class Maison
@@ -17,39 +19,50 @@ class Maison
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs libelle est requis")]
     private ?string $LibMaison = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Localisation = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs Lot est requis")]
     private ?string $Lot = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs Ilot est requis")]
     private ?string $Ilot = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $TFoncier = null;
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0', nullable: false)]
+    #[Assert\NotNull(message: "Le champs commission est requis")]
     private ?int $MntCom = null;
 
     #[ORM\OneToMany(mappedBy: 'maisson', targetEntity: Appartement::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $appartements;
 
     #[ORM\ManyToOne(inversedBy: 'quartierMaisons')]
+    #[Assert\NotNull(message: "Le champs quartier est requis")]
     private ?Quartier $quartier = null;
 
     #[ORM\ManyToOne(inversedBy: 'proprioMaisons')]
+    #[Assert\NotNull(message: "Le champs proprio est requis")]
     private ?Proprio $proprio = null;
 
     #[ORM\ManyToOne(inversedBy: 'typeMaisonMaisons')]
+    #[Assert\NotNull(message: "Le champs type maison est requis")]
     private ?Typemaison $typeMaison = null;
 
     #[ORM\ManyToOne(inversedBy: 'maisons')]
     /* #[ORM\JoinColumn(nullable: false)]
     #[Gedmo\Blameable(on: 'create')]*/
     private ?Utilisateur $IdAgent = null;
+
+    #[ORM\OneToMany(mappedBy: 'maison', targetEntity: VersmtProprio::class)]
+    private Collection $versmtProprios;
 
     /* #[ORM\ManyToOne(inversedBy: 'maisons')]
     private ?Quartier $quartier = null;
@@ -63,6 +76,7 @@ class Maison
     public function __construct()
     {
         $this->appartements = new ArrayCollection();
+        $this->versmtProprios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,6 +267,36 @@ class Maison
     public function setIdAgent(?Utilisateur $IdAgent): static
     {
         $this->IdAgent = $IdAgent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VersmtProprio>
+     */
+    public function getVersmtProprios(): Collection
+    {
+        return $this->versmtProprios;
+    }
+
+    public function addVersmtProprio(VersmtProprio $versmtProprio): static
+    {
+        if (!$this->versmtProprios->contains($versmtProprio)) {
+            $this->versmtProprios->add($versmtProprio);
+            $versmtProprio->setMaison($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVersmtProprio(VersmtProprio $versmtProprio): static
+    {
+        if ($this->versmtProprios->removeElement($versmtProprio)) {
+            // set the owning side to null (unless already changed)
+            if ($versmtProprio->getMaison() === $this) {
+                $versmtProprio->setMaison(null);
+            }
+        }
 
         return $this;
     }

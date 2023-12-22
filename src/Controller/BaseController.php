@@ -25,7 +25,7 @@ class BaseController extends AbstractController
     protected  $hasher;
 
 
-    public function __construct(EntityManagerInterface $em,Menu $menu,Security $security,UserPasswordHasherInterface $hasher)
+    public function __construct(EntityManagerInterface $em, Menu $menu, Security $security, UserPasswordHasherInterface $hasher)
     {
         $this->em = $em;
         $this->hasher = $hasher;
@@ -34,6 +34,4 @@ class BaseController extends AbstractController
         $this->entreprise = $this->security->getUser()->getEmploye()->getEntreprise();
         $this->groupe = $this->security->getUser()->getGroupe()->getCode();
     }
-
-   
 }

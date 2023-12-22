@@ -30,7 +30,8 @@ class ConfigAppType extends AbstractType
                     'label' => 'FichierAdmin',
                     'label' => 'Logo admin',
                     'doc_options' => $options['doc_options'],
-                    'required' => $options['doc_required'] ?? true
+                    'required' => $options['doc_required'] ?? true,
+                    'validation_groups' => $options['validation_groups'],
                 ]
             )
             ->add(
@@ -40,7 +41,8 @@ class ConfigAppType extends AbstractType
                     'label' => 'FichierAdmin',
                     'label' => 'Logo login',
                     'doc_options' => $options['doc_options'],
-                    'required' => $options['doc_required'] ?? true
+                    'required' => $options['doc_required'] ?? true,
+                    'validation_groups' => $options['validation_groups'],
                 ]
             )
 
@@ -51,7 +53,8 @@ class ConfigAppType extends AbstractType
                     'label' => 'FichierAdmin',
                     'label' => 'Favicon',
                     'doc_options' => $options['doc_options'],
-                    'required' => $options['doc_required'] ?? true
+                    'required' => $options['doc_required'] ?? true,
+                    'validation_groups' => $options['validation_groups'],
                 ]
             )
             ->add(
@@ -61,7 +64,8 @@ class ConfigAppType extends AbstractType
                     'label' => 'FichierAdmin',
                     'label' => 'Image Login',
                     'doc_options' => $options['doc_options'],
-                    'required' => $options['doc_required'] ?? true
+                    'required' => $options['doc_required'] ?? true,
+                    'validation_groups' => $options['validation_groups'],
                 ]
             )
             ->add('mainColorAdmin', ColorType::class, [
@@ -88,8 +92,10 @@ class ConfigAppType extends AbstractType
             'data_class' => ConfigApp::class,
             'doc_required' => true,
             'doc_options' => [],
+            'validation_groups' => [],
         ]);
         $resolver->setRequired('doc_options');
         $resolver->setRequired('doc_required');
+        $resolver->setRequired(['validation_groups']);
     }
 }

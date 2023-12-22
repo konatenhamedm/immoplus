@@ -124,7 +124,37 @@
 
 
                             <div class="row">
+
+                            {% if Proprio.Cni %}
+                                    <div class="form-group col-md-3">
+                                    <label class="sr-onl" for="userinput1">
+                                        Numéro CNI*
+                                    </label>
+                                    {{ form_widget(form.numCni) }}
+                                    </div>
+                                       <div class="form-group col-md-3">
+                                        <label class="sr-onl" for="userinput1">
+                                            Date de la CNI*
+                                        </label>
+                                        {{ form_widget(form.dateCni) }}
+                                    </div>
                                     <div class="form-group col-md-4">
+                                    <label class="sr-onl" for="userinput1">
+                                            CNI*
+                                        </label>
+                                        {{ form_widget(form.Cni) }}
+                                    </div>
+                                      <div class="form-group col-md-2 ">
+                                                <a class="btn btn-success btn-xs mt-6 py-5" target="_blank" title="Télécharger le document" href="{{ path('fichier_index', {id:  Proprio.Cni.id }) }}" download> 
+                                                
+                                                {# <i class="fe fe-upload"></i> #}
+                                                    <i class="fa fa-download"></i></a>
+                                                
+                                     </div>
+                                </div>
+
+                                {% else %}
+    <div class="form-group col-md-4">
                                     <label class="sr-onl" for="userinput1">
                                         Numéro CNI*
                                     </label>
@@ -143,6 +173,10 @@
                                         {{ form_widget(form.Cni) }}
                                     </div>
                                 </div>
+
+                               {% endif %}
+
+
                                 
                               
                             </div>
@@ -252,6 +286,36 @@
                           
                           
                             <div class="row">
+
+                            {% if Proprio.lien %}
+                            
+                                <div class="form-group col-md-3">
+                                <label class="sr-onl" for="userinput1">
+                                    Numéro CNI*
+                                </label>
+                                {{ form_widget(form.numCniR) }}
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="sr-onl" for="userinput1">
+                                        Date de la CNI*
+                                    </label>
+                                    {{ form_widget(form.dateCniR) }}
+                                </div>
+                                 <div class="form-group col-md-4">
+                                    <label class="sr-onl" for="userinput1">
+                                        Lien*
+                                    </label>
+                                    {{ form_widget(form.lien) }}
+                                </div>
+                                    <div class="form-group col-md-2 ">
+                                                <a class="btn btn-success btn-xs mt-6 py-5" target="_blank" title="Télécharger le document" href="{{ path('fichier_index', {id:  Proprio.Cni.id }) }}" download> 
+                                                
+                                                {# <i class="fe fe-upload"></i> #}
+                                                    <i class="fa fa-download"></i></a>
+                                                
+                                </div>
+                            
+                            {% else %}
                                 <div class="form-group col-md-4">
                                 <label class="sr-onl" for="userinput1">
                                     Numéro CNI*
@@ -270,6 +334,9 @@
                                     </label>
                                     {{ form_widget(form.lien) }}
                                 </div>
+                            
+                            {% endif %}
+                            
                             
                             </div>
                             

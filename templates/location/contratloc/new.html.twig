@@ -44,7 +44,7 @@
                             <h3 class="card-title align-items-start flex-column text-white" >
                                 <span class="card-label fw-bold fs-3 mb-1 text-white">
 
-                                        Insérer la pièce
+                                         Insérer le contrat scanné
 
                                 </span>
                             </h3>
@@ -331,6 +331,8 @@
         const $nb_avance = $('#{{ form.NbMoisAvance.vars.id }}');
 
         $nb_avance.on('input',function (){
+
+         
             const $this = $(this);
 
             const appart_montant = $('.appart').find('option:selected').attr('data-value');
@@ -347,7 +349,9 @@
 
         $nb.on('input',function (){
             const $this = $(this);
+               
             const appart_montant = $('.appart').find('option:selected').attr('data-value');
+            //alert(appart_montant)
             if(appart_montant === undefined){
                 alert('Veillez selectionner un appartement')
             }else{
@@ -362,8 +366,13 @@
         $appart.on('change', function () {
             const $this = $(this);
             const appart_montant = $this.find('option:selected').attr('data-value');
-            if($('.nb_mois_caution').val()){
-                $('.input-mnt_caution').val($this.val() * parseInt(appart_montant))
+            const resultat = $nb.val() * parseInt(appart_montant);
+
+           
+            if(isNaN(resultat) ){
+              $('.input-mnt_caution').val(0)  
+            }else{
+                  $('.input-mnt_caution').val(resultat)
             }
 
             //const nb = $this.find('option:selected').attr('data-value');

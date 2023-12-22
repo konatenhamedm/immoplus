@@ -14,7 +14,7 @@ class Reglements
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'reglements')]
-    private ?factureloc $numFact = null;
+    private ?Factureloc $numFact = null;
 
     #[ORM\ManyToOne(inversedBy: 'reglements')]
     private ?Fournisseurs $fournisseur = null;

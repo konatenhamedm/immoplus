@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\ModuleGroupePermition;
 use App\Entity\ConfigApp;
+use App\Entity\Factureloc;
 use App\Entity\Prestataire;
 use App\Entity\UserFront;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,12 +26,13 @@ class Menu
 
     private $resp;
     private $tableau = [];
-    private  const IN_MENU_PRINCIPAL =1;
+    private  const IN_MENU_PRINCIPAL = 1;
 
 
     public function __construct(EntityManagerInterface $em, RequestStack $requestStack, RouterInterface $router, Security $security)
     {
         $this->em = $em;
+
         if ($requestStack->getCurrentRequest()) {
             $this->route = $requestStack->getCurrentRequest()->attributes->get('_route');
             $this->container = $router->getRouteCollection()->all();
@@ -57,10 +59,12 @@ class Menu
         }*/
         //$this->getPermission();
     }
-    public function getGroupeName(){
+    public function getGroupeName()
+    {
         return $this->security->getUser()->getGroupe()->getName();
     }
-    public function getGroupeCode(){
+    public function getGroupeCode()
+    {
         return $this->security->getUser()->getGroupe()->getCode();
     }
     public function getRoute()
@@ -77,13 +81,24 @@ class Menu
         return $this->em->getRepository(ModuleGroupePermition::class)->afficheModule($this->security->getUser()->getGroupe()->getId());
     }
 
+    public function getAllFactureByAgentCampagne($agent, $campagne)
+    {
+
+        return $this->em->getRepository(Factureloc::class)->findAllFactureLocataireByAgentCampagne($agent, $campagne);
+    }
+    public function getAllFactureByAgentCampagneTotals($agent, $campagne)
+    {
+
+        return $this->em->getRepository(Factureloc::class)->findAllFactureLocataireByAgentCampagneTotal($agent, $campagne);
+    }
+
 
 
     public function listeGroupeModule()
     {
-//dd($this->em->getRepository(ModuleGroupePermition::class)->affiche($this->security->getUser()->getGroupe()->getId()));
+        //dd($this->em->getRepository(ModuleGroupePermition::class)->affiche($this->security->getUser()->getGroupe()->getId()));
 
-        return $this->em->getRepository(ModuleGroupePermition::class)->affiche($this->security->getUser()->getGroupe()->getId(),1);
+        return $this->em->getRepository(ModuleGroupePermition::class)->affiche($this->security->getUser()->getGroupe()->getId(), 1);
     }
 
     public function findParametre()

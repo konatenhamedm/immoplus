@@ -3,11 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Locataire;
+use App\Entity\Sitmatri;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,7 +21,7 @@ class LocataireType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-      
+
         $builder
             ->add('NPrenoms')
 
@@ -26,7 +29,7 @@ class LocataireType extends AbstractType
             ->add('DateNaiss', DateType::class,  [
                 'attr' => ['class' => 'datepicker no-auto skip-init'], 'widget' => 'single_text', 'format' => 'dd/MM/yyyy',
                 'label' => "Date de Naissance", 'empty_data' => date('d/m/Y'), 'required' => false, 'html5' => false
-            ]) 
+            ])
             ->add('numpiece', TextType::class, [
                 'label' => 'Numéro pièce',
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
@@ -35,19 +38,21 @@ class LocataireType extends AbstractType
                 'label' => 'Lieu de Naissance',
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
             ])
-           
+
+
+
             ->add(
                 'InfoPiece',
                 FichierType::class,
                 [
-                    /*  'label' => 'Fichier',*/
+                    'label' => 'Fichier',
                     'label' => 'Info pièce',
                     'doc_options' => $options['doc_options'],
                     'required' => $options['doc_required'] ?? true,
                     'validation_groups' => $options['validation_groups'],
                 ]
             )
-           
+
             ->add('Profession', TextType::class, [
                 'label' => 'Profession',
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
@@ -59,13 +64,13 @@ class LocataireType extends AbstractType
             ])
 
 
-            ->add('NbEnfts', NumberType::class, [
+            ->add('NbEnfts', IntegerType::class, [
                 'label' => 'Nbre enfants',
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
             ])
 
 
-            ->add('NbPersChge', NumberType::class, [
+            ->add('NbPersChge', IntegerType::class, [
                 'label' => 'Nbre Personne Charge',
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
             ])
@@ -116,34 +121,49 @@ class LocataireType extends AbstractType
                 //'attr' => ['placeholder' => 'Nom du chef de délégation']
             ])
 
-        
-            ->add('Genre', TextType::class, [
-                'label' => 'Genre',
-                //'attr' => ['placeholder' => 'Nom du chef de délégation']
-            ])
+            ->add(
+                'Genre',
+                ChoiceType::class,
+                [
+                    'placeholder' => 'Choisir un genre',
+                    'label' => 'Genre',
+                    'required'     => false,
+                    'expanded'     => false,
+                    'attr' => ['class' => 'has-select2 form-select'],
+                    'multiple' => false,
+                    'choices'  => array_flip([
+                        'G_MALE' => 'Masculin',
+                        'G_FEMALE' => 'Feminin',
+                    ]),
+                ]
+            )
 
-        
 
 
-            ->add('VivezAvec',
+
+            ->add(
+                'VivezAvec',
                 ChoiceType::class,
                 array(
                     'choices' => array(
-                    'Conjoint(e)' => 'conjoint',
-                    'Colocataire' => 'colocataire',
-                       
+                        'Conjoint(e)' => 'conjoint',
+                        'Colocataire' => 'colocataire',
+
                     ),
-                'choice_value' => null,
-                 'multiple' => false, 
-                 'expanded' => true
+                    'choice_value' => null,
+                    'multiple' => false,
+                    'expanded' => true
                 )
             )
-          
 
 
-            ->add('situationMatri', TextType::class, [
-                'label' => 'Situation Matrimoniale',
-                //'attr' => ['placeholder' => 'Nom du chef de délégation']
+
+            ->add('situationMatri', EntityType::class, [
+                'placeholder' => '----',
+                'class' => Sitmatri::class,
+                'choice_label' => 'LibSituation',
+                'label' => 'Situation matrimoniale',
+                'attr' => ['class' => 'has-select2 form-select']
             ]);
     }
 

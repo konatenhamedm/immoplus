@@ -41,39 +41,42 @@ class ContratlocRepository extends ServiceEntityRepository
 
     public function getContratLocActif($entreprise): array
     {
-              return $this->createQueryBuilder('c')
-                  ->innerJoin('c.locataire','l')
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.locataire', 'l')
             ->andWhere('l.entreprise = :entreprise')
             ->andWhere('c.Etat = :etat')
-           ->setParameter('entreprise', $entreprise)
-           ->setParameter('etat', 1)
-           ->orderBy('c.id', 'ASC')
+            ->setParameter('entreprise', $entreprise)
+            ->setParameter('etat', 1)
+            ->orderBy('c.id', 'ASC')
             ->getQuery()
-           ->getResult() ;
+            ->getResult();
     }
 
-//    /**
-//     * @return Contratloc[] Returns an array of Contratloc objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?Contratloc
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+
+
+    //    /**
+    //     * @return Contratloc[] Returns an array of Contratloc objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('c.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Contratloc
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

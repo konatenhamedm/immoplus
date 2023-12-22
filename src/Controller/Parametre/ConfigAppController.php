@@ -157,6 +157,7 @@ class ConfigAppController extends BaseController
     #[Route('/ads/new', name: 'app_parametre_config_app_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ConfigAppRepository $configAppRepository, FormError $formError): Response
     {
+        $validationGroups = ['Default', 'FileRequired', 'non'];
         $configApp = new ConfigApp();
         $form = $this->createForm(ConfigAppType::class, $configApp, [
             'method' => 'POST',
@@ -164,6 +165,7 @@ class ConfigAppController extends BaseController
                 'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
                 'attrs' => ['class' => 'filestyle'],
             ],
+            'validation_groups' => $validationGroups,
             'action' => $this->generateUrl('app_parametre_config_app_new')
         ]);
         $form->handleRequest($request);
@@ -223,9 +225,10 @@ class ConfigAppController extends BaseController
     #[Route('/ads/{id}/edit', name: 'app_parametre_config_app_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ConfigApp $configApp, ConfigAppRepository $configAppRepository, FormError $formError): Response
     {
-
+        $validationGroups = ['Default', 'FileRequired', 'non'];
         $form = $this->createForm(ConfigAppType::class, $configApp, [
             'method' => 'POST',
+            'validation_groups' => $validationGroups,
             'action' => $this->generateUrl('app_parametre_config_app_edit', [
                 'id' =>  $configApp->getId()
             ])

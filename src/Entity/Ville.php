@@ -16,7 +16,7 @@ class Ville
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $lib_ville = null;
+    private ?string $libVille = null;
 
     #[ORM\Column(length: 255)]
     private ?string $abrege_ville = null;
@@ -39,12 +39,12 @@ class Ville
 
     public function getLibVille(): ?string
     {
-        return $this->lib_ville;
+        return $this->libVille;
     }
 
-    public function setLibVille(string $lib_ville): static
+    public function setLibVille(string $libVille): static
     {
-        $this->lib_ville = $lib_ville;
+        $this->libVille = $libVille;
 
         return $this;
     }

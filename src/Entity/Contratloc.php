@@ -23,14 +23,14 @@ class Contratloc
     private ?Locataire $locataire = null;
 
 
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $DateDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $DateFin = null;
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '1')]
     private ?int $NbMoisCaution = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
@@ -38,7 +38,8 @@ class Contratloc
     private ?string $MntCaution = null;
 
 
-    #[ORM\Column(nullable: true)]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '1', nullable: true)]
     private ?int $NbMoisAvance = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
@@ -69,7 +70,7 @@ class Contratloc
     private ?DateTimeInterface $DateProchVers = null;
 
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Nature = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
@@ -90,7 +91,8 @@ class Contratloc
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $StatutLoc = null;
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0')]
     private ?string $Fraisanex = null;
 
     #[ORM\Column(nullable: true)]
@@ -121,6 +123,21 @@ class Contratloc
     #[ORM\OneToMany(mappedBy: 'contrat', targetEntity: CompteLocataire::class)]
     private Collection $compteLocataires;
 
+    #[ORM\ManyToOne(inversedBy: 'contratlocs')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Motif $motif = null;
+
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: '0', nullable: true)]
+    private ?string $CautionRemise = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $details = null;
+
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FichierAdmin $FichierResiliation = null;
+
 
 
     public function __construct()
@@ -130,6 +147,7 @@ class Contratloc
         $this->fincontrats = new ArrayCollection();
         $this->compteLocataires = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -566,6 +584,54 @@ class Contratloc
                 $compteLocataire->setContrat(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMotif(): ?Motif
+    {
+        return $this->motif;
+    }
+
+    public function setMotif(?Motif $motif): static
+    {
+        $this->motif = $motif;
+
+        return $this;
+    }
+
+    public function getCautionRemise(): ?string
+    {
+        return $this->CautionRemise;
+    }
+
+    public function setCautionRemise(string $CautionRemise): static
+    {
+        $this->CautionRemise = $CautionRemise;
+
+        return $this;
+    }
+
+    public function getDetails(): ?string
+    {
+        return $this->details;
+    }
+
+    public function setDetails(string $details): static
+    {
+        $this->details = $details;
+
+        return $this;
+    }
+
+    public function getFichierResiliation(): ?FichierAdmin
+    {
+        return $this->FichierResiliation;
+    }
+
+    public function setFichierResiliation(?FichierAdmin $FichierResiliation): static
+    {
+        $this->FichierResiliation = $FichierResiliation;
 
         return $this;
     }

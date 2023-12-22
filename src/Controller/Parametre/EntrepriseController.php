@@ -172,7 +172,7 @@ class EntrepriseController extends BaseController
     #[Route('/new', name: 'app_parametre_entreprise_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntrepriseRepository $entrepriseRepository, FormError $formError): Response
     {
-        $validationGroups = ['Default', 'FileRequired', 'autre'];
+        $validationGroups = ['Default', 'FileRequired', 'oui'];
         $entreprise = new Entreprise();
         $form = $this->createForm(EntrepriseType::class, $entreprise, [
             'method' => 'POST',
@@ -238,7 +238,7 @@ class EntrepriseController extends BaseController
     #[Route('/{id}/edit', name: 'app_parametre_entreprise_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Entreprise $entreprise, EntrepriseRepository $entrepriseRepository, FormError $formError): Response
     {
-        $validationGroups = ['Default', 'FileRequired', 'autre'];
+        $validationGroups = ['Default', 'FileRequired', 'oui'];
         $form = $this->createForm(EntrepriseType::class, $entreprise, [
             'method' => 'POST',
             'doc_options' => [

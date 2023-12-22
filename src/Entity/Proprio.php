@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProprioRepository::class)]
 class Proprio
@@ -17,18 +18,22 @@ class Proprio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs nom et prenoms est requis")]
     private ?string $nomPrenoms = null;
-
+    #[Assert\NotNull(message: "Le champs contacts est requis")]
     #[ORM\Column(length: 255)]
+
     private ?string $contacts = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs addressed est requis")]
     private ?string $addresse = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs numero cni est requis")]
     private ?string $numCni = null;
 
 
@@ -36,22 +41,24 @@ class Proprio
     #[ORM\JoinColumn(nullable: true)]
     private ?FichierAdmin $Cni = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomPere = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomMere = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsApp = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateNaiss = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs lieu de naissance est requis")]
     private ?string $lieuNaiss = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs profession est requis")]
     private ?string $prefession = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

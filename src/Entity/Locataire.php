@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Nullable;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LocataireRepository::class)]
 class Locataire
@@ -20,61 +22,67 @@ class Locataire
     #[ORM\Column(length: 255)]
     private ?string $NPrenoms = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "Le champs date de naissance est requis")]
     private ?DateTimeInterface $DateNaiss = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs  lieu de naissance est requis")]
     private ?string $LieuNaiss = null;
 
-    
+
     #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
     #[ORM\JoinColumn(nullable: true)]
     private ?FichierAdmin $InfoPiece = null;
 
-   
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs profession est requis")]
     private ?string $Profession = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Ethnie = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $NbEnfts = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $NbPersChge = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Pere = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Mere = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs contact est requis")]
     private ?string $Contacts = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Email = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $NPConjointe = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $ProfConj = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $EthnieConj = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $ContactConj = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs genre est requis")]
     private ?string $Genre = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $VivezAvec = null;
 
     #[ORM\ManyToOne(inversedBy: 'locataires')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Sitmatri $situationMatri = null;
 
     #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: Contratloc::class)]
@@ -89,11 +97,15 @@ class Locataire
     #[ORM\ManyToOne(inversedBy: 'locataires')]
     private ?Entreprise $entreprise = null;
 
-    #[ORM\Column(length: 255,nullable:true)]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: "Le champs numéro de pièce est requis")]
     private ?string $numpiece = null;
 
     #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: CompteLocataire::class)]
     private Collection $compteLocataires;
+
+    #[ORM\OneToMany(mappedBy: 'locataire', targetEntity: VersmtProprio::class)]
+    private Collection $versmtProprios;
 
     public function __construct()
     {
@@ -101,6 +113,7 @@ class Locataire
         $this->compteLocs = new ArrayCollection();
         $this->facturelocs = new ArrayCollection();
         $this->compteLocataires = new ArrayCollection();
+        $this->versmtProprios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,7 +169,7 @@ class Locataire
         return $this;
     }
 
-  
+
 
     public function getProfession(): ?string
     {
@@ -428,7 +441,7 @@ class Locataire
         return $this;
     }
 
-   
+
     public function getNumpiece(): ?string
     {
         return $this->numpiece;
@@ -445,40 +458,70 @@ class Locataire
         return $this->entreprise;
     }
 
-        public function setEntreprise(?Entreprise $entreprise): static
+    public function setEntreprise(?Entreprise $entreprise): static
     {
         $this->entreprise = $entreprise;
 
         return $this;
     }
 
-        /**
-         * @return Collection<int, CompteLocataire>
-         */
-        public function getCompteLocataires(): Collection
-        {
-            return $this->compteLocataires;
+    /**
+     * @return Collection<int, CompteLocataire>
+     */
+    public function getCompteLocataires(): Collection
+    {
+        return $this->compteLocataires;
+    }
+
+    public function addCompteLocataire(CompteLocataire $compteLocataire): static
+    {
+        if (!$this->compteLocataires->contains($compteLocataire)) {
+            $this->compteLocataires->add($compteLocataire);
+            $compteLocataire->setLocataire($this);
         }
 
-        public function addCompteLocataire(CompteLocataire $compteLocataire): static
-        {
-            if (!$this->compteLocataires->contains($compteLocataire)) {
-                $this->compteLocataires->add($compteLocataire);
-                $compteLocataire->setLocataire($this);
+        return $this;
+    }
+
+    public function removeCompteLocataire(CompteLocataire $compteLocataire): static
+    {
+        if ($this->compteLocataires->removeElement($compteLocataire)) {
+            // set the owning side to null (unless already changed)
+            if ($compteLocataire->getLocataire() === $this) {
+                $compteLocataire->setLocataire(null);
             }
-
-            return $this;
         }
 
-        public function removeCompteLocataire(CompteLocataire $compteLocataire): static
-        {
-            if ($this->compteLocataires->removeElement($compteLocataire)) {
-                // set the owning side to null (unless already changed)
-                if ($compteLocataire->getLocataire() === $this) {
-                    $compteLocataire->setLocataire(null);
-                }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VersmtProprio>
+     */
+    public function getVersmtProprios(): Collection
+    {
+        return $this->versmtProprios;
+    }
+
+    public function addVersmtProprio(VersmtProprio $versmtProprio): static
+    {
+        if (!$this->versmtProprios->contains($versmtProprio)) {
+            $this->versmtProprios->add($versmtProprio);
+            $versmtProprio->setLocataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVersmtProprio(VersmtProprio $versmtProprio): static
+    {
+        if ($this->versmtProprios->removeElement($versmtProprio)) {
+            // set the owning side to null (unless already changed)
+            if ($versmtProprio->getLocataire() === $this) {
+                $versmtProprio->setLocataire(null);
             }
-
-            return $this;
         }
+
+        return $this;
+    }
 }

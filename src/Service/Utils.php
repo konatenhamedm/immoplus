@@ -7,10 +7,12 @@ use App\Entity\Colonne;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Twig\Environment;
 
 class Utils
 {
-    
+
 
     const MOIS = [
         1 => 'Janvier',
@@ -22,7 +24,7 @@ class Utils
         'juillet',
         'août',
         'septembre',
-        'octobre', 
+        'octobre',
         'novembre',
         'décembre'
     ];
@@ -35,7 +37,7 @@ class Utils
         $value = $value ? strval($value) : '0';
         $decimalLength = $decimal;
         if (strpos($value, '.')) {
-            [,$decimal] = explode('.', $value);
+            [, $decimal] = explode('.', $value);
             if (substr_count($decimal, '0') != strlen($decimal)) {
                 $decimalLength = strlen($decimal);
             }
@@ -58,7 +60,7 @@ class Utils
     {
         return array_map(function ($row) use ($key) {
             return $row[$key];
-        },$array);
+        }, $array);
     }
 
 
@@ -68,7 +70,7 @@ class Utils
             return $data->format('d/m/Y');
         }
 
-        return $data && $prop ? $data->{"get".ucfirst(strtolower($prop))}() : null;
+        return $data && $prop ? $data->{"get" . ucfirst(strtolower($prop))}() : null;
     }
 
 
@@ -77,7 +79,7 @@ class Utils
     {
         $prenom = trim(str_replace(['epoux', 'épouse', 'epouse', 'épse', 'epse', 'epx'], '', $prenom));
         $nom = trim(str_replace(['epoux', 'épouse', 'epouse'], '', $nom));
-        preg_match_all('/\b\w/u', $prenom.' '.$nom, $matches);
+        preg_match_all('/\b\w/u', $prenom . ' ' . $nom, $matches);
         return mb_strtoupper(implode('', $matches[0]));
     }
 
@@ -106,7 +108,7 @@ class Utils
         $sources = [];
         foreach ($entities as $entity) {
             $refClass = new ReflectionClass($entity);
-           
+
             if ($refClass->getAttributes(Source::class)) {
                 $sources[class_basename($entity)] = $entity;
             }
@@ -133,22 +135,22 @@ class Utils
     public static function getFieldByColonne(Colonne $colonne)
     {
         $type = $colonne->getTypeDonnee();
-            
+
         $source = $colonne->getSource();
         $valeurs = explode(',', $colonne->getListeValeur());
         $id = $colonne->getId();
 
-            
+
         $props = [
             'required' => $colonne->getRequired(),
             'label' => $colonne->getLibelle()
         ];
 
-        $valeurs = $valeurs ? array_combine($valeurs, $valeurs): [];
+        $valeurs = $valeurs ? array_combine($valeurs, $valeurs) : [];
 
         $namespace = 'Symfony\\Component\\Form\\Extension\\Core\\Type\\';
-         
-        $fullType = $namespace.$type;
+
+        $fullType = $namespace . $type;
         if ($type == 'EntityType') {
             $fullType = "Symfony\\Bridge\\Doctrine\\Form\\Type\\{$type}";
             $props['class'] = $source;
@@ -156,7 +158,7 @@ class Utils
             $props['placeholder'] = '---';
             $props['attr'] = ['class' => 'has-select2'];
             $props['choice_label'] = function ($e) {
-                return $e->{'get'.ucfirst($e::DEFAULT_CHOICE_LABEL)}();
+                return $e->{'get' . ucfirst($e::DEFAULT_CHOICE_LABEL)}();
             };
         } elseif ($type == 'CheckboxType') {
             $type    = 'ChoiceType';
@@ -165,7 +167,7 @@ class Utils
                 'expanded' => true,
                 'multiple' => true,
                 'choices'  => $valeurs,
-            ]); 
+            ]);
         } elseif ($type == 'ChoiceType') {
             $props   = array_merge($props, [
                 'expanded' => true,
@@ -198,9 +200,9 @@ class Utils
         }
 
         if (isset($props['attr']['class'])) {
-            $props['attr']['class'] .= ' field-'.$idColonne.' '.$colonne->getCode();
+            $props['attr']['class'] .= ' field-' . $idColonne . ' ' . $colonne->getCode();
         } else {
-            $props['attr']['class'] = ' field-'.$idColonne.' '.$colonne->getCode();
+            $props['attr']['class'] = ' field-' . $idColonne . ' ' . $colonne->getCode();
         }
 
         $props['attr']['data-field'] = $idColonne;
@@ -217,15 +219,69 @@ class Utils
 
         $data = static::convertValue($valeur, $typeDonnee, $source, $em);
         if (is_object($data) && $data->getId()) {
-           
+
             $labelProperty = $data::DEFAULT_CHOICE_LABEL;
-            $method = 'get'.ucfirst($labelProperty);
+            $method = 'get' . ucfirst($labelProperty);
             if (method_exists($data, $method)) {
-               
+
                 return $data->{$method}();
             }
-           
         }
     }
 
+
+    /**
+     * @param $template
+     * @param $vars
+     */
+    public static function renderPdf($template, $vars, Environment $environment, ?UserInterface $user = null, $options = [])
+    {
+
+        $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $orientation = $options['orientation'] ?? 'P';
+        $formatSuffix = $orientation == 'P' ? '' : '-L';
+        $destination = $options['destination'] ?? 'I';
+        $fileName = $options['file_name'] ?? null;
+
+        $mpdf = new \Mpdf\Mpdf([
+            'orientation' => $orientation,
+            'format' => ($options['format'] ?? 'A4') . $formatSuffix,
+            'mode' => 'utf-8',
+            'fontDir' => array_merge($fontDirs, $options['fontDir'] ?? []),
+            'fontdata' => $fontData + [
+                'arial' => [
+                    'I' => 'ariali.ttf',
+                    'B' => 'arialb.ttf',
+                    'BI' => 'arialbi.ttf',
+                    'R' => 'arial.ttf',
+                    'L' => 'ariall.ttf',
+                ],
+                'trebuchet' => [
+                    'I' => 'Trebucheti.ttf',
+                    'R' => 'trebuc.ttf',
+                    'B' => 'TREBUCBD.ttf',
+                ]
+            ],
+        ]);
+
+        $mpdf->shrink_tables_to_fit = 1;
+
+        $mpdf->WriteHTML($environment->render($template, $vars));
+        $mpdf->author = $user ? $user->getNomComplet() : 'KPL';
+
+
+        if (isset($options['addPage'])) {
+            $mpdf->AddPage();
+        }
+
+
+        $data = $mpdf->Output($fileName, $destination);
+
+        return $data;
+    }
 }

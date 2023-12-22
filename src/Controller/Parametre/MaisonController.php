@@ -31,10 +31,10 @@ class MaisonController extends BaseController
 
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
-       
+
         $table = $dataTableFactory->create()
             ->add('Proprio', TextColumn::class, ['label' => 'Proprietaire', 'field' => 'p.nomPrenoms'])
-            ->add('quartier', TextColumn::class, ['label' => 'Proprietaire', 'field' => 'q.LibQuartier'])
+            ->add('quartier', TextColumn::class, ['label' => 'Quartier', 'field' => 'q.LibQuartier'])
             ->add('contacts', TextColumn::class, ['label' => 'Contacts'])
             ->add('LibMaison', TextColumn::class, ['label' => 'Maison'])
             ->add('agent', TextColumn::class, ['label' => 'Agent de recouvrement', 'field' => 'e.NomComplet'])
@@ -46,10 +46,10 @@ class MaisonController extends BaseController
                         ->join('m.proprio', 'p')
                         ->leftJoin('m.quartier', 'q')
                         ->join('m.IdAgent', 'a')
-                         ->join('a.employe', 'e') ;
+                        ->join('a.employe', 'e');
 
-                    if($this->groupe !="SADM"){
-                        $qb->andWhere('e.entreprise = :entreprise')
+                    if ($this->groupe != "SADM") {
+                        $qb->andWhere('p.entreprise = :entreprise')
                             ->setParameter('entreprise', $this->entreprise);
                     }
                 }
@@ -124,7 +124,7 @@ class MaisonController extends BaseController
                     'label' => 'Actions', 'orderable' => false, 'globalSearchable' => false, 'className' => 'grid_row_actions', 'render' => function ($value, Maison $context) use ($renders) {
                         $options = [
                             'default_class' => 'btn btn-xs btn-clean btn-icon mr-2 ',
-                            'target' => '#exampleModalSizeLg2',
+                            'target' => '#exampleModalSizeSm2',
 
                             'actions' => [
                                 'edit' => [

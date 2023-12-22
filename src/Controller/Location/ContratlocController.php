@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
+use App\Form\ContratlocResilierType;
 
 #[Route('/ads/location/contratloc')]
 class ContratlocController extends BaseController
@@ -34,34 +35,60 @@ class ContratlocController extends BaseController
 
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
-        $table = $dataTableFactory->create()
-            // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
-            ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
-            ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
-            ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
-            ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
-            ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
-            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
 
-            ->createAdapter(ORMAdapter::class, [
-                'entity' => Contratloc::class,
-                'query' => function (QueryBuilder $qb) {
-                    $qb->select('en, l,a')
-                        ->from(Contratloc::class, 'l')
-                        ->join('l.entreprise', 'en')
-                        ->join('l.appart', 'a')
-                        ->andWhere('l.Etat = :etat')
-                        ->setParameter('etat', 1);
+        if ($this->groupe == "SADM") {
+            $table = $dataTableFactory->create()
+                // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+                ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
+                ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
+                ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
+                ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
+                ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
+                ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
+                ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
 
-                    if ($this->groupe != "SADM") {
-                        $qb->andWhere('en = :entreprise')
-                            ->setParameter('entreprise', $this->entreprise);
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Contratloc::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l,a')
+                            ->from(Contratloc::class, 'l')
+                            ->join('l.entreprise', 'en')
+                            ->join('l.appart', 'a')
+                            ->andWhere('l.Etat = :etat')
+                            ->setParameter('etat', 1);
                     }
-                }
 
-            ])
-            ->setName('dt_app_location_contratloc');
+                ])
+                ->setName('dt_app_location_contratloc');
+        } else {
+            $table = $dataTableFactory->create()
+                // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+                /* ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise']) */
+                ->add('locataire', TextColumn::class, ['field' => 'l.NPrenoms', 'label' => 'Locataire'])
+                ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
+                ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
+                ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
+                ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
+                ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'c.TotVerse'])
+
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Contratloc::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l,a,c')
+                            ->from(Contratloc::class, 'c')
+                            ->join('c.entreprise', 'en')
+                            ->join('c.appart', 'a')
+                            ->join('c.locataire', 'l')
+                            ->andWhere('c.Etat = :etat')
+                            ->andWhere('en = :entreprise')
+                            ->setParameter('entreprise', $this->entreprise)
+                            ->setParameter('etat', 1);
+                    }
+
+                ])
+                ->setName('dt_app_location_contratloc');
+        }
+
         if ($permission != null) {
 
             $renders = [
@@ -152,7 +179,7 @@ class ContratlocController extends BaseController
 
                             'actions' => [
                                 'resilier' => [
-                                    'target' => '#exampleModalSizeNormal',
+                                    'target' => '#exampleModalSizeLg2',
                                     'url' => $this->generateUrl('app_location_contratloc_resilier', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-lock', 'attrs' => ['class' => 'btn-danger'], 'render' => $renders['resilier']
                                 ],
                                 'edit' => [
@@ -196,38 +223,78 @@ class ContratlocController extends BaseController
 
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
-        $table = $dataTableFactory->create()
-            // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
-            ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
-            ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
-            ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
-            ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
-            ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
-            ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
-            ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
 
-            ->createAdapter(ORMAdapter::class, [
-                'entity' => Contratloc::class,
-                'query' => function (QueryBuilder $qb) {
-                    $qb->select('en, l,a')
-                        ->from(Contratloc::class, 'l')
-                        ->join('l.entreprise', 'en')
-                        ->join('l.appart', 'a')
-                        ->andWhere('l.Etat = :etat')
-                        ->setParameter('etat', 0);
+        if ($this->groupe != "SADM") {
+            $table = $dataTableFactory->create()
+                // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+                /* ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise']) */
+                ->add('locataire', TextColumn::class, ['field' => 'l.NPrenoms', 'label' => 'Locataire'])
+                ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
+                ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
+                ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
+                ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
+                ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'c.TotVerse'])
 
-                    if ($this->groupe != "SADM") {
-                        $qb->andWhere('en = :entreprise')
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Contratloc::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l,a,c')
+                            ->from(Contratloc::class, 'c')
+                            ->join('c.entreprise', 'en')
+                            ->join('c.appart', 'a')
+                            ->join('c.locataire', 'l')
+                            ->andWhere('c.Etat = :etat')
+                            ->andWhere('en = :entreprise')
+                            ->setParameter('etat', 0)
                             ->setParameter('entreprise', $this->entreprise);
                     }
-                }
 
-            ])
-            ->setName('dt_app_location_contratloc_resilier');
+                ])
+                ->setName('dt_app_location_contratloc_resilier');
+        } else {
+            $table = $dataTableFactory->create()
+                // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+                ->add('entreprise', TextColumn::class, ['field' => 'en.denomination', 'label' => 'Entreprise'])
+                ->add('locataire', TextColumn::class, ['field' => 'a.libAppart', 'label' => 'Locataire'])
+                ->add('appartement', TextColumn::class, ['label' => 'Appartement', 'field' => 'a.LibAppart'])
+                ->add('MntLoyer', TextColumn::class, ['label' => 'Mnt Loyer'])
+                ->add('MntCaution', TextColumn::class, ['label' => 'Mnt Caution'])
+                ->add('MntAvance', TextColumn::class, ['label' => 'Mnt Avancé'])
+                ->add('TotVerse', TextColumn::class, ['label' => 'Total Versé', 'field' => 'l.TotVerse'])
+
+                ->createAdapter(ORMAdapter::class, [
+                    'entity' => Contratloc::class,
+                    'query' => function (QueryBuilder $qb) {
+                        $qb->select('en, l,a')
+                            ->from(Contratloc::class, 'l')
+                            ->join('l.entreprise', 'en')
+                            ->join('l.appart', 'a')
+                            ->andWhere('l.Etat = :etat')
+                            ->setParameter('etat', 0);
+                    }
+
+                ])
+                ->setName('dt_app_location_contratloc_resilier');
+        }
+
         if ($permission != null) {
 
             $renders = [
-
+                'imprime' => new ActionRender(function () use ($permission) {
+                    if ($permission == 'R') {
+                        return true;
+                    } elseif ($permission == 'RD') {
+                        return true;
+                    } elseif ($permission == 'RU') {
+                        return true;
+                    } elseif ($permission == 'CRUD') {
+                        return true;
+                    } elseif ($permission == 'CRU') {
+                        return true;
+                    } elseif ($permission == 'CR') {
+                        return true;
+                    }
+                }),
 
                 'show' => new ActionRender(function () use ($permission) {
                     if ($permission == 'R') {
@@ -266,7 +333,9 @@ class ContratlocController extends BaseController
                             'target' => '#exampleModalSizeLg2',
 
                             'actions' => [
-
+                                'imprime' => [
+                                    'url' => $this->generateUrl('fichier_index_contrat_resilier', ['id' => $value]), 'ajax' => false, 'icon' => '%icon% fa fa-download', 'attrs' => ['class' => 'btn-success', 'target' => '_blank'], 'render' => new ActionRender(fn () =>  $context->getFichierResiliation())
+                                ],
                                 'show' => [
                                     'url' => $this->generateUrl('app_location_contratloc_show', ['id' => $value]), 'ajax' => true, 'icon' => '%icon% bi bi-eye', 'attrs' => ['class' => 'btn-primary'], 'render' => $renders['show']
                                 ],
@@ -296,10 +365,12 @@ class ContratlocController extends BaseController
     #[Route('/new', name: 'app_location_contratloc_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ContratlocRepository $contratlocRepository, AppartementRepository $appartementRepository, FormError $formError): Response
     {
-        $validationGroups = ['Default', 'FileRequired', 'autre'];
+        $validationGroups = ['Default', 'FileRequired', 'non'];
         $contratloc = new Contratloc();
         $form = $this->createForm(ContratlocType::class, $contratloc, [
             'method' => 'POST',
+            'type' => 'new',
+            'contratId' => '',
             'doc_options' => [
                 'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
                 'attrs' => ['class' => 'filestyle'],
@@ -373,11 +444,13 @@ class ContratlocController extends BaseController
     }
 
     #[Route('/{id}/edit', name: 'app_location_contratloc_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Contratloc $contratloc, ContratlocRepository $contratlocRepository, FormError $formError): Response
+    public function edit(Request $request, Contratloc $contratloc, ContratlocRepository $contratlocRepository, FormError $formError, AppartementRepository $appartementRepository): Response
     {
-        $validationGroups = ['Default', 'FileRequired', 'autre'];
+        $validationGroups = ['Default', 'FileRequired', 'non'];
         $form = $this->createForm(ContratlocType::class, $contratloc, [
             'method' => 'POST',
+            'type' => 'edit',
+            'contratId' => $contratloc->getId(),
             'doc_options' => [
                 'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
                 'attrs' => ['class' => 'filestyle'],
@@ -393,18 +466,42 @@ class ContratlocController extends BaseController
 
         $isAjax = $request->isXmlHttpRequest();
 
+        //dd($contratloc->getAppart()->getId());
 
+        $idOld = $contratloc->getAppart()->getId();
         $form->handleRequest($request);
+
 
         if ($form->isSubmitted()) {
             $somme = $form->getData()->getMntCaution() + $form->getData()->getFraisanex() + $form->getData()->getMntAvance();
             $response = [];
             $redirect = $this->generateUrl('app_config_location_index');
+            $appartementOld = $appartementRepository->find($idOld);
+            $appart = $appartementRepository->find($form->getData()->getAppart()->getId());
 
+
+
+
+            // dd($idOld, $form->getData()->getAppart()->getId());
+
+            /* $appartementRepository->save($appartementOld, true); */
 
             if ($form->isValid()) {
+
+                if ($idOld != $form->getData()->getAppart()->getId()) {
+                    $appartementOld->setOqp(0);
+                    $appartementRepository->save($appartementOld, true);
+
+                    if ($appart) {
+                        $appart->setOqp(1);
+                        $appartementRepository->save($appart, true);
+                    }
+                }
+
+
                 $contratloc->setTotVerse($somme);
                 $contratlocRepository->save($contratloc, true);
+
                 $data = true;
                 $message = 'Opération effectuée avec succès';
                 $statut = 1;
@@ -437,48 +534,69 @@ class ContratlocController extends BaseController
 
 
     #[Route('/{id}/resilier', name: 'app_location_contratloc_resilier', methods: ['GET', 'POST'])]
-    public function resilier(Request $request, Contratloc $contratloc, ContratlocRepository $contratlocRepository, FormError $formError): Response
+    public function editResiliation(Request $request, Contratloc $contratloc, ContratlocRepository $contratlocRepository, FormError $formError, AppartementRepository $appartementRepository): Response
     {
-        $form = $this->createFormBuilder()
-            ->setAction(
-                $this->generateUrl(
-                    'app_location_contratloc_resilier',
-                    [
-                        'id' => $contratloc->getId()
-                    ]
-                )
-            )
-            ->setMethod('POST')
-            ->getForm();
+        $validationGroups = ['Default', 'FileRequired', 'non'];
+        $form = $this->createForm(ContratlocResilierType::class, $contratloc, [
+            'method' => 'POST',
+            'doc_options' => [
+                'uploadDir' => $this->getUploadDir(self::UPLOAD_PATH, true),
+                'attrs' => ['class' => 'filestyle'],
+            ],
+            'validation_groups' => $validationGroups,
+            'action' => $this->generateUrl('app_location_contratloc_resilier', [
+                'id' => $contratloc->getId()
+            ])
+        ]);
+
+        $data = null;
+        $statutCode = Response::HTTP_OK;
+
+        $isAjax = $request->isXmlHttpRequest();
+
+
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = true;
-            $contratloc->setEtat(0);
-            $contratlocRepository->save($contratloc, true);
 
+        if ($form->isSubmitted()) {
+
+            $response = [];
             $redirect = $this->generateUrl('app_config_location_index');
+            $appart = $appartementRepository->find($contratloc->getAppart()->getId());
 
-            $message = 'Opération effectuée avec succès';
+            if ($form->isValid()) {
 
-            $response = [
-                'statut' => 1,
-                'message' => $message,
-                'redirect' => $redirect,
-                'data' => $data
-            ];
+                $contratloc->setEtat(0);
+                $contratlocRepository->save($contratloc, true);
 
-            $this->addFlash('success', $message);
-
-            if (!$request->isXmlHttpRequest()) {
-                return $this->redirect($redirect);
+                $appart->setOqp(0);
+                $appartementRepository->save($appart, true);
+                $data = true;
+                $message = 'Opération effectuée avec succès';
+                $statut = 1;
+                $this->addFlash('success', $message);
             } else {
-                return $this->json($response);
+                $message = $formError->all($form);
+                $statut = 0;
+                $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+                if (!$isAjax) {
+                    $this->addFlash('warning', $message);
+                }
+            }
+
+
+            if ($isAjax) {
+                return $this->json(compact('statut', 'message', 'redirect', 'data'), $statutCode);
+            } else {
+                if ($statut == 1) {
+                    return $this->redirect($redirect, Response::HTTP_OK);
+                }
             }
         }
 
         return $this->renderForm('location/contratloc/resilier.html.twig', [
             'contratloc' => $contratloc,
             'form' => $form,
+            'user_groupe' => $this->groupe
         ]);
     }
 
@@ -526,5 +644,13 @@ class ContratlocController extends BaseController
             'contratloc' => $contratloc,
             'form' => $form,
         ]);
+    }
+
+
+    #[Route('/api/test', name: 'app_api_test', methods: ['GET'])]
+    public function testapi(AppartementRepository $appartementRepository): Response
+    {
+        dd($appartementRepository->firstQuery());
+        return $this->json();
     }
 }

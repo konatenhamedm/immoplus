@@ -11,6 +11,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FacturelocRepository::class)]
 class Factureloc
 {
+
+    const ETATS = [
+        'oui' => 'oui',
+        'non' => 'non',
+
+    ];
+    const ETATS_STATUT = [
+        'payer' => 'payer',
+        'impayer' => 'impayer',
+
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -52,6 +64,9 @@ class Factureloc
 
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $encaisse = null;
 
     public function __construct()
     {
@@ -221,6 +236,18 @@ class Factureloc
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getEncaisse(): ?string
+    {
+        return $this->encaisse;
+    }
+
+    public function setEncaisse(string $encaisse): static
+    {
+        $this->encaisse = $encaisse;
 
         return $this;
     }
