@@ -56,9 +56,13 @@ services:
     App\Twig\CustomTwigExtension:
         arguments:
             $renderer: '@twig.form.renderer'
+            
 
     #datadog.event_subscriber.audit:
     #    class: App\EventSubscriber\AuditSubscriber
     #    arguments: ["@security.token_storage"]
     #    tags:
     #    - { name: doctrine.event_subscriber }
+    # App\Controller\:
+    #     resource: '../src/Controller/'
+    #     tags: ['controller.service_arguments']

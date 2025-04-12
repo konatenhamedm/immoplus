@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Controller\Comptabilte;
-
+namespace App\Controller\Comptabilite;
 use App\Entity\Ligneversementfrais;
 use App\Form\LigneversementfraisType;
 use App\Repository\LigneversementfraisRepository;
@@ -17,13 +16,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
+use App\Controller\FileTrait;
+use App\Entity\Compte;
 use App\Entity\CompteCltT;
 use App\Form\LigneVersementFaisEditType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use Mpdf\Tag\Li;
 
-#[Route('/ads/comptabilte/ligneversementfrais')]
+#[Route('/ads/comptabilite/ligneversementfrais')]
 class LigneversementfraisController extends BaseController
 {
     const INDEX_ROOT_NAME = 'app_comptabilte_ligneversementfrais_index';
@@ -31,15 +31,15 @@ class LigneversementfraisController extends BaseController
     const TAB_ID = 'parametre-tabs';
 
 
-    public function getdata($idR) {}
+
 
     #[Route('/liste/paiement/{idR}', name: 'app_comptabilte_ligneversementfrais_index', methods: ['GET', 'POST'])]
-    public function indexCompteCltT(Request $request, DataTableFactory $dataTableFactory, int $idR): Response
+    public function indexCompte(Request $request, DataTableFactory $dataTableFactory, int $idR): Response
     {
 
 
         $table = $dataTableFactory->create()
-            ->add('compteCltT', TextColumn::class, ['label' => 'N° CompteCltT', 'field' => 'c.id'])
+            ->add('compte', TextColumn::class, ['label' => 'N° Compte', 'field' => 'c.id'])
             ->add('dateversementfrais', DateTimeColumn::class, ['label' => 'Date de paiement', 'format' => 'd/m/Y'])
             ->add('montantverse', TextColumn::class, ['label' => 'Montant'])
             ->createAdapter(ORMAdapter::class, [
@@ -126,7 +126,7 @@ class LigneversementfraisController extends BaseController
             return $table->getResponse();
         }
 
-        return $this->render('comptabilte/ligneversementfrais/index.html.twig', [
+        return $this->render('comptabilite/ligneversementfrais/index.html.twig', [
             'datatable' => $table,
             'id' => $idR
         ]);
@@ -135,13 +135,13 @@ class LigneversementfraisController extends BaseController
 
     
     #[Route('/{id}/new', name: 'app_comptabilte_ligneversementfrais_new', methods: ['GET', 'POST'])]
-    public function new(Request $request,CompteCltT $compteCltT,  LigneversementfraisRepository $ligneversementfraisRepository, EntityManagerInterface $entityManager, FormError $formError): Response
+    public function new(Request $request,CompteCltT $compteClt,  LigneversementfraisRepository $ligneversementfraisRepository, EntityManagerInterface $entityManager, FormError $formError): Response
     {
 
-        $form = $this->createForm(LigneversementfraisType::class, $compteCltT, [
+        $form = $this->createForm(LigneversementfraisType::class, $compteClt, [
             'method' => 'POST',
             'action' => $this->generateUrl('app_comptabilte_ligneversementfrais_new', [
-                'id' => $compteCltT->getId()
+                'id' => $compteClt->getId()
             ])
         ]);
 
@@ -164,20 +164,20 @@ class LigneversementfraisController extends BaseController
             $date = $form->get('datePaiement')->getData();
             $somme = 0;
 
-               // Récupération des lignes de paiement liées au compteCltT client
-            $montantSolde = (int)str_replace(' ', '', $compteCltT->getSolde());
+               // Récupération des lignes de paiement liées au compte client
+            $montantSolde = (int)str_replace(' ', '', $compteClt->getSolde());
             $resteAPayer = $montantSolde - $montant; // Montant saisi
 
-            // $lignes = $ligneversementfraisRepository->findBy(['compteCltT' => $compteCltT->getId()]);
+            // $lignes = $ligneversementfraisRepository->findBy(['compte' => $compte->getId()]);
 
             // if ($lignes) {
 
             //     foreach ($lignes as $key => $info) {
             //         $somme += (int)$info->getMontantverse();
-            //         $resteAPayer = abs((int)$compteCltT->getMontant() - $somme);
+            //         $resteAPayer = abs((int)$compte->getMontant() - $somme);
             //     }
             // } else {
-            //     $resteAPayer = abs((int)$compteCltT->getMontant());
+            //     $resteAPayer = abs((int)$compte->getMontant());
             // }
          
           
@@ -189,14 +189,14 @@ class LigneversementfraisController extends BaseController
 
                     $ligneversementfrai = new Ligneversementfrais();
                     $ligneversementfrai->setDateversementfrais($date);
-                    $ligneversementfrai->setCompteCltT($compteCltT);
+                    $ligneversementfrai->setComptecltT($compteClt);
                     $ligneversementfrai->setMontantverse($montant);
                     $entityManager->persist($ligneversementfrai);
                     $entityManager->flush();
 
-                    $compteCltT->setSolde($resteAPayer);
+                    $compteClt->setSolde($resteAPayer);
 
-                    $entityManager->persist($compteCltT);
+                    $entityManager->persist($compteClt);
                     $entityManager->flush();
 
                     $load_tab = true;
@@ -215,7 +215,7 @@ class LigneversementfraisController extends BaseController
 
                 $url = [
                     'url' => $this->generateUrl('app_config_frais_paiement_index', [
-                        'id' => $compteCltT->getId()
+                        'id' => $compteClt->getId()
                     ]),
                     'tab' => '#module0',
                     'current' => '#module0'
@@ -246,9 +246,9 @@ class LigneversementfraisController extends BaseController
             }
         }
 
-        return $this->renderForm('comptabilte/ligneversementfrais/new.html.twig', [
+        return $this->renderForm('comptabilite/ligneversementfrais/new.html.twig', [
             // 'ligneversementfrai' => $ligneversementfrai,
-            'compteCltT' => $compteCltT,
+            'compte' => $compteClt,
             'form' => $form,
         ]);
     }
@@ -284,7 +284,7 @@ class LigneversementfraisController extends BaseController
 
 
 
-            $lignes = $ligneversementfraisRepository->findBy(['compteCltT' => $ligneversementfrai->getCompteCltT()->getId()]);
+            $lignes = $ligneversementfraisRepository->findBy(['compte' => $ligneversementfrai->getCompteCltT()->getId()]);
 
             if ($lignes) {
 
@@ -304,10 +304,10 @@ class LigneversementfraisController extends BaseController
                     $entityManager->persist($ligneversementfrai);
                     $entityManager->flush();
 
-                    $compteCltT = $ligneversementfrai->getCompteCltT();
-                    $compteCltT->setSolde($resteAPayer);
+                    $compte = $ligneversementfrai->getComptecltT();
+                    $compte->setSolde($resteAPayer);
 
-                    $entityManager->persist($compteCltT);
+                    $entityManager->persist($compte);
                     $entityManager->flush();
                 }
           
@@ -320,7 +320,7 @@ class LigneversementfraisController extends BaseController
                 $this->addFlash('success', $message);
                  $url = [
                     'url' => $this->generateUrl('app_config_frais_paiement_index', [
-                        'id' => $ligneversementfrai->getCompteCltT()->getId()
+                        'id' => $ligneversementfrai->getComptecltT()->getId()
                     ]),
                     'tab' => '#module0',
                     'current' => '#module0'
@@ -351,7 +351,7 @@ class LigneversementfraisController extends BaseController
             }
         }
 
-        return $this->renderForm('comptabilte/ligneversementfrais/edit.html.twig', [
+        return $this->renderForm('comptabilite/ligneversementfrais/edit.html.twig', [
             'ligneversementfrai' => $ligneversementfrai,
             'form' => $form,
         ]);
@@ -360,7 +360,7 @@ class LigneversementfraisController extends BaseController
     #[Route('/{id}/show', name: 'app_comptabilte_ligneversementfrais_show', methods: ['GET'])]
     public function show(Ligneversementfrais $ligneversementfrai): Response
     {
-        return $this->render('comptabilte/ligneversementfrais/show.html.twig', [
+        return $this->render('comptabilite/ligneversementfrais/show.html.twig', [
             'ligneversementfrai' => $ligneversementfrai,
         ]);
     }
@@ -406,7 +406,7 @@ class LigneversementfraisController extends BaseController
             }
         }
 
-        return $this->renderForm('comptabilte/ligneversementfrais/delete.html.twig', [
+        return $this->renderForm('comptabilite/ligneversementfrais/delete.html.twig', [
             'ligneversementfrai' => $ligneversementfrai,
             'form' => $form,
         ]);
