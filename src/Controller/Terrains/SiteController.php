@@ -424,7 +424,7 @@ class SiteController extends BaseController
         $validationGroups = ['Default', 'FileRequired', 'oui'];
         $filePath = 'site';
         $form = $this->createForm(SiteType::class, $site, [
-            'method' => 'GET',
+            'method' => 'POST',
             'etat' => $etat,
             'action' => $this->generateUrl('app_terrains_site_workflow', [
                 'id' =>  $site->getId()

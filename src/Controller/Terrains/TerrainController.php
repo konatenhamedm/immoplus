@@ -240,8 +240,7 @@ class TerrainController extends BaseController
                     ->setMontant($montant) // <- Important : une vraie chaîne ici
                     ->setSolde($montant);  // <- Pareil ici (si solde est aussi une string)
 
-                $em->persist($compteClt);
-                $em->flush();
+                $terrain->addCompteCltT($compteClt);
 
                 $terrainRepository->save($terrain, true);
                 $data = true;
