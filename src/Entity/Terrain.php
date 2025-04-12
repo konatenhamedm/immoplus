@@ -6,8 +6,16 @@ use App\Repository\TerrainRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Gedmo\Mapping\Annotation as Gedmo; // gedmo annotations
+
+
+
 
 #[ORM\Entity(repositoryClass: TerrainRepository::class)]
+#[UniqueEntity(['num'], message: 'Ce numéro est déjà utilisé')]
+
 class Terrain
 {
     #[ORM\Id]
@@ -16,31 +24,42 @@ class Terrain
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $superfice = null;
+    private ?string $num = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $etat = null;
+    private ?string $superfice = null;
+
+
 
     #[ORM\Column(length: 255)]
     private ?string $prix = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $justification = null;
+    // #[ORM\Column(length: 255)]
+    // private ?string $justification = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nomClient = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $telClient = null;
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nomcl = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $telcl = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $localisationClient = null;
+    
+
 
     #[ORM\OneToMany(mappedBy: 'terrain', targetEntity: CompteCltT::class)]
     private Collection $compteCltTs;
 
     #[ORM\ManyToOne(inversedBy: 'terrain')]
     private ?Site $site = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Gedmo\Timestampable(on: 'create')]
+    private ?\DateTimeInterface $datecreation = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $etat = 'disponible';
 
     public function __construct()
     {
@@ -52,6 +71,17 @@ class Terrain
         return $this->id;
     }
 
+    public function getNum(): ?string
+    {
+        return $this->num;
+    }
+
+    public function setNum(string $num): static
+    {
+        $this->num = $num;
+
+        return $this;
+    }
     public function getSuperfice(): ?string
     {
         return $this->superfice;
@@ -88,38 +118,38 @@ class Terrain
         return $this;
     }
 
-    public function getJustification(): ?string
+    // public function getJustification(): ?string
+    // {
+    //     return $this->justification;
+    // }
+
+    // public function setJustification(string $justification): static
+    // {
+    //     $this->justification = $justification;
+
+    //     return $this;
+    // }
+
+    public function gettest(): ?string
     {
-        return $this->justification;
+        return $this->nomcl;
     }
 
-    public function setJustification(string $justification): static
+    public function settest(string $nomcl): static
     {
-        $this->justification = $justification;
+        $this->nomcl   = $nomcl;
 
         return $this;
     }
 
-    public function getNomClient(): ?string
+    public function gettelcl(): ?string
     {
-        return $this->nomClient;
+        return $this->telcl;
     }
 
-    public function setNomClient(string $nomClient): static
+    public function settelcl(string $telcl): static
     {
-        $this->nomClient = $nomClient;
-
-        return $this;
-    }
-
-    public function getTelClient(): ?string
-    {
-        return $this->telClient;
-    }
-
-    public function setTelClient(string $telClient): static
-    {
-        $this->telClient = $telClient;
+        $this->telcl = $telcl;
 
         return $this;
     }
@@ -174,6 +204,18 @@ class Terrain
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function getDatecreation(): ?\DateTimeInterface
+    {
+        return $this->datecreation;
+    }
+
+    public function setDatecreation(?\DateTimeInterface $datecreation): static
+    {
+        $this->datecreation = $datecreation;
 
         return $this;
     }

@@ -21,13 +21,14 @@ class CompteCltT
     #[ORM\Column(length: 255)]
     private ?string $montant = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $solde = null;
 
-    
 
-    #[ORM\ManyToOne(inversedBy: 'compteCltTs')]
+
+    #[ORM\ManyToOne(targetEntity: Terrain::class, inversedBy: 'compteCltTs', cascade: ['persist'])]
     private ?Terrain $terrain = null;
+
 
     #[ORM\OneToMany(mappedBy: 'comptecltT', targetEntity: Ligneversementfrais::class)]
     private Collection $ligneversementfrais;
@@ -114,7 +115,7 @@ class CompteCltT
         return $this;
     }
 
-    
+
     public function getDatecreation(): ?\DateTimeInterface
     {
         return $this->datecreation;
@@ -126,5 +127,4 @@ class CompteCltT
 
         return $this;
     }
-  
 }

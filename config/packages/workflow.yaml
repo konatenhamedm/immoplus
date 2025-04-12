@@ -1,0 +1,38 @@
+framework:
+    workflows:
+           site:
+               type: 'state_machine' # or 'state_machine'
+               audit_trail:
+                   enabled: true
+               marking_store:
+                   type: 'method'
+                   property: 'etat'            
+               supports: 
+                   - App\Entity\Site
+               initial_marking: en_attente
+               places:
+                   - en_attente
+                   - approuve
+               transitions:
+                   approuver:
+                       from: en_attente
+                       to: approuve
+        
+           terrain:
+                type: 'state_machine' # or 'state_machine'
+                audit_trail:
+                        enabled: true
+                marking_store:
+                        type: 'method'
+                        property: 'etat'
+                supports: 
+                        - App\Entity\Terrain
+                initial_marking: disponible
+                places:
+                        - disponible
+                        - vendu
+                transitions:
+                        vendre:
+                            from: disponible
+                            to: vendu
+            

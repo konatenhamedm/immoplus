@@ -15,6 +15,7 @@
     <div class="modal-body content-doc">
         {{ include('_includes/ajax/response.html.twig') }}
         {{ form_widget(form) }}
+   
     </div>
     <div class="modal-footer">
         {# {{ include('_includes/ajax/loader.html.twig') }} #}
@@ -28,6 +29,18 @@
     <script>
         $(function () {
             init_select2('select');
+
+              $('.no-auto').each(function () {
+                const $this = $(this);
+                const $id = $('#' + $this.attr('id'));
+                init_date_picker($id, 'down', (start, e) => {
+                    //$this.val(start.format('DD/MM/YYYY'));
+                }, null, null, false);
+
+                $id.on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('DD/MM/YYYY'));
+                });
+            });
         });
         $(function () {
             init_select2('select', null, '.content-doc');

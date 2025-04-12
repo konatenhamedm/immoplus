@@ -6,6 +6,9 @@ use App\Repository\SiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
+use Gedmo\Mapping\Annotation as Gedmo; // gedmo annotations
+
 
 #[ORM\Entity(repositoryClass: SiteRepository::class)]
 class Site
@@ -21,14 +24,23 @@ class Site
     #[ORM\Column(length: 255)]
     private ?string $localisation = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $etat = null;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $etat = 'en_attente';
 
-    #[ORM\Column(length: 255)]
-    private ?string $justification = null;
+
+    // #[ORM\Column(length: 255)]
+    // private ?string $justification = null;
 
     #[ORM\OneToMany(mappedBy: 'site', targetEntity: Terrain::class)]
     private Collection $terrain;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Gedmo\Timestampable(on: 'create')]
+    private ?\DateTimeInterface $datecreation = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $description = null;
+   
 
     public function __construct()
     {
@@ -76,17 +88,17 @@ class Site
         return $this;
     }
 
-    public function getJustification(): ?string
-    {
-        return $this->justification;
-    }
+    // public function getJustification(): ?string
+    // {
+    //     return $this->justification;
+    // }
 
-    public function setJustification(string $justification): static
-    {
-        $this->justification = $justification;
+    // public function setJustification(string $justification): static
+    // {
+    //     $this->justification = $justification;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, Terrain>
@@ -114,6 +126,30 @@ class Site
                 $terrain->setSite(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDatecreation(): ?\DateTimeInterface
+    {
+        return $this->datecreation;
+    }
+
+    public function setDatecreation(?\DateTimeInterface $datecreation): static
+    {
+        $this->datecreation = $datecreation;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
