@@ -50,7 +50,9 @@ class CompteCltTController extends BaseController
                         ->from(CompteCltT::class, 'c')
                         ->join('c.terrain', 't')
                         ->join('t.site', 's')
-                        ->orderBy('c.id ', 'DESC');;
+                        ->andWhere("t.etat =:etat")
+                        ->setParameter('etat', "vendu")
+                        ->orderBy('c.id ', 'DESC');
                 }
             ])
             ->setName('dt_app_comptabilite_compte_clt_t');

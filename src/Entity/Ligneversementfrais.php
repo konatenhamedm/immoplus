@@ -21,7 +21,7 @@ class Ligneversementfrais
     private ?string $montantverse = null;
 
     #[ORM\ManyToOne(inversedBy: 'ligneversementfrais')]
-    private ?ComptecltT $comptecltT = null;
+    private ?CompteCltT $comptecltT = null;
 
 
     public function getId(): ?int
@@ -53,12 +53,12 @@ class Ligneversementfrais
         return $this;
     }
 
-    public function getComptecltT(): ?ComptecltT
+    public function getComptecltT(): ?CompteCltT
     {
         return $this->comptecltT;
     }
 
-    public function setComptecltT(?ComptecltT $comptecltT): static
+    public function setComptecltT(?CompteCltT $comptecltT): static
     {
         $this->comptecltT = $comptecltT;
 
