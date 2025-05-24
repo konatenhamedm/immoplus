@@ -474,8 +474,14 @@ class TerrainController extends BaseController
                 if ($form->getClickedButton()->getName() === 'vendre') {
 
                     try {
-                        if ($workflow->can($terrain, 'vendu')) {
-                            $workflow->apply($terrain, 'vendu');
+                        if ($workflow->can($terrain, 'vendre')) {
+                            $workflow->apply($terrain, 'vendre');
+
+                            $this->em->flush();
+                        }
+
+                        if ($workflow->can($terrain, 'disponible')) {
+                            $workflow->apply($terrain, 'disponible');
 
                             $this->em->flush();
                         }
