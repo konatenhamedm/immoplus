@@ -39,19 +39,19 @@ class Terrain
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomcl = null;
-    
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telcl = null;
-    
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localisationClient = null;
-    
 
 
-    #[ORM\OneToMany(mappedBy: 'terrain', targetEntity: CompteCltT::class)]
+
+    #[ORM\OneToMany(mappedBy: 'terrain', targetEntity: CompteCltT::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $compteCltTs;
 
-    #[ORM\ManyToOne(inversedBy: 'terrain')]
+    #[ORM\ManyToOne(inversedBy: 'terrain', cascade: ['persist'])]
     private ?Site $site = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -130,12 +130,12 @@ class Terrain
     //     return $this;
     // }
 
-    public function gettest(): ?string
+    public function getnomcl(): ?string
     {
         return $this->nomcl;
     }
 
-    public function settest(string $nomcl): static
+    public function setnomcl(string $nomcl): static
     {
         $this->nomcl   = $nomcl;
 

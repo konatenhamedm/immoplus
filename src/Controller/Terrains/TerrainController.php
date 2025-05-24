@@ -35,13 +35,16 @@ class TerrainController extends BaseController
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
 
         $table = $dataTableFactory->create()
-            // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+            ->add('site', TextColumn::class, ['label' => 'Le site', 'field' => 's.nom'])
+            ->add('num', TextColumn::class, ['label' => 'Numero ILOT'])
+            ->add('superfice', TextColumn::class, ['label' => 'Superficie terrain'])
+            ->add('prix', TextColumn::class, ['label' => 'Prix terrain'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Terrain::class,
                 'query' => function (QueryBuilder $req) use ($etat) {
                     $req->select(['t'])
                         ->from(Terrain::class, 't')
-                    ;
+                        ->leftJoin('t.site', 's');;
 
                     if ($etat == 'disponible') {
                         $req->andWhere("t.etat =:etat")

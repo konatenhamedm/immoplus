@@ -20,13 +20,13 @@
     <p class="d-none">Workflow State: <span id="workflow-state">{{ etat|raw }}</span></p>
     <div class="row">
 		<div class="row">
-			<div class="col-md-6">{{ form_widget(form.num) }}</div>
-			<div class="col-md-6">{{ form_widget(form.superfice) }}</div>
-			<div class="col-md-6">{{ form_widget(form.site)}}</div>
-			<div class="col-md-6">{{ form_widget(form.prix)}}</div>
-			<div class="col-md-4">{{ form_widget(form.nomcl)}}</div>
-			<div class="col-md-3">{{ form_widget(form.telcl)}}</div>
-			<div class="col-md-5">{{ form_widget(form.localisationClient)}}</div>
+			<div class="col-md-6">{{ form_row(form.num) }}</div>
+			<div class="col-md-6">{{ form_row(form.superfice) }}</div>
+			<div class="col-md-6">{{ form_row(form.site)}}</div>
+			<div class="col-md-6">{{ form_row(form.prix)}}</div>
+			<div class="col-md-4">{{ form_row(form.nomcl)}}</div>
+			<div class="col-md-3">{{ form_row(form.telcl)}}</div>
+			<div class="col-md-5">{{ form_row(form.localisationClient)}}</div>
 			{# <div class="col-md-12 justication">{{ form_row(form.justification) }}</div> #}
 		</div>
     <div class="modal-footer">

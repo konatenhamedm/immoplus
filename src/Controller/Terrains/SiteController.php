@@ -35,6 +35,8 @@ class SiteController extends BaseController
         $permission = $this->menu->getPermissionIfDifferentNull($this->security->getUser()->getGroupe()->getId(), self::INDEX_ROOT_NAME);
         $table = $dataTableFactory->create()
             // ->add('id', TextColumn::class, ['label' => 'Identifiant'])
+            ->add('nom', TextColumn::class, ['label' => 'Nom du site'])
+            ->add('localisation', TextColumn::class, ['label' => 'La localisation du site'])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Site::class,
                 'query' => function (QueryBuilder $req) use ($etat) {

@@ -21,16 +21,16 @@ class CompteCltT
     #[ORM\Column(length: 255)]
     private ?string $montant = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $solde = null;
 
 
 
-    #[ORM\ManyToOne(targetEntity: Terrain::class, inversedBy: 'compteCltTs', cascade: ['persist'])]
+    #[ORM\ManyToOne(inversedBy: 'compteCltTs', cascade: ['persist'])]
     private ?Terrain $terrain = null;
 
 
-    #[ORM\OneToMany(mappedBy: 'comptecltT', targetEntity: Ligneversementfrais::class)]
+    #[ORM\OneToMany(mappedBy: 'comptecltT', targetEntity: Ligneversementfrais::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $ligneversementfrais;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

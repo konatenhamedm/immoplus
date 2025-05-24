@@ -17,14 +17,7 @@ class TerrainType extends AbstractType
     {
         $etat = $options['etat'];
         $builder
-            // ->add('superfice')
-            // ->add('etat')
-            // ->add('prix')
-            // ->add('justification')
-            // ->add(' test  ')
-            // ->add('telcl')
-            // ->add('localisationClient')
-            // ->add('site')
+             
             ->add('num', TextType::class,[
                 'label' => 'Numero ILOT',
                 'attr' =>['placeholder' => 'Numero ILOT']
@@ -58,8 +51,25 @@ class TerrainType extends AbstractType
 
 
 
+        if ($etat == 'create') {
+            $builder->add('nomcl', TextType::class,[
+                'label' => false,
+                'attr' =>['placeholder' => 'Nom du client','readonly' => true, 'hidden' => true]
+                ])
+
+                ->add('telcl', TextType::class,[
+                    'label' => false,
+                    'attr' =>['placeholder' => 'Telephone du client','readonly' => true, 'hidden' => true]
+                ])
+                ->add('localisationClient', TextType::class,[
+                    'label' => false,
+                    'attr' =>['placeholder' => 'Ville/village du client','readonly' => true, 'hidden' => true]
+                ])
+                //  ->add('rejeter', SubmitType::class,['label' => "Rejeter", 'attr' =>['class' => 'btn btn-main btn-ajax rejeter invisible ']])
+                ->add('vendre', SubmitType::class,['label' => 'Valider l\achat','attr' =>['class' => 'btn btn-main btn-ajax vendu invisible  ']]);
+        }
         if ($etat == 'disponible') {
-            $builder->add('test', TextType::class,[
+            $builder->add('nomcl', TextType::class,[
                     'label' => 'Nom du client',
                     'attr' =>['placeholder' => 'Nom du client']
                 ])
