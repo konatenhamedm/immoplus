@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Site;
 use App\Entity\Terrain;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -31,20 +32,25 @@ class TerrainType extends AbstractType
                 'label' => 'Le prix de vente du terrain',
                 'attr' =>['placeholder' => 'Le prix de vente du terrain']
             ])
-            ->add('site', EntityType::class,[
+         ->add('site', EntityType::class, [
                 'class'        => Site::class,
                 'label'        => 'Le site',
                 'choice_label' => 'nom',
                 'multiple'     => false,
                 'expanded'     => false,
-                //'autocomplete' => true,
-                'placeholder' => 'Sélectionner une site du terrain                ',
-                'attr' =>[
-                    'class' => 'has-select2',
-                    'autocomplete' => true,
-                ],
+                'placeholder'  => 'Sélectionner un site du terrain',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('s')
+                            ->where('s.etat = :etat')
+                            ->setParameter('etat', 'approuve')
+                            ->orderBy('s.nom', 'ASC');
+            },
+    'attr' => [
+        'class' => 'has-select2',
+        'autocomplete' => true,
+    ],
+])
 
-            ])
 
         ;
         // ->add('justification')
