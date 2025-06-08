@@ -1,0 +1,59 @@
+
+{% macro ligne_echancier_terrain(colonne) %}
+
+
+    <tr class="row-colonne even pointer table-light">
+         <td width="40%" class="p-2">
+
+            <div style="display:non" class="field-matiere  ">{{ form_widget(colonne.date)}}</div>
+{#             <div style="display:non" class="field-matiere">{{ colonne.document_type_client.vars.value }} </div>
+             #}
+        </td>
+        <td width="10%" class="p-2">
+            <div style="display:no " class="field-matiere">{{ form_widget(colonne.montant) }}</div>
+        </td>
+         {# <td width="20%" class="p-2">
+         
+            <div style="display:no " class="field-matiere">{{ form_widget(colonne.dateDebut) }}</div>
+        </td>
+       
+            <td width="20%" class="p-2">
+                <div style="display:no " class="field-matiere">{{ form_widget(colonne.dateFin) }}</div>
+            </td> #}
+       
+    <td width="10%" class="p-2 del-col " data-parent=".row-colonne">{# <a href="#" class="btn btn-danger btn-xs"><span
+                class="bi bi-trash"></span></a> #}</td>
+        
+    </tr>
+{% endmacro  %}
+
+
+{% macro prototype_ligne_echancier_terrain(form) %}
+    <div class="list-colonne"  data-prototype="{{ _self.ligne_echancier_terrain(form.echancier.vars.prototype)|e }}"></div>
+    
+    <table class="table table-bordered table-custom">
+        <thead class="thead-dark">
+                    <tr width="100%" style="border: 0px !important;">
+                        <th colspan="5" class="p-2 text-center text-bold text-uppercase">Liste des articles demandés </th>
+                    </tr>
+            <tr>
+                <th  class="p-2">Date</th>
+                <th  class="p-2">Montant</th>
+                {# <th  class="p-2">Date de début</th>
+                <th  class="p-2">Date de fin</th> #}
+               
+                <th colspan="2" width="10%">
+                    <button type="button" data-protoname="__name__" class="btn btn-default add_line btn-xs " id="add_ligne"
+                        data-protoclass=".list-colonne" data-container=".column-container">
+                        <i class="fa fa-plus"></i> Ajouter
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody  class="column-container proto-container" data-childclass=""">
+            {% for item in form.echancier %}
+                {{ _self.ligne_echancier_terrain(item|e) }}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}

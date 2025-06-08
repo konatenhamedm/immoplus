@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+
 
 class TerrainType extends AbstractType
 {
@@ -18,21 +20,21 @@ class TerrainType extends AbstractType
     {
         $etat = $options['etat'];
         $builder
-             
-            ->add('num', TextType::class,[
+
+            ->add('num', TextType::class, [
                 'label' => 'Numero ILOT',
-                'attr' =>['placeholder' => 'Numero ILOT']
+                'attr' => ['placeholder' => 'Numero ILOT']
             ])
-            ->add('superfice', TextType::class,[
+            ->add('superfice', TextType::class, [
                 'label' => 'La superficie du terrain',
-                'attr' =>['placeholder' => 'La superficie du terrain']
+                'attr' => ['placeholder' => 'La superficie du terrain']
             ])
             // ->add('etat')
-            ->add('prix', TextType::class,[
+            ->add('prix', TextType::class, [
                 'label' => 'Le prix de vente du terrain',
-                'attr' =>['placeholder' => 'Le prix de vente du terrain']
+                'attr' => ['placeholder' => 'Le prix de vente du terrain']
             ])
-         ->add('site', EntityType::class, [
+            ->add('site', EntityType::class, [
                 'class'        => Site::class,
                 'label'        => 'Le site',
                 'choice_label' => 'nom',
@@ -41,15 +43,15 @@ class TerrainType extends AbstractType
                 'placeholder'  => 'Sélectionner un site du terrain',
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('s')
-                            ->where('s.etat = :etat')
-                            ->setParameter('etat', 'approuve')
-                            ->orderBy('s.nom', 'ASC');
-            },
-    'attr' => [
-        'class' => 'has-select2',
-        'autocomplete' => true,
-    ],
-])
+                        ->where('s.etat = :etat')
+                        ->setParameter('etat', 'approuve')
+                        ->orderBy('s.nom', 'ASC');
+                },
+                'attr' => [
+                    'class' => 'has-select2',
+                    'autocomplete' => true,
+                ],
+            ])
 
 
         ;
@@ -58,57 +60,118 @@ class TerrainType extends AbstractType
 
 
         if ($etat == 'create') {
-            $builder->add('nomcl', TextType::class,[
+            $builder->add('nomcl', TextType::class, [
                 'label' => false,
-                'attr' =>['placeholder' => 'Nom du client','readonly' => true, 'hidden' => true]
-                ])
+                'attr' => ['placeholder' => 'Nom du client', 'readonly' => true, 'hidden' => true]
+            ])
 
-                ->add('telcl', TextType::class,[
+                ->add('telcl', TextType::class, [
                     'label' => false,
-                    'attr' =>['placeholder' => 'Telephone du client','readonly' => true, 'hidden' => true]
+                    'attr' => ['placeholder' => 'Telephone du client', 'readonly' => true, 'hidden' => true]
                 ])
-                ->add('localisationClient', TextType::class,[
+                ->add('localisationClient', TextType::class, [
                     'label' => false,
-                    'attr' =>['placeholder' => 'Ville/village du client','readonly' => true, 'hidden' => true]
+                    'attr' => ['placeholder' => 'Ville/village du client', 'readonly' => true, 'hidden' => true]
                 ])
                 //  ->add('rejeter', SubmitType::class,['label' => "Rejeter", 'attr' =>['class' => 'btn btn-main btn-ajax rejeter invisible ']])
-                ->add('vendre', SubmitType::class,['label' => 'Valider l\achat','attr' =>['class' => 'btn btn-main btn-ajax vendu invisible  ']]);
+                ->add('vendre', SubmitType::class, ['label' => 'Valider l\achat', 'attr' => ['class' => 'btn btn-main btn-ajax vendu invisible  ']])
+                ->add('finaliser', SubmitType::class, ['label' => 'Finaliser la vente', 'attr' => ['class' => 'btn btn-main btn-ajax payer invisible  ']]);
         }
         if ($etat == 'disponible') {
-            $builder->add('nomcl', TextType::class,[
-                    'label' => 'Nom du client',
-                    'attr' =>['placeholder' => 'Nom du client']
-                ])
+            $builder->add('nomcl', TextType::class, [
+                'label' => 'Nom du client',
+                'required'=> true,
+                'attr' => ['placeholder' => 'Nom du client']
+            ])
 
-                ->add('telcl', TextType::class,[
+                ->add('telcl', TextType::class, [
                     'label' => 'Telephone du client',
-                    'attr' =>['placeholder' => 'Telephone du client']
+                    'required'=> true,
+                    'attr' => ['placeholder' => 'Telephone du client']
                 ])
-                ->add('localisationClient', TextType::class,[
+                ->add('localisationClient', TextType::class, [
                     'label' => 'Ville/village du client',
-                    'attr' =>['placeholder' => 'Ville/village du client']
+                    'attr' => ['placeholder' => 'Ville/village du client']
                 ])
                 //  ->add('rejeter', SubmitType::class,['label' => "Rejeter", 'attr' =>['class' => 'btn btn-main btn-ajax rejeter invisible ']])
-                ->add('vendre', SubmitType::class,['label' => 'Valider l\achat','attr' =>['class' => 'btn btn-main btn-ajax vendu  ']]);
+                ->add('vendre', SubmitType::class, ['label' => 'Valider l\achat', 'attr' => ['class' => 'btn btn-main btn-ajax vendu  ']])
+                ->add('finaliser', SubmitType::class, ['label' => 'Finaliser la vente', 'attr' => ['class' => 'btn btn-main btn-ajax payer invisible ']])
+                ->add('echancier', CollectionType::class, [
+                    'entry_type' => EchancierType::class,
+                    'entry_options' => [
+                        'label' => false
+                    ],
+                    'allow_add' => true,
+                    'label' => false,
+                    'by_reference' => false,
+                    'allow_delete' => true,
+                    'prototype' => true,
+
+                ])
+            ;
         }
 
 
         if ($etat == 'vendu') {
-            $builder->add('nomcl', TextType::class,[
-                    'label' => 'Nom du client',
-                    'attr' =>['placeholder' => 'Nom du client', 'readonly' => true]
-                ])
+            $builder->add('nomcl', TextType::class, [
+                'label' => 'Nom du client',
+                'attr' => ['placeholder' => 'Nom du client', 'readonly' => true]
+            ])
 
-                ->add('telcl', TextType::class,[
+                ->add('telcl', TextType::class, [
                     'label' => 'Telephone du client',
-                    'attr' =>['placeholder' => 'Telephone du client', 'readonly' => true,]
+                    'attr' => ['placeholder' => 'Telephone du client', 'readonly' => true,]
                 ])
-                ->add('localisationClient', TextType::class,[
+                ->add('localisationClient', TextType::class, [
                     'label' => 'Ville/village du client',
-                    'attr' =>['placeholder' => 'Ville/village du client', 'readonly' => true,]
+                    'attr' => ['placeholder' => 'Ville/village du client', 'readonly' => true,]
                 ])
                 //  ->add('rejeter', SubmitType::class,['label' => "Rejeter", 'attr' =>['class' => 'btn btn-main btn-ajax rejeter invisible ']])
-                ->add('vendre', SubmitType::class,['label' => 'Valider l\achat', 'attr' =>['class' => 'btn btn-main btn-ajax vendu invisible ']]);
+                ->add('vendre', SubmitType::class, ['label' => 'Valider l\achat', 'attr' => ['class' => 'btn btn-main btn-ajax vendu invisible ']])
+                ->add('finaliser', SubmitType::class, ['label' => 'Finaliser la vente', 'attr' => ['class' => 'btn btn-main btn-ajax payer  ']])
+
+                ->add('echancier', CollectionType::class, [
+                    'entry_type' => EchancierType::class,
+                    'entry_options' => [
+                        'label' => false
+                    ],
+                    'allow_add' => true,
+                    'label' => false,
+                    'by_reference' => false,
+                    'allow_delete' => true,
+                    'prototype' => true,
+
+                ]);
+        }
+        if ($etat == 'payer') {
+            $builder->add('nomcl', TextType::class, [
+                'label' => 'Nom du client',
+                'attr' => ['placeholder' => 'Nom du client', 'readonly' => true]
+            ])
+
+                ->add('telcl', TextType::class, [
+                    'label' => 'Telephone du client',
+                    'attr' => ['placeholder' => 'Telephone du client', 'readonly' => true,]
+                ])
+                ->add('localisationClient', TextType::class, [
+                    'label' => 'Ville/village du client',
+                    'attr' => ['placeholder' => 'Ville/village du client', 'readonly' => true,]
+                ])
+                //  ->add('rejeter', SubmitType::class,['label' => "Rejeter", 'attr' =>['class' => 'btn btn-main btn-ajax rejeter invisible ']])
+                ->add('vendre', SubmitType::class, ['label' => 'Valider l\achat', 'attr' => ['class' => 'btn btn-main btn-ajax vendu invisible ']])
+                ->add('finaliser', SubmitType::class, ['label' => 'Finaliser la vente', 'attr' => ['class' => 'btn btn-main btn-ajax vendu invisible ']])
+                ->add('echancier', CollectionType::class, [
+                    'entry_type' => EchancierType::class,
+                    'entry_options' => [
+                        'label' => false
+                    ],
+                    'allow_add' => true,
+                    'label' => false,
+                    'by_reference' => false,
+                    'allow_delete' => true,
+                    'prototype' => true,
+
+                ]);
         }
     }
 

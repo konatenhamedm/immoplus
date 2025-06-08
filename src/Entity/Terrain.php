@@ -61,9 +61,13 @@ class Terrain
     #[ORM\Column(type: 'string', length: 255)]
     private string $etat = 'disponible';
 
+    #[ORM\OneToMany(mappedBy: 'terrain', targetEntity: Echancier::class,cascade: ['persist', 'remove'])]
+    private Collection $echancier;
+
     public function __construct()
     {
         $this->compteCltTs = new ArrayCollection();
+        $this->echancier = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -216,6 +220,36 @@ class Terrain
     public function setDatecreation(?\DateTimeInterface $datecreation): static
     {
         $this->datecreation = $datecreation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Echancier>
+     */
+    public function getEchancier(): Collection
+    {
+        return $this->echancier;
+    }
+
+    public function addEchancier(Echancier $echancier): static
+    {
+        if (!$this->echancier->contains($echancier)) {
+            $this->echancier->add($echancier);
+            $echancier->setTerrain($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEchancier(Echancier $echancier): static
+    {
+        if ($this->echancier->removeElement($echancier)) {
+            // set the owning side to null (unless already changed)
+            if ($echancier->getTerrain() === $this) {
+                $echancier->setTerrain(null);
+            }
+        }
 
         return $this;
     }

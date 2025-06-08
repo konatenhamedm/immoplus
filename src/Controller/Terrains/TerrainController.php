@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\BaseController;
 use App\Entity\CompteCltT;
+use App\Entity\Echancier;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Asset\Exception\LogicException;
@@ -52,6 +53,9 @@ class TerrainController extends BaseController
                     } elseif ($etat == 'vendu') {
                         $req->andWhere("t.etat =:etat")
                             ->setParameter('etat', "vendu");
+                    } elseif ($etat == 'payer') {
+                        $req->andWhere("t.etat =:etat")
+                            ->setParameter('etat', "payer");
                     }
                 }
             ])
@@ -447,6 +451,8 @@ class TerrainController extends BaseController
     public function workflow(Request $request, Terrain $terrain, TerrainRepository $terrainRepository, EntityManagerInterface $entityManager, FormError $formError): Response
     {
         $etat =  $terrain->getEtat();
+        $echanciers = new Echancier();
+        $terrain->addEchancier($echanciers);
 
         $filePath = 'terrain';
         $form = $this->createForm(TerrainType::class, $terrain, [
@@ -494,20 +500,20 @@ class TerrainController extends BaseController
                     $terrainRepository->save($terrain, true);
                 }
 
-                // if ($form->getClickedButton()->getName() === 'rejeter') {
-                //     try {
-                //         if ($workflow->can($audience, 'rejeter')) {
-                //             $workflow->apply($audience, 'rejeter');
-                //             $this->em->flush();
-                //         }
-                //     } catch (LogicException $e) {
+                if ($form->getClickedButton()->getName() === 'finaliser') {
+                    try {
+                        if ($workflow->can($terrain, 'finaliser')) {
+                            $workflow->apply($terrain, 'finaliser');
+                            $this->em->flush();
+                        }
+                    } catch (LogicException $e) {
 
-                //         $this->addFlash('danger', sprintf('No, that did not work: %s', $e->getMessage()));
-                //     }
-                //     $audienceRepository->save($audience, true);
-                // } else {
-                //     $audienceRepository->save($audience, true);
-                // }
+                        $this->addFlash('danger', sprintf('No, that did not work: %s', $e->getMessage()));
+                    }
+                    $terrainRepository->save($terrain, true);
+                } else {
+                    $terrainRepository->save($terrain, true);
+                }
 
                 $data = true;
                 $message       = 'Opération effectuée avec succès';

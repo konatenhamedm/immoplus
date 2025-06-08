@@ -35,9 +35,15 @@ class  TerrainsConfigController extends BaseController
                 'href' => $this->generateUrl('app_config_terrain_index', ['etat' => 'disponible'])
             ],
             [
-                'label' => 'TERRAINS VENDUS',
+                'label' => 'TERRAINS EN COURS D\ACCISSIOM',
                 'icon' => 'bi bi-list',
                 'href' => $this->generateUrl('app_config_terrain_index', ['etat' => 'vendu'])
+            ],
+
+            [
+                'label' => 'TERRAINS VENDUS',
+                'icon' => 'bi bi-list',
+                'href' => $this->generateUrl('app_config_terrain_index', ['etat' => 'payer'])
             ],
 
 

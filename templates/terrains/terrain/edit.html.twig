@@ -39,11 +39,12 @@
 {% block javascripts_inline %}
 	<script>
 		$(function () {
-$('.vendu').hide()
-init_select2('select');
-});
-$(function () {
-init_select2('select', null, '.content-doc');
-});
+			init_select2('select');
+			$('.vendu').hide()
+			$('.payer').hide()
+	 }); 
+	  $(function () {
+			init_select2('select', null, '.content-doc');
+	 });
 	</script>
 {% endblock %}

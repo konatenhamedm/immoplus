@@ -31,8 +31,12 @@ framework:
                 places:
                         - disponible
                         - vendu
+                        - payer
                 transitions:
                         vendre:
                             from: disponible
                             to: vendu
+                        finaliser:
+                            from: vendu
+                            to: payer
             

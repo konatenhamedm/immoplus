@@ -1,5 +1,6 @@
 {% block page_content %}
 	{% form_theme form 'widget/fields-block.html.twig' %}
+
 	<div class="modal-header">
 		<h5 class="modal-title" id="exampleModalLabel">Création Terrain</h5>
 		<div class="btn btn-icon btn-sm  ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -28,6 +29,8 @@
 			{# <div class="col-md-12 justication">{{ form_row(form.justification) }}</div> #}
 		</div>
 	</div>
+	
+
 	<div
 		class="modal-footer">
 		{# {{ include('_includes/ajax/loader.html.twig') }} #}
@@ -44,11 +47,17 @@
 		$(function () {
 		init_select2('select');
 		$('.vendu').hide()
-		// $('.rejeter').hide()
+		 $('.payer').hide()
 		// $('.justication').hide()
+
+
+		
+        init_select2('select');
 		});
 		$(function () {
 		init_select2('select', null, '.content-doc');
 		});
+
+	
 	</script>
 {% endblock %}
